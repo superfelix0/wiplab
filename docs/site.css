@@ -1,0 +1,77 @@
+:root {
+  --ink: #1f2b25;
+  --muted: #71786f;
+  --cream: #f4f0e6;
+  --paper: #fbf9f3;
+  --green: #2e5c4b;
+  --coral: #c97258;
+  --blue: #70889c;
+  --line: rgba(31, 43, 37, .15);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); font-family: "Noto Sans KR", sans-serif; background: var(--paper); }
+.grain { position: fixed; inset: 0; z-index: -1; opacity: .24; background-image: radial-gradient(rgba(46,92,75,.16) .6px, transparent .6px); background-size: 11px 11px; }
+.site-header, main, footer { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+.site-header { height: 82px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.site-header p { color: var(--muted); font-size: 10px; letter-spacing: .18em; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-family: "Gowun Dodum", serif; font-size: 21px; font-weight: 700; text-decoration: none; }
+.brand-dot { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: white; font-family: "Noto Sans KR", sans-serif; font-size: 16px; background: var(--green); }
+.hero { min-height: 680px; display: flex; align-items: center; justify-content: space-between; gap: 60px; padding: 70px 6%; border-bottom: 1px solid var(--line); }
+.hero-copy { max-width: 620px; }
+.eyebrow { margin: 0 0 20px; color: var(--coral); font-size: 10px; font-weight: 800; letter-spacing: .22em; }
+h1, h2, h3, p, blockquote { word-break: keep-all; }
+h1 { margin: 0; font-family: "Gowun Dodum", serif; font-size: clamp(52px, 7vw, 92px); font-weight: 400; line-height: 1.1; letter-spacing: -.06em; }
+h1 em { color: var(--green); font-style: normal; }
+.hero-description { margin: 32px 0; color: var(--muted); font-size: 16px; line-height: 1.9; }
+.hero-link { display: inline-flex; gap: 30px; align-items: center; border-bottom: 1px solid var(--ink); padding: 10px 2px; color: var(--ink); font-size: 13px; font-weight: 700; text-decoration: none; }
+.decision-orbit { position: relative; flex: 0 0 410px; height: 410px; }
+.orbit { position: absolute; inset: 12%; border: 1px solid rgba(46,92,75,.22); border-radius: 48% 52% 53% 47%; }
+.orbit-one { transform: rotate(20deg); }
+.orbit-two { inset: 24%; border-color: rgba(201,114,88,.28); transform: rotate(-14deg); }
+.orbit-center { position: absolute; inset: 39%; display: grid; place-items: center; border-radius: 50%; color: white; font-family: "Gowun Dodum", serif; font-size: 44px; background: var(--green); }
+.orbit-word { position: absolute; font-family: "Gowun Dodum", serif; font-size: 32px; }
+.word-one { top: 17%; left: 4%; color: var(--green); }
+.word-two { right: 3%; bottom: 17%; color: var(--coral); }
+.orbit-note { position: absolute; right: 4%; top: 14%; color: var(--muted); font-size: 10px; line-height: 1.7; }
+.tools-section { padding: 110px 3%; }
+.section-heading { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 42px; }
+.section-heading h2 { margin: 0; font-family: "Gowun Dodum", serif; font-size: clamp(34px, 4vw, 50px); font-weight: 400; }
+.section-heading > p { color: var(--muted); font-size: 12px; line-height: 1.7; }
+.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.tool-card { position: relative; min-height: 310px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; border: 1px solid var(--line); padding: 34px; color: var(--ink); text-decoration: none; background: rgba(255,255,255,.55); transition: transform .25s, box-shadow .25s; }
+a.tool-card:hover { transform: translateY(-5px); box-shadow: 0 24px 55px rgba(31,43,37,.1); }
+.tool-number { position: absolute; top: 26px; left: 30px; color: var(--muted); font-size: 10px; }
+.tool-icon { position: absolute; top: 25px; right: 30px; color: rgba(46,92,75,.17); font-family: "Gowun Dodum", serif; font-size: 76px; }
+.tool-category { margin: 0 0 9px; color: var(--coral); font-size: 10px; font-weight: 700; letter-spacing: .12em; }
+.tool-card h3 { margin: 0 0 12px; font-family: "Gowun Dodum", serif; font-size: 34px; font-weight: 400; }
+.tool-card div > p:last-child { max-width: 360px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.gift-card { background: #f4eee4; }
+.buy-card { background: #e9efea; }
+.card-arrow { position: absolute; right: 30px; bottom: 30px; font-size: 22px; }
+.soon-card { opacity: .68; }
+.soon-label { position: absolute; right: 28px; bottom: 29px; border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; font-size: 9px; }
+.principle { margin: 0 3% 110px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 70px 4%; text-align: center; }
+.principle > p { color: var(--coral); font-size: 10px; font-weight: 700; letter-spacing: .15em; }
+.principle blockquote { margin: 25px 0 0; font-family: "Gowun Dodum", serif; font-size: clamp(25px, 3.3vw, 40px); line-height: 1.55; }
+.principle em { color: var(--green); font-style: normal; }
+footer { display: flex; justify-content: space-between; border-top: 1px solid var(--line); padding: 25px 0 35px; color: var(--muted); font-size: 10px; }
+footer p { margin: 0; }
+@media (max-width: 800px) {
+  .hero { flex-direction: column; align-items: flex-start; min-height: auto; padding: 75px 0; }
+  .decision-orbit { align-self: center; transform: scale(.82); margin: -20px 0; }
+  .tool-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .site-header, main, footer { width: calc(100% - 28px); }
+  .site-header p { display: none; }
+  h1 { font-size: 50px; }
+  .hero { gap: 30px; }
+  .decision-orbit { width: 360px; height: 360px; flex-basis: 360px; transform: scale(.85); transform-origin: center; margin-left: calc((100% - 360px)/2); }
+  .section-heading { align-items: flex-start; flex-direction: column; gap: 18px; }
+  .tools-section { padding: 80px 0; }
+  .tool-card { min-height: 280px; padding: 28px 23px; }
+  .tool-icon { right: 23px; }
+  .card-arrow, .soon-label { right: 23px; }
+  footer { flex-direction: column; gap: 7px; }
+}

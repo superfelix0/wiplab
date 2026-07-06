@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="필요와 욕심 사이, 지금 이 물건을 사도 괜찮은지 판단해주는 무료 도구.">
+  <title>살까말까 — 할까말까</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="../"><span>?</span> 할까말까</a>
+    <p>BUY OR NOT</p>
+  </header>
+  <main>
+    <section id="intro" class="view intro active">
+      <div class="intro-copy">
+        <p class="eyebrow">A QUIET CHECK BEFORE BUYING</p>
+        <h1>그 물건,<br><em>정말 살까요?</em></h1>
+        <p>사지 말라는 잔소리도, 무조건 사라는 부추김도 없이.<br>필요와 욕심 사이를 함께 차분히 살펴봐요.</p>
+        <button id="startButton" class="primary">구매 고민 풀어보기 <span>→</span></button>
+        <small>가입 없이 무료 · 답변은 저장하지 않아요</small>
+      </div>
+      <div class="receipt" aria-hidden="true">
+        <p>OR NOT STORE</p><span>DECISION RECEIPT</span>
+        <div class="receipt-lines"><i></i><i></i><i></i></div>
+        <b>NEED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WANT</b>
+        <strong>?</strong>
+        <div class="barcode">|||| ||| || |||| |</div>
+      </div>
+    </section>
+
+    <section id="quiz" class="view quiz">
+      <div class="progress"><span id="stepText"></span><i><b id="progressBar"></b></i></div>
+      <button id="backButton" class="back" type="button">← 이전</button>
+      <div class="question-box">
+        <p id="kicker" class="eyebrow"></p>
+        <h2 id="question"></h2>
+        <p id="help"></p>
+        <div id="options" class="options"></div>
+        <button id="nextButton" class="primary next" type="button" disabled>다음 <span>→</span></button>
+      </div>
+    </section>
+
+    <section id="result" class="view result">
+      <div class="result-head">
+        <p class="eyebrow">YOUR BUYING DECISION</p>
+        <span id="badge"></span>
+        <h2 id="headline"></h2>
+        <p id="summary"></p>
+      </div>
+      <div class="score-board">
+        <div><small>구매 적합도</small><strong id="score"></strong></div>
+        <div class="meter"><i id="meterFill"></i></div>
+      </div>
+      <div class="result-grid">
+        <article class="decision"><small>결론</small><h3 id="decision"></h3><p id="reason"></p></article>
+        <article><small>추천 행동</small><h3 id="action"></h3><p id="actionReason"></p></article>
+        <article><small>한 번 더 확인</small><ul id="checks"></ul></article>
+        <article><small>기억할 한마디</small><blockquote id="quote"></blockquote></article>
+      </div>
+      <div class="actions"><button id="restart" class="primary">다른 물건 고민하기</button><a href="../">다른 도구 보기</a></div>
+      <p class="disclaimer">이 결과는 소비 습관을 돌아보기 위한 참고 의견이며, 재정·의료 등 전문적 판단을 대신하지 않아요.</p>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
