@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://giftornot.pages.dev/revisit/">
+  <meta property="og:url" content="https://giftornot.pages.dev/revisit/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="다시만난소비 | 지난 소비 회고하기">
+  <meta property="og:description" content="지난 소비를 다시 돌아보고 나에게 맞는 다음 구매 기준을 발견하는 무료 소비 회고 도구입니다.">
+  <meta name="description" content="시간이 지난 소비를 다시 만나 다음 구매의 기준을 발견하는 무료 소비 회고 도구.">
+  <title>다시만난소비 — 할까말까</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="../"><span>?</span> 할까말까</a>
+    <p>REVISIT YOUR PURCHASE</p>
+  </header>
+
+  <main>
+    <section id="intro" class="view intro active">
+      <div class="intro-copy">
+        <p class="eyebrow">다시 보면, 다음이 달라져요</p>
+        <h1>그 소비와<br><em>다시 만나볼까요?</em></h1>
+        <p>잘 산 물건도, 아쉬웠던 물건도 시간이 지나야 보이는 것이 있어요.<br>지난 소비에서 나만의 다음 기준을 발견해보세요.</p>
+        <label for="itemName">무엇을 다시 만나볼까요?</label>
+        <div class="name-row">
+          <input id="itemName" type="text" maxlength="30" placeholder="예: 로봇청소기, 운동화, 온라인 강의">
+          <button id="startButton" class="primary" type="button" disabled>다시 만나기 <span>→</span></button>
+        </div>
+        <small>가입 없이 무료 · 입력한 내용은 저장하지 않아요</small>
+      </div>
+      <div class="memory-card" aria-hidden="true">
+        <span class="tape"></span>
+        <p>나의 소비 기록</p>
+        <strong>그때의<br>선택</strong>
+        <i>×</i>
+        <strong>지금의<br>마음</strong>
+        <div class="date-line">THEN ───────── NOW</div>
+      </div>
+    </section>
+
+    <section id="quiz" class="view quiz">
+      <div class="progress"><span id="stepText"></span><i><b id="progressBar"></b></i></div>
+      <button id="backButton" class="back" type="button">← 이전</button>
+      <div class="question-box">
+        <p id="kicker" class="eyebrow"></p>
+        <h2 id="question"></h2>
+        <p id="help"></p>
+        <div id="options" class="options"></div>
+        <button id="nextButton" class="primary next" type="button" disabled>다음 <span>→</span></button>
+      </div>
+    </section>
+
+    <section id="result" class="view result">
+      <div class="result-head">
+        <p class="eyebrow">MY CONSUMPTION REVIEW</p>
+        <span id="badge"></span>
+        <h2 id="headline"></h2>
+        <p id="summary"></p>
+      </div>
+      <div class="result-grid">
+        <article class="main-result"><small>다시 만난 결론</small><h3 id="verdict"></h3><p id="reason"></p></article>
+        <article><small>지금 할 일</small><h3 id="action"></h3><p id="actionReason"></p></article>
+        <article><small>이번 소비가 알려준 것</small><ul id="lessons"></ul></article>
+        <article class="promise"><small>다음 소비의 약속</small><blockquote id="promise"></blockquote></article>
+      </div>
+      <div class="actions">
+        <button id="restart" class="primary" type="button">다른 소비 만나기</button>
+        <a href="../">다른 도구 보기</a>
+      </div>
+      <p class="disclaimer">소비를 평가하는 목적은 후회가 아니라, 나에게 맞는 기준을 발견하는 데 있어요.</p>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

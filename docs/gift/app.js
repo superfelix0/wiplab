@@ -146,6 +146,7 @@ function buildRecommendation() {
   let decision;
   if (score >= 5) {
     decision = {
+      tone: "#315e4d",
       badge: "선물로 마음을 전하기 좋은 때",
       title: "작게라도 챙겨보세요",
       reason: "이미 오간 마음이 있거나 관계가 충분히 가까워요. 비싼 것보다 상대를 생각해 골랐다는 느낌이 중요합니다.",
@@ -154,6 +155,7 @@ function buildRecommendation() {
     };
   } else if (score >= 2) {
     decision = {
+      tone: "#9a7428",
       badge: "가벼운 표현이 잘 어울리는 때",
       title: "부담 없는 선물이 좋아요",
       reason: "꼭 챙겨야 하는 관계는 아니지만 마음을 표현하면 반가울 상황이에요. 크기보다 자연스러운 명분을 우선하세요.",
@@ -162,6 +164,7 @@ function buildRecommendation() {
     };
   } else {
     decision = {
+      tone: "#536f84",
       badge: "안부만으로도 충분한 때",
       title: "선물하지 않아도 괜찮아요",
       reason: "현재 관계와 선물을 고민하는 이유를 보면, 물건보다 진심 어린 안부가 더 자연스럽습니다. 억지로 준비하지 않아도 예의에 어긋나지 않아요.",
@@ -217,6 +220,7 @@ function buildRecommendation() {
 
 function renderResult() {
   const result = buildRecommendation();
+  document.getElementById("result").style.setProperty("--result-color", result.decision.tone);
   document.getElementById("resultBadge").textContent = result.decision.badge;
   document.getElementById("resultHeadline").innerHTML = result.decision.headline.replace("\n", "<br>");
   document.getElementById("resultSummary").textContent = result.decision.summary;

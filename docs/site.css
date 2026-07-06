@@ -1,11 +1,13 @@
 :root {
   --ink: #1f2b25;
-  --muted: #71786f;
+  --muted: #656d66;
   --cream: #f4f0e6;
   --paper: #fbf9f3;
   --green: #2e5c4b;
-  --coral: #c97258;
+  --coral: #a95b46;
   --blue: #70889c;
+  --gold: #c99a3d;
+  --violet: #806f9b;
   --line: rgba(31, 43, 37, .15);
 }
 * { box-sizing: border-box; }
@@ -46,8 +48,16 @@ a.tool-card:hover { transform: translateY(-5px); box-shadow: 0 24px 55px rgba(31
 .tool-category { margin: 0 0 9px; color: var(--coral); font-size: 10px; font-weight: 700; letter-spacing: .12em; }
 .tool-card h3 { margin: 0 0 12px; font-family: "Gowun Dodum", serif; font-size: 34px; font-weight: 400; }
 .tool-card div > p:last-child { max-width: 360px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
-.gift-card { background: #f4eee4; }
-.buy-card { background: #e9efea; }
+.gift-card { background: #f4e8df; }
+.gift-card .tool-category { color: #a95b46; }
+.buy-card { background: #e7edf1; }
+.buy-card .tool-category { color: #536f84; }
+.revisit-card { background: #eee9f3; }
+.revisit-card .tool-category { color: #6f5d8a; }
+.soon-card:not(.random-card) { background: #f4ecd9; }
+.soon-card:not(.random-card) .tool-category { color: #8a681f; }
+.random-card { background: #eee9f3; }
+.random-card .tool-category { color: #6f5d8a; }
 .card-arrow { position: absolute; right: 30px; bottom: 30px; font-size: 22px; }
 .soon-card { opacity: .68; }
 .soon-label { position: absolute; right: 28px; bottom: 29px; border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; font-size: 9px; }

@@ -1,11 +1,12 @@
 :root {
   --ink: #263128;
-  --muted: #6f766f;
+  --muted: #656d66;
   --paper: #f7f3e9;
   --paper-deep: #eee6d7;
   --green: #315f4f;
   --green-dark: #24483c;
-  --coral: #c8735b;
+  --coral: #a95b46;
+  --action: #405565;
   --line: rgba(49, 95, 79, .17);
   --shadow: 0 24px 70px rgba(50, 61, 50, .11);
 }
@@ -115,12 +116,12 @@ h1 em { color: var(--green); font-style: normal; }
   transition: transform .2s, background .2s, opacity .2s;
 }
 .primary-button {
-  border: 1px solid var(--green);
+  border: 1px solid var(--action);
   color: #fff;
-  background: var(--green);
+  background: var(--action);
   box-shadow: 0 12px 26px rgba(49, 95, 79, .17);
 }
-.primary-button:hover:not(:disabled) { background: var(--green-dark); transform: translateY(-2px); }
+.primary-button:hover:not(:disabled) { background: #30434f; transform: translateY(-2px); }
 .primary-button:disabled { cursor: not-allowed; opacity: .35; }
 .primary-button span { margin-left: 18px; }
 .secondary-button {
@@ -231,9 +232,9 @@ h1 em { color: var(--green); font-style: normal; }
 .option-copy small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
 .question-actions { display: flex; justify-content: flex-end; margin-top: 34px; }
 
-.result { flex-direction: column; padding: 64px 4% 100px; }
+.result { --result-color: var(--green); flex-direction: column; padding: 64px 4% 100px; }
 .result-heading { max-width: 740px; margin: 0 auto 40px; text-align: center; }
-.result-badge { display: inline-block; margin-bottom: 22px; border-radius: 999px; padding: 7px 13px; color: var(--green); font-size: 11px; font-weight: 700; background: rgba(49, 95, 79, .09); }
+.result-badge { display: inline-block; margin-bottom: 22px; border-radius: 999px; padding: 7px 13px; color: var(--result-color); font-size: 11px; font-weight: 700; background: rgba(62, 72, 66, .08); }
 .result-heading > p:last-child { color: var(--muted); line-height: 1.8; }
 .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .result-card {
@@ -247,7 +248,7 @@ h1 em { color: var(--green); font-style: normal; }
 .result-card p { color: var(--muted); font-size: 14px; line-height: 1.8; }
 .card-number { position: absolute; top: 28px; right: 30px; color: rgba(49, 95, 79, .3); font-family: "Gowun Dodum", serif; font-size: 13px; }
 .card-label { margin: 0 !important; color: var(--coral) !important; font-size: 11px !important; font-weight: 800; letter-spacing: .12em; }
-.verdict-card { color: #fff; background: var(--green); }
+.verdict-card { color: #fff; background: var(--result-color); }
 .verdict-card .card-label, .verdict-card p { color: rgba(255, 255, 255, .75) !important; }
 .verdict-card .card-number { color: rgba(255, 255, 255, .4); }
 .wide-card { grid-column: span 2; min-height: auto; }
