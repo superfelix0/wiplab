@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GD6K8FB589');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://giftornot.pages.dev/compare/">
+  <meta name="description" content="두 선택지 사이에서 현실성, 만족도, 후회 가능성을 비교해 결정을 돕는 무료 A/B 선택 도구.">
+  <meta property="og:url" content="https://giftornot.pages.dev/compare/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="할까말까">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:title" content="둘 중 뭐? | 무료 A/B 선택 도우미">
+  <meta property="og:description" content="A와 B 사이, 나에게 중요한 기준을 하나씩 비교해 마음을 정리해보세요.">
+  <title>둘 중 뭐? | 무료 A/B 선택 도우미</title>
+  <meta name="theme-color" content="#f8f6ef">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "둘 중 뭐?",
+    "url": "https://giftornot.pages.dev/compare/",
+    "description": "두 선택지를 중요한 기준별로 비교해 결정을 돕는 무료 A/B 선택 도구입니다.",
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "Any",
+    "inLanguage": "ko-KR",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" }
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="../"><span>?</span> 할까말까</a>
+    <p>A OR B</p>
+  </header>
+
+  <main>
+    <section id="intro" class="view intro active">
+      <div class="intro-copy">
+        <p class="eyebrow">TWO OPTIONS, ONE CLEARER MIND</p>
+        <h1>둘 다 괜찮아서,<br><em>더 어렵다면.</em></h1>
+        <p>A와 B를 적어주세요. 정답을 대신 고르기보다<br>내가 무엇을 더 중요하게 보는지 선명하게 만들어드릴게요.</p>
+        <div class="choice-inputs">
+          <label><span>선택 A</span><input id="choiceA" maxlength="28" placeholder="예: 이직하기"></label>
+          <b>VS</b>
+          <label><span>선택 B</span><input id="choiceB" maxlength="28" placeholder="예: 지금 회사에 남기"></label>
+        </div>
+        <button id="startButton" class="primary" type="button" disabled>비교 시작하기 <span>→</span></button>
+        <small>가입 없이 무료 · 입력 내용은 저장하지 않아요</small>
+      </div>
+      <div class="balance" aria-hidden="true">
+        <div class="balance-line"></div><div class="balance-pivot">?</div>
+        <div class="balance-side side-a"><i>A</i><span>마음</span></div>
+        <div class="balance-side side-b"><i>B</i><span>현실</span></div>
+      </div>
+    </section>
+
+    <section id="quiz" class="view quiz">
+      <div class="progress"><span id="stepText"></span><i><b id="progressBar"></b></i></div>
+      <button id="backButton" class="back" type="button">← 이전</button>
+      <div class="question-box">
+        <p id="kicker" class="eyebrow"></p>
+        <h2 id="question"></h2>
+        <p id="help"></p>
+        <div id="options" class="options"></div>
+        <button id="nextButton" class="primary next" type="button" disabled>다음 <span>→</span></button>
+      </div>
+    </section>
+
+    <section id="result" class="view result">
+      <div class="result-head">
+        <p class="eyebrow">YOUR COMPARISON NOTE</p>
+        <span id="badge"></span>
+        <h2 id="headline"></h2>
+        <p id="summary"></p>
+      </div>
+      <div class="score-card">
+        <div class="score-labels"><strong id="labelA"></strong><strong id="labelB"></strong></div>
+        <div class="score-track"><i id="scoreA"></i><i id="scoreB"></i></div>
+        <div class="score-values"><span id="valueA"></span><span id="valueB"></span></div>
+      </div>
+      <div class="result-grid">
+        <article class="main-result"><small>조금 더 기우는 쪽</small><h3 id="winner"></h3><p id="reason"></p></article>
+        <article><small>마음이 기운 이유</small><ul id="strengths"></ul></article>
+        <article><small>반대쪽이 더 맞을 때</small><p id="counterpoint"></p></article>
+        <article class="last-check"><small>마지막 확인</small><blockquote id="lastCheck"></blockquote></article>
+      </div>
+      <div class="actions">
+        <button id="restart" class="primary" type="button">다른 선택 비교하기</button>
+        <button id="share" class="secondary" type="button">결과 공유하기</button>
+        <a href="../">다른 도구 보기</a>
+      </div>
+      <p class="disclaimer">이 결과는 답을 대신 정하는 판정이 아니라, 내가 중요하게 여긴 기준을 정리한 참고 의견이에요.</p>
+    </section>
+  </main>
+
+  <footer class="seo-footer">
+    <nav aria-label="다른 고민 도구">
+      <a href="../gift/">드릴까말까</a><a href="../buy/">살까말까</a><a href="../revisit/">다시만난소비</a><a href="../">모든 도구</a>
+    </nav>
+  </footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

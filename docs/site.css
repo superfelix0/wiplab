@@ -54,6 +54,8 @@ a.tool-card:hover { transform: translateY(-5px); box-shadow: 0 24px 55px rgba(31
 .buy-card .tool-category { color: #536f84; }
 .revisit-card { background: #eee9f3; }
 .revisit-card .tool-category { color: #6f5d8a; }
+.compare-card { background: #e5efec; }
+.compare-card .tool-category { color: #397466; }
 .soon-card:not(.random-card) { background: #f4ecd9; }
 .soon-card:not(.random-card) .tool-category { color: #8a681f; }
 .random-card { background: #eee9f3; }
