@@ -46,12 +46,12 @@ a {
 .site-header,
 main > section,
 footer {
-  width: min(1120px, calc(100% - 40px));
+  width: min(1080px, calc(100% - 32px));
   margin: auto;
 }
 
 .site-header {
-  min-height: 78px;
+  min-height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -67,18 +67,18 @@ footer {
 }
 
 .brand span {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
+  border-radius: 11px;
   color: #253142;
   background: linear-gradient(135deg, #ffe7a6, #c9ddff);
-  font: 800 14px "DM Sans", sans-serif;
+  font: 800 11px "DM Sans", sans-serif;
 }
 
 .brand strong {
-  font: 800 17px "DM Sans", sans-serif;
+  font: 800 14px "DM Sans", sans-serif;
   letter-spacing: -0.02em;
 }
 
@@ -92,26 +92,26 @@ nav {
 nav a {
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 8px 12px;
+  padding: 6px 10px;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.64);
   text-decoration: none;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
 }
 
 .hero {
-  min-height: 470px;
+  min-height: auto;
   display: grid;
   align-content: center;
-  padding: 80px 0 42px;
+  padding: 34px 0 18px;
 }
 
 .eyebrow {
-  margin: 0 0 14px;
+  margin: 0 0 8px;
   color: #7186d8;
-  font: 800 11px "DM Sans", sans-serif;
-  letter-spacing: 0.18em;
+  font: 800 10px "DM Sans", sans-serif;
+  letter-spacing: 0.14em;
 }
 
 h1,
@@ -121,9 +121,9 @@ h2 {
 }
 
 h1 {
-  max-width: 850px;
-  font-size: clamp(48px, 7vw, 88px);
-  line-height: 1.08;
+  max-width: 760px;
+  font-size: clamp(26px, 4vw, 34px);
+  line-height: 1.22;
 }
 
 h1 em {
@@ -132,72 +132,72 @@ h1 em {
 }
 
 .hero-copy {
-  max-width: 720px;
-  margin: 28px 0;
+  max-width: 760px;
+  margin: 12px 0 0;
   color: var(--muted);
-  font-size: 16px;
-  line-height: 1.85;
+  font-size: 14px;
+  line-height: 1.55;
   word-break: keep-all;
 }
 
 .service-board {
-  padding: 18px 0 28px;
+  padding: 14px 0 18px;
 }
 
 .service-grid {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
-  gap: 18px;
+  gap: 12px;
 }
 
 .service-card {
-  min-height: 270px;
+  min-height: 178px;
   position: relative;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--line);
-  border-radius: 30px;
-  padding: 28px;
+  border-radius: 22px;
+  padding: 18px;
   color: var(--ink);
   text-decoration: none;
-  box-shadow: 0 20px 55px rgba(131, 105, 78, 0.1);
+  box-shadow: 0 14px 34px rgba(131, 105, 78, 0.08);
 }
 
 .service-card p {
-  margin: auto 0 10px;
+  margin: auto 0 6px;
   color: #8b78cf;
-  font: 800 11px "DM Sans", sans-serif;
-  letter-spacing: 0.16em;
+  font: 800 10px "DM Sans", sans-serif;
+  letter-spacing: 0.12em;
 }
 
 .service-card h3 {
   margin: 0;
-  font-size: clamp(28px, 3vw, 42px);
-  line-height: 1.22;
-  letter-spacing: -0.055em;
+  font-size: 18px;
+  line-height: 1.28;
+  letter-spacing: -0.025em;
 }
 
 .service-card small {
   max-width: 520px;
-  margin-top: 16px;
+  margin-top: 8px;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.45;
   word-break: keep-all;
 }
 
 .service-card b {
-  margin-top: 24px;
-  font-size: 13px;
+  margin-top: 14px;
+  font-size: 12px;
 }
 
 .service-number {
   width: max-content;
   border-radius: 999px;
-  padding: 7px 12px;
+  padding: 5px 9px;
   background: rgba(255, 255, 255, 0.7);
   color: #5f6f83;
-  font: 800 12px "DM Sans", sans-serif;
+  font: 800 10px "DM Sans", sans-serif;
 }
 
 .active-service {
@@ -230,10 +230,10 @@ h1 em {
 }
 
 .calc-note {
-  margin: 18px 4px 0;
+  margin: 12px 4px 0;
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.75;
+  font-size: 11px;
+  line-height: 1.45;
   word-break: keep-all;
 }
 
@@ -244,18 +244,18 @@ h1 em {
 
 .calculator {
   border: 1px solid var(--line);
-  border-radius: 30px;
-  padding: 34px;
+  border-radius: 22px;
+  padding: 20px;
   background: rgba(255, 253, 248, 0.9);
   box-shadow: 0 28px 80px rgba(131, 105, 78, 0.14);
   backdrop-filter: blur(12px);
 }
 
 .chart-panel {
-  margin-top: 34px;
+  margin-top: 18px;
   border: 1px solid var(--line);
-  border-radius: 24px;
-  padding: 24px;
+  border-radius: 18px;
+  padding: 16px;
   background: #fffaf0;
 }
 
@@ -263,14 +263,14 @@ h1 em {
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .chart-head h3 {
   margin: 0;
-  font-size: clamp(24px, 3vw, 34px);
-  letter-spacing: -0.045em;
+  font-size: 17px;
+  letter-spacing: -0.02em;
 }
 
 .chart-legend {
@@ -278,7 +278,7 @@ h1 em {
   gap: 14px;
   flex-wrap: wrap;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -305,14 +305,14 @@ h1 em {
 .chart-wrap {
   position: relative;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 14px;
   background: linear-gradient(180deg, #fffdf8, #f7fbff);
 }
 
 #priceChart {
   display: block;
   width: 100%;
-  min-height: 260px;
+  min-height: 210px;
 }
 
 .chart-grid line {
@@ -322,12 +322,12 @@ h1 em {
 .chart-grid text,
 .chart-date {
   fill: #718092;
-  font: 700 12px "DM Sans", sans-serif;
+  font: 700 11px "DM Sans", sans-serif;
 }
 
 .chart-line {
   fill: none;
-  stroke-width: 4;
+  stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -349,7 +349,7 @@ h1 em {
   color: var(--muted);
   background: rgba(255, 253, 248, 0.78);
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .chart-empty[hidden] {
@@ -360,17 +360,17 @@ h1 em {
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
 .refresh-button {
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 12px 18px;
+  padding: 8px 12px;
   color: #253142;
   background: linear-gradient(135deg, #ffe7a6, #c9ddff);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -382,17 +382,18 @@ h1 em {
 
 .section-title h2,
 .guide h2 {
-  font-size: clamp(30px, 4vw, 48px);
+  font-size: 18px;
+  letter-spacing: -0.02em;
 }
 
 .status {
   border: 1px solid var(--line);
   border-radius: 16px;
-  margin-bottom: 16px;
-  padding: 14px 16px;
+  margin-bottom: 10px;
+  padding: 9px 12px;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .status[data-state="ok"] {
@@ -408,15 +409,15 @@ h1 em {
 .quote-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  gap: 10px;
 }
 
 .quote-grid article {
-  min-height: 150px;
+  min-height: 104px;
   display: block;
   border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 18px;
+  border-radius: 15px;
+  padding: 13px;
   background: var(--panel-2);
 }
 
@@ -427,34 +428,34 @@ h1 em {
 
 .quote-grid small {
   display: block;
-  margin-top: 14px;
+  margin-top: 8px;
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.55;
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .quote-grid strong {
   display: block;
-  margin-top: 28px;
+  margin-top: 14px;
   color: var(--ink);
-  font: 800 clamp(25px, 3vw, 36px) "DM Sans", sans-serif;
-  letter-spacing: -0.05em;
+  font: 800 20px "DM Sans", sans-serif;
+  letter-spacing: -0.025em;
 }
 
 .result-panel {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 14px;
-  margin-top: 18px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .result-panel article {
-  min-height: 160px;
+  min-height: 112px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-radius: 22px;
-  padding: 22px;
+  border-radius: 16px;
+  padding: 14px;
   color: var(--ink);
   background: var(--white);
 }
@@ -462,14 +463,14 @@ h1 em {
 .result-panel span,
 .result-panel small {
   color: #607084;
-  font-size: 13px;
+  font-size: 11px;
 }
 
 .result-panel strong {
-  margin: 20px 0;
+  margin: 12px 0;
   color: var(--ink);
-  font: 800 clamp(26px, 3.6vw, 43px) "DM Sans", sans-serif;
-  letter-spacing: -0.05em;
+  font: 800 22px "DM Sans", sans-serif;
+  letter-spacing: -0.025em;
 }
 
 #premiumRate[data-state="premium"] {
@@ -487,13 +488,13 @@ h1 em {
 .guide {
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
-  gap: 50px;
-  padding: 92px 0;
+  gap: 18px;
+  padding: 28px 0;
 }
 
 .guide ol {
   display: grid;
-  gap: 14px;
+  gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -501,11 +502,12 @@ h1 em {
 
 .guide li {
   border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 22px;
+  border-radius: 15px;
+  padding: 13px;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.62);
-  line-height: 1.75;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .guide b {
@@ -517,12 +519,12 @@ h1 em {
 footer {
   display: grid;
   grid-template-columns: 1fr 1.3fr auto;
-  gap: 28px;
+  gap: 18px;
   border-top: 1px solid var(--line);
-  padding: 34px 0 46px;
+  padding: 18px 0 26px;
   color: var(--muted);
   font-size: 12px;
-  line-height: 1.75;
+  line-height: 1.45;
 }
 
 footer strong {
@@ -543,7 +545,7 @@ footer p {
 
   .hero {
     min-height: auto;
-    padding-top: 52px;
+    padding-top: 26px;
   }
 
   .guide {
@@ -580,12 +582,12 @@ footer p {
   }
 
   .calculator {
-    padding: 22px;
-    border-radius: 22px;
+    padding: 16px;
+    border-radius: 18px;
   }
 
   h1 {
-    font-size: 43px;
+    font-size: 24px;
   }
 
   footer {
