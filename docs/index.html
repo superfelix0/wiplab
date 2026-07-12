@@ -11,10 +11,10 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="WIP Lab의 첫 번째 실험: ADR과 국내 상장 주식 가격을 실시간 시세로 불러와 원화 기준 괴리율을 비교하는 계산기입니다.">
-  <meta name="theme-color" content="#07111f">
-  <meta property="og:title" content="WIP Lab — ADR Gap Monitor">
-  <meta property="og:description" content="계속 만드는 실험실의 첫 도구. ADR과 국내 상장 주식의 원화 기준 가격 차이를 자동 계산합니다.">
+  <meta name="description" content="WIP Lab은 작은 웹 도구를 빠르게 만들고 실제로 써보며 다듬는 실험실입니다. 첫 번째 WIP는 SK하이닉스 ADR 가격 비교입니다.">
+  <meta name="theme-color" content="#fbf7ef">
+  <meta property="og:title" content="WIP Lab — 계속 만드는 실험실">
+  <meta property="og:description" content="작게 만들고 써보며 고치는 웹 실험실. WIP 1은 SK하이닉스 ADR 가격 비교입니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
@@ -24,16 +24,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <title>WIP Lab — ADR Gap Monitor</title>
+  <title>WIP Lab — 계속 만드는 실험실</title>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "WIP Lab — ADR Gap Monitor",
+    "@type": "WebSite",
+    "name": "WIP Lab",
     "url": "https://wiplabs.pages.dev/",
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "Any",
-    "description": "ADR과 국내 상장 주식 가격을 실시간 시세로 원화 환산해 비교하는 무료 계산기입니다.",
+    "description": "작은 웹 도구를 빠르게 만들고 실제로 써보며 다듬는 실험실입니다.",
     "inLanguage": "ko-KR",
     "isAccessibleForFree": true
   }
@@ -46,27 +44,54 @@
       <strong>WIP Lab</strong>
     </a>
     <nav aria-label="외부 시세 링크">
-      <a href="https://finance.yahoo.com/quote/SKHYV" target="_blank" rel="noopener">SKHY/SKHYV</a>
-      <a href="https://finance.yahoo.com/quote/000660.KS" target="_blank" rel="noopener">000660.KS</a>
-      <a href="https://finance.yahoo.com/quote/KRW=X" target="_blank" rel="noopener">USD/KRW</a>
+      <a href="#wip-1">WIP 1</a>
+      <a href="#wip-2">WIP 2</a>
+      <a href="https://github.com/superfelix0/wiplab" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </header>
 
   <main>
     <section class="hero">
-      <p class="eyebrow">EXPERIMENT 001 · ADR GAP MONITOR</p>
-      <h1>ADR 가격<br><em>vs 본주 가격</em></h1>
+      <p class="eyebrow">WORK IN PROGRESS LAB</p>
+      <h1>작게 만들고,<br><em>써보며 고치는 실험실</em></h1>
       <p class="hero-copy">
-        ADR과 국내 본주 가격을 같은 원화 기준으로 맞춰보고, 두 가격의 흐름을 함께 확인합니다.
-        WIP Lab은 작게 만들고, 실제로 써보고, 쓸모 있는 것만 남기는 실험 공간입니다.
+        WIP Lab은 떠오른 아이디어를 빠르게 웹 도구로 만들어보고, 실제로 써보며 쓸모 있는 것만 남기는 공간입니다.
+        지금은 첫 번째 실험으로 ADR 가격과 국내 본주 가격을 비교하는 도구를 운영 중입니다.
       </p>
     </section>
 
-    <section class="calculator" aria-labelledby="calc-title">
+    <section class="service-board" aria-labelledby="service-title">
       <div class="section-title">
         <div>
-          <p class="eyebrow">LIVE DATA</p>
-          <h2 id="calc-title">ADR 괴리율 비교</h2>
+          <p class="eyebrow">NOW BUILDING</p>
+          <h2 id="service-title">진행 중인 WIP</h2>
+        </div>
+      </div>
+
+      <div class="service-grid">
+        <a class="service-card active-service" href="#wip-1">
+          <span class="service-number">WIP 1</span>
+          <p>LIVE SERVICE</p>
+          <h3>SK하이닉스 ADR 가격 비교</h3>
+          <small>ADR 가격과 코스피 본주 가격을 원화 기준으로 환산해 비교합니다.</small>
+          <b>바로 보기 ↓</b>
+        </a>
+
+        <article id="wip-2" class="service-card pending-service">
+          <span class="service-number">WIP 2</span>
+          <p>IN DEVELOPMENT</p>
+          <h3>다음 실험 준비 중</h3>
+          <small>두 번째 서비스는 아직 만들고 있습니다. 작게 열고, 반응을 보며 다듬을 예정입니다.</small>
+          <b>coming soon</b>
+        </article>
+      </div>
+    </section>
+
+    <section id="wip-1" class="calculator" aria-labelledby="calc-title">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">WIP 1 · LIVE DATA</p>
+          <h2 id="calc-title">SK하이닉스 ADR 가격 비교</h2>
         </div>
         <button id="refreshButton" class="refresh-button" type="button">새로고침</button>
       </div>
