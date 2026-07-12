@@ -28,6 +28,10 @@ function formatPercent(value) {
   return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%`;
 }
 
+function formatPer(value) {
+  return Number.isFinite(value) ? `${value.toFixed(value % 1 === 0 ? 0 : 1)}x` : "확인 필요";
+}
+
 function formatTime(value) {
   if (!value) return "";
   return new Intl.DateTimeFormat("ko-KR", {
@@ -62,21 +66,27 @@ function renderCards(data) {
     .map((market) => {
       const quote = Object.values(data.quotes).find((item) => item.symbol === market.symbol);
       const time = quote ? formatTime(quote.marketTime) : "";
-      const manual = market.manualBenchmark ? '<span class="market-badge">수동 기준</span>' : "";
+      const badges = [
+        market.manualBenchmark ? '<span class="market-badge">목표 수동 기준</span>' : "",
+        market.manualAverage ? '<span class="market-badge">평균 보완 필요</span>' : "",
+      ].join("");
 
       return `
         <article>
           <div class="market-card-head">
             <span>${market.name}</span>
-            ${manual}
+            <span class="market-badge-row">${badges}</span>
           </div>
           <strong>${formatNumber(market.current)}</strong>
           <dl>
             <div><dt>연말 예상</dt><dd>${formatNumber(market.target)}</dd></div>
             <div><dt>목표 대비</dt><dd>${formatPercent(market.upside)}</dd></div>
             <div><dt>Forward PER</dt><dd>${market.forwardPerLabel}</dd></div>
+            <div><dt>역사적 평균 PER</dt><dd>${market.historicalAverageLabel}</dd></div>
+            <div><dt>평균 대비</dt><dd>${formatPercent(market.perVsAverage)}</dd></div>
           </dl>
           <p>${market.targetBasis}</p>
+          <p>${market.historicalAverageBasis}</p>
           <small>${market.symbol}${time ? ` · ${time}` : ""}</small>
         </article>
       `;
@@ -201,7 +211,7 @@ function renderPerChart(markets) {
       }));
 
       const value = svgEl("text", { x: point.x + 7, y: point.y - 7, class: "bar-value" });
-      value.textContent = `${point.value}x`;
+      value.textContent = formatPer(point.value);
       perChart.appendChild(value);
     });
 

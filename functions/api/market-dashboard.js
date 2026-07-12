@@ -12,9 +12,19 @@ const SOURCES = [
     note: "KOSPI 12,000 12개월 목표와 이익 전망을 참고했습니다.",
   },
   {
+    title: "MarketWatch: KOSPI 7.6 P/E after correction",
+    url: "https://www.marketwatch.com/story/it-was-the-worlds-hottest-stock-market-now-south-koreas-stock-market-index-has-entered-bear-market-territory-95d70e3d",
+    note: "최근 조정 이후 KOSPI 7.6배 P/E 언급을 참고했습니다.",
+  },
+  {
     title: "MarketWatch: S&P 500 forward P/E 20.61",
     url: "https://www.marketwatch.com/livecoverage/stock-market-today-s-p-500-nasdaq-dow-chip-stocks-surge-sk-hynix-trading-debut-us/card/stocks-rally-into-an-expected-strong-earnings-season-as-valuations-get-cheaper-BS7L1QcqKbcqb6wE0v3Q",
-    note: "S&P 500 forward P/E 20.61을 참고했습니다.",
+    note: "S&P 500 forward P/E 20.61 및 1년 전 22.54를 참고했습니다.",
+  },
+  {
+    title: "MarketWatch: S&P 500 historical forward P/E context",
+    url: "https://www.marketwatch.com/story/how-to-lower-your-investment-risk-when-stocks-are-so-expensive-1bd1b881",
+    note: "S&P 500 10년 평균 forward P/E 약 18.5배를 참고했습니다.",
   },
   {
     title: "Kiplinger: S&P 500 year-end 7,600 outlook",
@@ -22,9 +32,14 @@ const SOURCES = [
     note: "S&P 500 연말 예상 지수 7,600을 참고했습니다.",
   },
   {
-    title: "MarketWatch: oil retreat and U.S. equity target context",
-    url: "https://www.marketwatch.com/story/as-oil-exits-the-danger-zone-heres-what-history-suggests-happens-next-for-stocks-7724a8a9",
-    note: "미국 증시 목표치 상향 흐름과 기술주 우호 환경을 보조 참고했습니다.",
+    title: "Investopedia: QQQ tracks the Nasdaq-100",
+    url: "https://www.investopedia.com/ask/answers/061715/what-qqq-etf.asp",
+    note: "Nasdaq 100 비교 지표는 QQQ/NDX의 기술주 중심 특성을 참고했습니다.",
+  },
+  {
+    title: "Yahoo Finance chart API",
+    url: "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC",
+    note: "KOSPI 200, KOSPI, Nasdaq 100, S&P 500의 현재 지수 조회에 사용합니다.",
   },
 ];
 
@@ -86,6 +101,14 @@ function percentToTarget(current, target) {
   return (target - current) / current;
 }
 
+function diffToAverage(current, historicalAverage) {
+  if (!Number.isFinite(current) || !Number.isFinite(historicalAverage) || historicalAverage === 0) {
+    return null;
+  }
+
+  return (current - historicalAverage) / historicalAverage;
+}
+
 function buildMarkets(quotes) {
   const kospiTarget = 12000;
   const kospi200Target =
@@ -107,15 +130,19 @@ function buildMarkets(quotes) {
       target: kospi200Target,
       targetLabel: "KOSPI 12,000 환산",
       targetBasis: "Goldman Sachs의 KOSPI 12,000 목표를 현재 KOSPI200/KOSPI 비율로 환산했습니다.",
-      forwardPer: 8.0,
-      forwardPerLabel: "약 8.0x",
-      forwardPerBasis: "기사 기반 관측치",
+      forwardPer: 7.6,
+      forwardPerLabel: "약 7.6x",
+      forwardPerBasis: "MarketWatch의 최근 KOSPI P/E 언급을 KOSPI 200 비교 기준으로 사용했습니다.",
+      historicalAveragePer: 10.5,
+      historicalAverageLabel: "약 10.5x",
+      historicalAverageBasis: "공개 기사에서 안정적인 KOSPI 200 장기 forward PER 평균이 확인되지 않아 한국 시장 장기 정상권 비교 기준으로 표시했습니다. 원천 데이터 확보 시 교체 대상입니다.",
       trend: [
-        { label: "랠리 전", value: 10.5, basis: "장기 평균에 가까운 내부 기준값" },
-        { label: "최근 기사", value: 8.0, basis: "Goldman/MarketWatch 계열 기사에서 언급된 저평가 구간" },
-        { label: "현재 표시", value: 8.0, basis: "기사 기반 최신 기준값 유지" },
+        { label: "역사 평균", value: 10.5, basis: "장기 정상권 비교 기준" },
+        { label: "최근 기사", value: 7.6, basis: "MarketWatch KOSPI P/E" },
+        { label: "현재 표시", value: 7.6, basis: "기사 기반 최신 기준값 유지" },
       ],
-      sourceIds: [0],
+      sourceIds: [0, 1, 6],
+      manualAverage: true,
     },
     {
       id: "nasdaq100",
@@ -124,17 +151,21 @@ function buildMarkets(quotes) {
       current: quotes.nasdaq100.price,
       target: nasdaqTarget,
       targetLabel: "S&P500 목표 수익률 환산",
-      targetBasis: "공개 기사에서 Nasdaq100 단독 연말 목표가 확인되지 않아 S&P500 7,600 목표 수익률을 비교 벤치마크로 적용했습니다.",
+      targetBasis: "공개 기사에서 Nasdaq 100 단독 연말 목표가 확인되지 않아 S&P500 7,600 목표 수익률을 비교 벤치마크로 적용했습니다.",
       forwardPer: 30.0,
       forwardPerLabel: "약 30.0x",
-      forwardPerBasis: "기술주 고평가/AI 랠리 기사 흐름을 반영한 임시 비교 기준입니다. 업데이트 필요.",
+      forwardPerBasis: "기술주·AI 중심 랠리 환경을 반영한 임시 비교 기준입니다.",
+      historicalAveragePer: 25.0,
+      historicalAverageLabel: "약 25.0x",
+      historicalAverageBasis: "무료 공개 기사에서 Nasdaq 100의 공식 장기 forward PER 평균이 확인되지 않아 기술주 지수 장기 비교 기준으로 표시했습니다. 원천 데이터 확보 시 교체 대상입니다.",
       trend: [
-        { label: "Q1 조정", value: 27.0, basis: "기술주 조정 국면 비교 기준" },
+        { label: "역사 평균", value: 25.0, basis: "기술주 지수 장기 비교 기준" },
         { label: "AI 랠리", value: 30.0, basis: "AI 중심 기술주 프리미엄 반영" },
         { label: "현재 표시", value: 30.0, basis: "수동 비교 기준" },
       ],
-      sourceIds: [3],
+      sourceIds: [5, 6],
       manualBenchmark: true,
+      manualAverage: true,
     },
     {
       id: "sp500",
@@ -147,16 +178,20 @@ function buildMarkets(quotes) {
       forwardPer: 20.61,
       forwardPerLabel: "20.61x",
       forwardPerBasis: "MarketWatch 기사 기준입니다.",
+      historicalAveragePer: 18.5,
+      historicalAverageLabel: "약 18.5x",
+      historicalAverageBasis: "MarketWatch의 S&P 500 10년 평균 forward P/E 언급을 사용했습니다.",
       trend: [
-        { label: "연초", value: 22.2, basis: "2026년 초 고점권 밸류에이션" },
+        { label: "10년 평균", value: 18.5, basis: "MarketWatch 장기 평균" },
         { label: "1년 전", value: 22.54, basis: "MarketWatch 비교 수치" },
         { label: "현재", value: 20.61, basis: "MarketWatch 최신 기사" },
       ],
-      sourceIds: [1, 2],
+      sourceIds: [2, 3, 4, 6],
     },
   ].map((market) => ({
     ...market,
     upside: percentToTarget(market.current, market.target),
+    perVsAverage: diffToAverage(market.forwardPer, market.historicalAveragePer),
   }));
 }
 

@@ -641,6 +641,13 @@ h1 em {
   white-space: nowrap;
 }
 
+.market-badge-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
 .market-card-grid strong {
   display: block;
   margin-top: 12px;
