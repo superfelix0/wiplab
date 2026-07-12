@@ -164,7 +164,7 @@ function renderPerChart(markets) {
   const allValues = markets.flatMap((market) => market.trend.map((point) => point.value)).filter(Number.isFinite);
   const max = Math.max(...allValues, 1) * 1.15;
   const min = 0;
-  const barColors = ["#1f4e79", "#a77b2d", "#2f6f58"];
+  const barColors = ["#1f4e79", "#a77b2d"];
   const yScale = (value) => height - bottom - ((value - min) / (max - min)) * (height - top - bottom);
 
   [0, 0.25, 0.5, 0.75, 1].forEach((ratio) => {
@@ -192,7 +192,7 @@ function renderPerChart(markets) {
   markets.forEach((market, marketIndex) => {
     const groupStart = left + marketIndex * groupWidth;
     const groupCenter = groupStart + groupWidth / 2;
-    const points = market.trend.slice(0, 3);
+    const points = market.trend.slice(0, 2);
     const totalBarWidth = points.length * barWidth + (points.length - 1) * barGap;
     const firstBarX = groupCenter - totalBarWidth / 2;
 
@@ -233,8 +233,7 @@ function renderPerChart(markets) {
 
   const legendItems = [
     { label: "역사 평균", color: barColors[0] },
-    { label: "최근·비교 기준", color: barColors[1] },
-    { label: "현재", color: barColors[2] },
+    { label: "현재", color: barColors[1] },
   ];
   const legendStartX = left + 12;
 

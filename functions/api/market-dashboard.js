@@ -138,7 +138,6 @@ function buildMarkets(quotes) {
       historicalAverageBasis: "공개 기사에서 안정적인 KOSPI 200 장기 forward PER 평균이 확인되지 않아 한국 시장 장기 정상권 비교 기준으로 표시했습니다. 원천 데이터 확보 시 교체 대상입니다.",
       trend: [
         { label: "역사 평균", value: 10.5, basis: "장기 정상권 비교 기준" },
-        { label: "최근 기사", value: 7.6, basis: "MarketWatch KOSPI P/E" },
         { label: "현재 표시", value: 7.6, basis: "기사 기반 최신 기준값 유지" },
       ],
       sourceIds: [0, 1, 6],
@@ -160,7 +159,6 @@ function buildMarkets(quotes) {
       historicalAverageBasis: "무료 공개 기사에서 Nasdaq 100의 공식 장기 forward PER 평균이 확인되지 않아 기술주 지수 장기 비교 기준으로 표시했습니다. 원천 데이터 확보 시 교체 대상입니다.",
       trend: [
         { label: "역사 평균", value: 25.0, basis: "기술주 지수 장기 비교 기준" },
-        { label: "AI 랠리", value: 30.0, basis: "AI 중심 기술주 프리미엄 반영" },
         { label: "현재 표시", value: 30.0, basis: "수동 비교 기준" },
       ],
       sourceIds: [5, 6],
@@ -183,7 +181,6 @@ function buildMarkets(quotes) {
       historicalAverageBasis: "MarketWatch의 S&P 500 10년 평균 forward P/E 언급을 사용했습니다.",
       trend: [
         { label: "10년 평균", value: 18.5, basis: "MarketWatch 장기 평균" },
-        { label: "1년 전", value: 22.54, basis: "MarketWatch 비교 수치" },
         { label: "현재", value: 20.61, basis: "MarketWatch 최신 기사" },
       ],
       sourceIds: [2, 3, 4, 6],
