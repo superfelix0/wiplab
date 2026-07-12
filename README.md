@@ -10,3 +10,5 @@
 - Build command: 없음
 - Build output directory: `docs`
 - Pages Function: `functions/api/quotes.js`
+
+Cloudflare가 빌드 설정을 잘못 읽지 않도록 `wrangler.toml`에도 Pages 출력 경로를 명시했습니다.
