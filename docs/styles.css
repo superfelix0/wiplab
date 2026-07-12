@@ -143,12 +143,62 @@ h1 em {
 }
 
 .hero-copy {
-  max-width: 720px;
+  max-width: none;
   margin: 14px 0 0;
   color: var(--muted);
   font-size: 14px;
   line-height: 1.58;
   word-break: keep-all;
+  white-space: nowrap;
+}
+
+.wip-list {
+  padding: 24px 0 34px;
+}
+
+.wip-list h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.wip-index {
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.wip-index a {
+  display: grid;
+  grid-template-columns: 92px 260px 1fr;
+  gap: 18px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.wip-index a:hover strong {
+  color: var(--blue);
+}
+
+.wip-index span {
+  color: var(--gold);
+  font: 800 10px "DM Sans", sans-serif;
+  letter-spacing: 0.14em;
+}
+
+.wip-index strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.wip-index small {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .service-board {
@@ -572,6 +622,19 @@ footer p {
 
   .guide {
     grid-template-columns: 1fr;
+  }
+
+  .hero-copy,
+  .wip-index small {
+    white-space: normal;
+  }
+
+  .wip-index a {
+    grid-template-columns: 80px 1fr;
+  }
+
+  .wip-index small {
+    grid-column: 2;
   }
 }
 
