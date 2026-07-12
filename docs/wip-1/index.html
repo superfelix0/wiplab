@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-GD6K8FB589");
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="SK하이닉스 ADR 가격과 코스피 본주 가격을 원화 기준으로 비교하는 WIP Lab의 첫 번째 실험입니다.">
+  <meta name="theme-color" content="#fbf7ef">
+  <meta property="og:title" content="WIP 1 — SK하이닉스 ADR 가격 비교">
+  <meta property="og:description" content="ADR 가격과 코스피 본주 가격을 원화 기준으로 환산해 비교합니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wiplabs.pages.dev/wip-1/">
+  <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
+  <link rel="canonical" href="https://wiplabs.pages.dev/wip-1/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <title>WIP 1 — SK하이닉스 ADR 가격 비교</title>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="홈으로 이동">
+      <span>WIP</span>
+      <strong>WIP Lab</strong>
+    </a>
+    <nav aria-label="페이지 이동">
+      <a href="../wip-1/">WIP 1</a>
+      <a href="../wip-2/">WIP 2</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero service-hero">
+      <p class="eyebrow">WIP 1 · LIVE DATA</p>
+      <h1>SK하이닉스 ADR 가격<br><em>vs 본주 가격</em></h1>
+      <p class="hero-copy">
+        ADR과 국내 본주 가격을 같은 원화 기준으로 맞춰보고, 두 가격의 흐름을 함께 확인합니다.
+      </p>
+    </section>
+
+    <section class="calculator" aria-labelledby="calc-title">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">PRICE CHECK</p>
+          <h2 id="calc-title">ADR 괴리율 비교</h2>
+        </div>
+        <button id="refreshButton" class="refresh-button" type="button">새로고침</button>
+      </div>
+
+      <div id="status" class="status" role="status" aria-live="polite">시세를 불러오는 중입니다…</div>
+
+      <div class="quote-grid">
+        <article>
+          <span id="adrSymbolLabel">SKHY ADR</span>
+          <strong id="adrPrice">-</strong>
+          <small id="adrTime">Nasdaq · USD</small>
+        </article>
+        <article>
+          <span>코스피 000660</span>
+          <strong id="kospiPrice">-</strong>
+          <small id="kospiTime">KSE · KRW</small>
+        </article>
+        <article>
+          <span>USD/KRW</span>
+          <strong id="fxRate">-</strong>
+          <small id="fxTime">환율</small>
+        </article>
+        <article>
+          <span>ADR 비율</span>
+          <strong>0.1주</strong>
+          <small>ADR 1주 = 본주 1/10주</small>
+        </article>
+      </div>
+
+      <div class="result-panel" aria-live="polite">
+        <article>
+          <span>ADR 환산 본주가</span>
+          <strong id="convertedPrice">-</strong>
+          <small>ADR 가격 × 환율 ÷ 0.1</small>
+        </article>
+        <article>
+          <span>괴리율</span>
+          <strong id="premiumRate">-</strong>
+          <small id="premiumLabel">시세를 불러오면 자동 계산됩니다.</small>
+        </article>
+        <article>
+          <span>본주 1주 기준 차이</span>
+          <strong id="priceGap">-</strong>
+          <small>ADR 환산 본주가 - 코스피 가격</small>
+        </article>
+      </div>
+
+      <p class="calc-note">
+        SKHY 또는 임시 티커 SKHYV ADR, 코스피 000660, USD/KRW 환율을 자동으로 불러와 같은 원화 기준으로 비교합니다.
+        계산 기준은 <b>ADR 환산 본주가 = ADR 가격 × 환율 ÷ 0.1</b>입니다. ADR 1주가 본주 1/10을 대표하므로, 본주 1주 기준 가격은 ADR 원화가의 10배로 환산합니다.
+      </p>
+
+      <section class="chart-panel" aria-labelledby="chart-title">
+        <div class="chart-head">
+          <div>
+            <p class="eyebrow">SINCE ADR LISTING</p>
+            <h3 id="chart-title">ADR 상장 이후 가격 추이</h3>
+          </div>
+          <div class="chart-legend" aria-label="차트 범례">
+            <span><i class="legend-adr"></i>ADR 환산 본주가</span>
+            <span><i class="legend-kospi"></i>코스피 본주</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <svg id="priceChart" viewBox="0 0 900 360" role="img" aria-labelledby="chart-title chart-desc">
+            <desc id="chart-desc">ADR 상장일부터 현재까지 ADR 환산 본주가와 코스피 본주 가격을 비교한 선 그래프</desc>
+          </svg>
+          <p id="chartEmpty" class="chart-empty">가격 추이 데이터를 불러오는 중입니다…</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="guide" aria-labelledby="guide-title">
+      <div>
+        <p class="eyebrow">HOW TO READ</p>
+        <h2 id="guide-title">해석은 이렇게</h2>
+      </div>
+      <ol>
+        <li>
+          <b>괴리율이 플러스면</b>
+          ADR 환산 본주가가 코스피 본주 가격보다 높다는 뜻입니다.
+        </li>
+        <li>
+          <b>괴리율이 마이너스면</b>
+          ADR 환산 본주가가 코스피 본주 가격보다 낮다는 뜻입니다.
+        </li>
+        <li>
+          <b>실제 거래 전에는</b>
+          시세 지연, 환전 스프레드, 세금, 거래 수수료, 유동성, 장 운영 시간 차이를 함께 봐야 합니다.
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>WIP 1</strong>
+      <p>SK하이닉스 ADR 가격 비교</p>
+    </div>
+    <p>이 도구는 교육·참고용 계산기입니다. 투자 권유가 아니며, 시세 데이터는 서버 함수에서 Yahoo Finance 공개 chart 응답을 조회해 표시합니다.</p>
+    <span>© 2026</span>
+  </footer>
+
+  <script src="../app.js"></script>
+</body>
+</html>

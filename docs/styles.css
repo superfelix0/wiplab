@@ -27,11 +27,7 @@ body {
   min-height: 100vh;
   margin: 0;
   color: var(--ink);
-  background:
-    radial-gradient(circle at 82% 4%, rgba(217, 208, 255, 0.62), transparent 31rem),
-    radial-gradient(circle at 8% 16%, rgba(255, 216, 199, 0.66), transparent 28rem),
-    radial-gradient(circle at 74% 72%, rgba(153, 216, 189, 0.34), transparent 28rem),
-    linear-gradient(135deg, #fbf7ef 0%, #f7fbff 52%, #fff8ef 100%);
+  background: var(--bg);
   font-family: "Noto Sans KR", system-ui, sans-serif;
 }
 
@@ -72,8 +68,8 @@ footer {
   display: grid;
   place-items: center;
   border-radius: 11px;
-  color: #253142;
-  background: linear-gradient(135deg, #ffe7a6, #c9ddff);
+  color: #ffffff;
+  background: #7186d8;
   font: 800 11px "DM Sans", sans-serif;
 }
 
@@ -93,8 +89,8 @@ nav a {
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 6px 10px;
-  color: var(--muted);
-  background: rgba(255, 255, 255, 0.64);
+  color: var(--ink);
+  background: var(--white);
   text-decoration: none;
   font-size: 11px;
   font-weight: 700;
@@ -201,15 +197,11 @@ h1 em {
 }
 
 .active-service {
-  background:
-    radial-gradient(circle at 92% 16%, rgba(255, 255, 255, 0.75), transparent 14rem),
-    linear-gradient(135deg, #fff2cd, #eaf2ff);
+  background: var(--panel);
 }
 
 .pending-service {
-  background:
-    radial-gradient(circle at 90% 12%, rgba(255, 255, 255, 0.78), transparent 12rem),
-    linear-gradient(135deg, #f3edff, #eaf8f1);
+  background: var(--panel-2);
 }
 
 .market-note {
@@ -306,7 +298,7 @@ h1 em {
   position: relative;
   overflow: hidden;
   border-radius: 14px;
-  background: linear-gradient(180deg, #fffdf8, #f7fbff);
+  background: var(--paper);
 }
 
 #priceChart {
@@ -368,8 +360,8 @@ h1 em {
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 8px 12px;
-  color: #253142;
-  background: linear-gradient(135deg, #ffe7a6, #c9ddff);
+  color: #ffffff;
+  background: #7186d8;
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
