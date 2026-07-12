@@ -28,7 +28,7 @@ body {
   margin: 0;
   color: var(--ink);
   background: var(--bg);
-  font-family: "Noto Sans KR", system-ui, sans-serif;
+  font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", system-ui, sans-serif;
   font-size: 14px;
 }
 
@@ -71,11 +71,11 @@ footer {
   border-radius: 3px;
   color: #ffffff;
   background: var(--ink);
-  font: 800 11px "DM Sans", sans-serif;
+  font: 800 11px "Malgun Gothic", "맑은 고딕", sans-serif;
 }
 
 .brand strong {
-  font: 800 14px "DM Sans", sans-serif;
+  font: 800 14px "Malgun Gothic", "맑은 고딕", sans-serif;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -118,7 +118,7 @@ nav a:hover {
 .eyebrow {
   margin: 0 0 9px;
   color: var(--gold);
-  font: 800 10px "DM Sans", sans-serif;
+  font: 800 10px "Malgun Gothic", "맑은 고딕", sans-serif;
   letter-spacing: 0.16em;
 }
 
@@ -131,10 +131,10 @@ h2 {
 h1 {
   max-width: 760px;
   color: var(--ink);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(28px, 4vw, 40px);
-  font-weight: 600;
-  line-height: 1.14;
+  font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.28;
 }
 
 h1 em {
@@ -157,9 +157,9 @@ h1 em {
 }
 
 .wip-list h2 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 20px;
-  font-weight: 600;
+  font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
   letter-spacing: -0.015em;
 }
 
@@ -185,14 +185,14 @@ h1 em {
 
 .wip-index span {
   color: var(--gold);
-  font: 800 10px "DM Sans", sans-serif;
+  font: 800 10px "Malgun Gothic", "맑은 고딕", sans-serif;
   letter-spacing: 0.14em;
 }
 
 .wip-index strong {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 17px;
-  font-weight: 600;
+  font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .wip-index small {
@@ -228,15 +228,15 @@ h1 em {
 .service-card p {
   margin: auto 0 6px;
   color: var(--gold);
-  font: 800 10px "DM Sans", sans-serif;
+  font: 800 10px "Malgun Gothic", "맑은 고딕", sans-serif;
   letter-spacing: 0.14em;
 }
 
 .service-card h3 {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 20px;
-  font-weight: 600;
+  font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
   line-height: 1.22;
   letter-spacing: -0.015em;
 }
@@ -263,7 +263,7 @@ h1 em {
   padding: 5px 9px;
   background: var(--panel-2);
   color: var(--muted);
-  font: 800 10px "DM Sans", sans-serif;
+  font: 800 10px "Malgun Gothic", "맑은 고딕", sans-serif;
 }
 
 .active-service,
@@ -328,9 +328,9 @@ h1 em {
 
 .chart-head h3 {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 18px;
-  font-weight: 600;
+  font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
   letter-spacing: -0.015em;
 }
 
@@ -383,7 +383,7 @@ h1 em {
 .chart-grid text,
 .chart-date {
   fill: var(--muted);
-  font: 700 11px "DM Sans", sans-serif;
+  font: 700 11px "Malgun Gothic", "맑은 고딕", sans-serif;
 }
 
 .chart-line {
@@ -447,9 +447,9 @@ h1 em {
 
 .section-title h2,
 .guide h2 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 20px;
-  font-weight: 600;
+  font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
   letter-spacing: -0.015em;
 }
 
@@ -507,7 +507,7 @@ h1 em {
   display: block;
   margin-top: 14px;
   color: var(--ink);
-  font: 800 20px "DM Sans", sans-serif;
+  font: 800 18px "Malgun Gothic", "맑은 고딕", sans-serif;
   letter-spacing: -0.025em;
 }
 
@@ -539,7 +539,7 @@ h1 em {
 .result-panel strong {
   margin: 12px 0;
   color: var(--ink);
-  font: 800 22px "DM Sans", sans-serif;
+  font: 800 18px "Malgun Gothic", "맑은 고딕", sans-serif;
   letter-spacing: -0.025em;
 }
 
@@ -599,8 +599,8 @@ footer {
 
 footer strong {
   color: var(--ink);
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 600;
+  font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", system-ui, sans-serif;
+  font-weight: 700;
 }
 
 footer p {
@@ -671,7 +671,7 @@ footer p {
   }
 
   h1 {
-    font-size: 26px;
+    font-size: 16px;
   }
 
   footer {
