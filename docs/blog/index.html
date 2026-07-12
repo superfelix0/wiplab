@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-GD6K8FB589");
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="WIP Labs의 개발 기록, 서비스 실험 메모, 시장 데이터 해석을 모아두는 블로그형 게시판입니다.">
+  <meta name="theme-color" content="#f6f3ec">
+  <meta property="og:title" content="WIP Labs Blog">
+  <meta property="og:description" content="WIP Labs의 개발 기록과 서비스 실험 메모를 모아둡니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wiplabs.pages.dev/blog/">
+  <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
+  <link rel="canonical" href="https://wiplabs.pages.dev/blog/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css">
+  <title>WIP Labs Blog</title>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="홈으로 이동">
+      <span>WIP</span>
+      <strong>WIP Labs</strong>
+    </a>
+    <nav aria-label="주요 메뉴">
+      <a href="../">Home</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero service-hero">
+      <p class="eyebrow">BLOG</p>
+      <h1>WIP Labs 게시판</h1>
+      <p class="hero-copy">서비스를 만들며 남기는 개발 기록, 아이디어 메모, 데이터 해석 노트를 쌓아두는 공간입니다.</p>
+    </section>
+
+    <section class="blog-board" aria-labelledby="blog-board-title">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">NOTES</p>
+          <h2 id="blog-board-title">글 목록</h2>
+        </div>
+      </div>
+
+      <div class="blog-list">
+        <article>
+          <a href="posts/wip2-per-comparison/">
+            <span>2026.07.12</span>
+            <strong>WIP 2의 Forward PER 그래프를 막대그래프로 바꾼 이유</strong>
+            <small>시간축이 아닌 기준점 비교라면 선형 그래프보다 그룹 막대그래프가 더 정직합니다.</small>
+          </a>
+        </article>
+        <article>
+          <a href="posts/how-wiplabs-starts/">
+            <span>2026.07.12</span>
+            <strong>WIP Labs는 무엇을 실험하는 곳인가</strong>
+            <small>작게 만들고 실제로 써보며 남길 것과 버릴 것을 판단하는 개인 실험실입니다.</small>
+          </a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>WIP Labs Blog</strong>
+      <p>개발 기록과 실험 메모를 남기는 게시판입니다.</p>
+    </div>
+    <p>현재는 정적 HTML 방식입니다. 이후 글 작성 폼, 검색, 태그, 댓글 기능을 단계적으로 붙일 수 있습니다.</p>
+    <span>© 2026</span>
+  </footer>
+</body>
+</html>

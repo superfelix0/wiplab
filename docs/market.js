@@ -233,7 +233,7 @@ function renderPerChart(markets) {
 
   const legendItems = [
     { label: "역사 평균", color: barColors[0] },
-    { label: "중간 기준", color: barColors[1] },
+    { label: "최근·비교 기준", color: barColors[1] },
     { label: "현재", color: barColors[2] },
   ];
   const legendStartX = left + 12;

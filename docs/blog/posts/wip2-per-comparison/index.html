@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-GD6K8FB589");
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="WIP 2의 Forward PER 비교 그래프를 선형 그래프에서 그룹 막대그래프로 바꾼 이유를 기록합니다.">
+  <meta name="theme-color" content="#f6f3ec">
+  <meta property="og:title" content="WIP 2의 Forward PER 그래프를 막대그래프로 바꾼 이유">
+  <meta property="og:description" content="시간축이 아닌 기준점 비교라면 선형 그래프보다 그룹 막대그래프가 더 정직합니다.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://wiplabs.pages.dev/blog/posts/wip2-per-comparison/">
+  <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
+  <link rel="canonical" href="https://wiplabs.pages.dev/blog/posts/wip2-per-comparison/">
+  <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../styles.css">
+  <title>WIP 2의 Forward PER 그래프를 막대그래프로 바꾼 이유</title>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../../../" aria-label="홈으로 이동">
+      <span>WIP</span>
+      <strong>WIP Labs</strong>
+    </a>
+    <nav aria-label="주요 메뉴">
+      <a href="../../">Blog</a>
+    </nav>
+  </header>
+
+  <main>
+    <article class="post-article">
+      <p class="eyebrow">2026.07.12 · WIP 2</p>
+      <h1>WIP 2의 Forward PER 그래프를 막대그래프로 바꾼 이유</h1>
+      <p>
+        처음에는 Forward PER를 선형 그래프로 연결했지만, 이 값들은 동일한 날짜축 위의 시계열이 아니었습니다.
+        역사 평균, 최근 기사 기준, 현재 표시값처럼 서로 성격이 다른 기준점을 순서대로 놓은 것이었기 때문에 선으로 연결하면 실제 추세처럼 오해될 수 있었습니다.
+      </p>
+      <p>
+        그래서 각 지수별로 세 기준점을 묶고, 역사 평균·최근 비교 기준·현재값을 막대그래프로 나란히 비교하도록 바꿨습니다.
+        데이터의 한계를 숨기기보다 화면 구조에서 드러내는 편이 이 서비스의 방향에 더 맞습니다.
+      </p>
+      <p>
+        다음 단계에서는 각 지수의 Forward PER 원천 데이터를 더 안정적으로 확보해 실제 시계열 차트로 확장할 수 있는지 검토할 예정입니다.
+      </p>
+    </article>
+  </main>
+
+  <footer>
+    <div>
+      <strong>WIP Labs Blog</strong>
+      <p>서비스를 만들며 남기는 기록.</p>
+    </div>
+    <p><a href="../../">글 목록으로 돌아가기</a></p>
+    <span>© 2026</span>
+  </footer>
+</body>
+</html>
