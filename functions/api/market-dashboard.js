@@ -19,7 +19,7 @@ const SOURCES = [
   {
     title: "MarketWatch: S&P 500 forward P/E 20.61",
     url: "https://www.marketwatch.com/livecoverage/stock-market-today-s-p-500-nasdaq-dow-chip-stocks-surge-sk-hynix-trading-debut-us/card/stocks-rally-into-an-expected-strong-earnings-season-as-valuations-get-cheaper-BS7L1QcqKbcqb6wE0v3Q",
-    note: "S&P 500 forward P/E 20.61 및 1년 전 22.54를 참고했습니다.",
+    note: "S&P 500 forward P/E 20.61을 참고했습니다.",
   },
   {
     title: "MarketWatch: S&P 500 historical forward P/E context",
