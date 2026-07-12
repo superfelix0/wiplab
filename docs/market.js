@@ -160,11 +160,11 @@ function renderPerChart(markets) {
   const left = 58;
   const right = 36;
   const top = 28;
-  const bottom = 48;
+  const bottom = 70;
   const allValues = markets.flatMap((market) => market.trend.map((point) => point.value)).filter(Number.isFinite);
   const max = Math.max(...allValues, 1) * 1.15;
-  const min = Math.max(0, Math.min(...allValues) * 0.75);
-  const colors = ["#1f4e79", "#a77b2d", "#2f6f58"];
+  const min = 0;
+  const barColors = ["#1f4e79", "#a77b2d", "#2f6f58"];
   const yScale = (value) => height - bottom - ((value - min) / (max - min)) * (height - top - bottom);
 
   [0, 0.25, 0.5, 0.75, 1].forEach((ratio) => {
@@ -184,57 +184,78 @@ function renderPerChart(markets) {
     perChart.appendChild(tick);
   });
 
+  const plotWidth = width - left - right;
+  const groupWidth = plotWidth / markets.length;
+  const barWidth = 30;
+  const barGap = 8;
+
   markets.forEach((market, marketIndex) => {
-    const points = market.trend.map((point, pointIndex) => {
-      const x = left + (pointIndex / Math.max(1, market.trend.length - 1)) * (width - left - right);
+    const groupStart = left + marketIndex * groupWidth;
+    const groupCenter = groupStart + groupWidth / 2;
+    const points = market.trend.slice(0, 3);
+    const totalBarWidth = points.length * barWidth + (points.length - 1) * barGap;
+    const firstBarX = groupCenter - totalBarWidth / 2;
+
+    points.forEach((point, pointIndex) => {
+      const barHeight = height - bottom - yScale(point.value);
+      const x = firstBarX + pointIndex * (barWidth + barGap);
       const y = yScale(point.value);
-      return { ...point, x, y };
-    });
+      const color = barColors[pointIndex % barColors.length];
 
-    const path = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
-
-    perChart.appendChild(svgEl("path", {
-      d: path,
-      fill: "none",
-      stroke: colors[marketIndex % colors.length],
-      "stroke-width": 3,
-      "stroke-linecap": "round",
-      "stroke-linejoin": "round",
-    }));
-
-    points.forEach((point) => {
-      perChart.appendChild(svgEl("circle", {
-        cx: point.x,
-        cy: point.y,
-        r: 4,
-        fill: colors[marketIndex % colors.length],
+      perChart.appendChild(svgEl("rect", {
+        x,
+        y,
+        width: barWidth,
+        height: Math.max(1, barHeight),
+        rx: 2,
+        fill: color,
       }));
 
-      const value = svgEl("text", { x: point.x + 7, y: point.y - 7, class: "bar-value" });
+      const value = svgEl("text", {
+        x: x + barWidth / 2,
+        y: y - 7,
+        "text-anchor": "middle",
+        class: "bar-value",
+      });
       value.textContent = formatPer(point.value);
       perChart.appendChild(value);
     });
 
-    const legendX = left + 12 + marketIndex * 150;
-    const legendY = height - 22;
-    const color = colors[marketIndex % colors.length];
+    const marketLabel = svgEl("text", {
+      x: groupCenter,
+      y: height - 42,
+      "text-anchor": "middle",
+      class: "market-legend-text",
+    });
+    marketLabel.textContent = market.name;
+    perChart.appendChild(marketLabel);
+  });
+
+  const legendItems = [
+    { label: "역사 평균", color: barColors[0] },
+    { label: "중간 기준", color: barColors[1] },
+    { label: "현재", color: barColors[2] },
+  ];
+  const legendStartX = left + 12;
+
+  legendItems.forEach((item, index) => {
+    const x = legendStartX + index * 130;
 
     perChart.appendChild(svgEl("rect", {
-      x: legendX,
-      y: legendY,
+      x,
+      y: height - 22,
       width: 18,
       height: 6,
       rx: 3,
-      fill: color,
+      fill: item.color,
     }));
 
     const legend = svgEl("text", {
-      x: legendX + 26,
+      x: x + 26,
       y: height - 16,
-      fill: colors[marketIndex % colors.length],
       class: "market-legend-text",
     });
-    legend.textContent = market.name;
+    legend.textContent = item.label;
     perChart.appendChild(legend);
   });
 }
