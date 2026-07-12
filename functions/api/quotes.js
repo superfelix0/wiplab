@@ -10,6 +10,10 @@ function yahooChartUrl(symbol) {
   return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1m&range=1d`;
 }
 
+function yahooHistoryUrl(symbol) {
+  return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=max`;
+}
+
 function json(data, init = {}) {
   return new Response(JSON.stringify(data), {
     ...init,
@@ -55,6 +59,77 @@ async function fetchQuote(symbol) {
   };
 }
 
+async function fetchChart(symbol, url) {
+  const response = await fetch(url, {
+    headers: {
+      "user-agent": "wiplab-quote-checker/1.0",
+      accept: "application/json",
+    },
+    cf: {
+      cacheTtl: 300,
+      cacheEverything: false,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`${symbol} chart request failed with ${response.status}`);
+  }
+
+  const data = await response.json();
+  const result = data?.chart?.result?.[0];
+
+  if (!result) {
+    throw new Error(`${symbol} chart is unavailable`);
+  }
+
+  return result;
+}
+
+function toDateKey(seconds) {
+  return new Date(seconds * 1000).toISOString().slice(0, 10);
+}
+
+function parseHistorySeries(symbol, result) {
+  const timestamps = result?.timestamp || [];
+  const close = result?.indicators?.quote?.[0]?.close || [];
+
+  return timestamps
+    .map((time, index) => ({
+      date: toDateKey(time),
+      time: time * 1000,
+      value: close[index],
+    }))
+    .filter((point) => Number.isFinite(point.value));
+}
+
+function latestValueOnOrBefore(series, date) {
+  let value = null;
+
+  for (const point of series) {
+    if (point.date > date) {
+      break;
+    }
+
+    value = point.value;
+  }
+
+  return value;
+}
+
+async function fetchHistory(symbol) {
+  const result = await fetchChart(symbol, yahooHistoryUrl(symbol));
+  const series = parseHistorySeries(symbol, result);
+
+  if (!series.length) {
+    throw new Error(`${symbol} history is unavailable`);
+  }
+
+  return {
+    symbol,
+    series,
+  };
+}
+
 async function fetchFirstValidQuote(symbols) {
   const errors = [];
 
@@ -69,12 +144,52 @@ async function fetchFirstValidQuote(symbols) {
   throw new Error(errors.at(-1) || "ADR quote is unavailable");
 }
 
+async function fetchFirstValidHistory(symbols) {
+  const errors = [];
+
+  for (const symbol of symbols) {
+    try {
+      return await fetchHistory(symbol);
+    } catch (error) {
+      errors.push(error.message);
+    }
+  }
+
+  throw new Error(errors.at(-1) || "ADR history is unavailable");
+}
+
+function buildHistory({ adr, kospi, fx }) {
+  return adr.series
+    .map((point) => {
+      const kospiValue = latestValueOnOrBefore(kospi.series, point.date);
+      const fxValue = latestValueOnOrBefore(fx.series, point.date);
+
+      if (!Number.isFinite(kospiValue) || !Number.isFinite(fxValue)) {
+        return null;
+      }
+
+      const adrConverted = (point.value * fxValue) / ADR_SHARE_RATIO;
+
+      return {
+        date: point.date,
+        time: point.time,
+        adrConverted,
+        kospi: kospiValue,
+        premium: (adrConverted - kospiValue) / kospiValue,
+      };
+    })
+    .filter(Boolean);
+}
+
 export async function onRequestGet() {
   try {
-    const [adr, kospi, fx] = await Promise.all([
+    const [adr, kospi, fx, adrHistory, kospiHistory, fxHistory] = await Promise.all([
       fetchFirstValidQuote(SYMBOLS.adrCandidates),
       fetchQuote(SYMBOLS.kospi),
       fetchQuote(SYMBOLS.fx),
+      fetchFirstValidHistory(SYMBOLS.adrCandidates),
+      fetchHistory(SYMBOLS.kospi),
+      fetchHistory(SYMBOLS.fx),
     ]);
 
     const converted = (adr.price * fx.price) / ADR_SHARE_RATIO;
@@ -94,6 +209,11 @@ export async function onRequestGet() {
         gap,
         premium,
       },
+      history: buildHistory({
+        adr: adrHistory,
+        kospi: kospiHistory,
+        fx: fxHistory,
+      }),
       fetchedAt: Date.now(),
     });
   } catch (error) {

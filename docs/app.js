@@ -12,6 +12,8 @@ const output = {
   premiumRate: document.querySelector("#premiumRate"),
   premiumLabel: document.querySelector("#premiumLabel"),
   priceGap: document.querySelector("#priceGap"),
+  priceChart: document.querySelector("#priceChart"),
+  chartEmpty: document.querySelector("#chartEmpty"),
 };
 
 const usd = new Intl.NumberFormat("en-US", {
@@ -42,6 +44,18 @@ const dateTime = new Intl.DateTimeFormat("ko-KR", {
   timeStyle: "short",
 });
 
+const chartDate = new Intl.DateTimeFormat("ko-KR", {
+  month: "short",
+  day: "numeric",
+});
+
+const chartDateTime = new Intl.DateTimeFormat("ko-KR", {
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
 async function fetchQuotes() {
   const response = await fetch("/api/quotes", { cache: "no-store" });
   const data = await response.json().catch(() => null);
@@ -51,6 +65,89 @@ async function fetchQuotes() {
   }
 
   return data;
+}
+
+function pathFromPoints(points) {
+  return points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
+}
+
+function renderChart(history) {
+  const svg = output.priceChart;
+
+  if (!svg || !Array.isArray(history) || history.length < 2) {
+    output.chartEmpty.textContent = "아직 그래프로 그릴 만큼의 가격 추이 데이터가 충분하지 않습니다.";
+    output.chartEmpty.hidden = false;
+    return;
+  }
+
+  output.chartEmpty.hidden = true;
+  svg.replaceChildren();
+
+  const width = 900;
+  const height = 360;
+  const padding = { top: 26, right: 28, bottom: 46, left: 78 };
+  const innerWidth = width - padding.left - padding.right;
+  const innerHeight = height - padding.top - padding.bottom;
+  const values = history.flatMap((point) => [point.adrConverted, point.kospi]);
+  const min = Math.min(...values) * 0.98;
+  const max = Math.max(...values) * 1.02;
+  const span = max - min || 1;
+
+  const x = (index) => padding.left + (index / (history.length - 1)) * innerWidth;
+  const y = (value) => padding.top + innerHeight - ((value - min) / span) * innerHeight;
+
+  const grid = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  grid.setAttribute("class", "chart-grid");
+
+  for (let i = 0; i <= 4; i += 1) {
+    const lineY = padding.top + (innerHeight / 4) * i;
+    const value = max - (span / 4) * i;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", padding.left);
+    line.setAttribute("x2", width - padding.right);
+    line.setAttribute("y1", lineY);
+    line.setAttribute("y2", lineY);
+    grid.append(line);
+
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", padding.left - 12);
+    label.setAttribute("y", lineY + 4);
+    label.setAttribute("text-anchor", "end");
+    label.textContent = `${Math.round(value / 10000).toLocaleString("ko-KR")}만`;
+    grid.append(label);
+  }
+
+  svg.append(grid);
+
+  const first = history[0];
+  const middle = history[Math.floor(history.length / 2)];
+  const last = history.at(-1);
+  const useTimeLabels = first.date === last.date;
+
+  [first, middle, last].forEach((point) => {
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("class", "chart-date");
+    label.setAttribute("x", x(history.indexOf(point)));
+    label.setAttribute("y", height - 14);
+    label.setAttribute("text-anchor", point === first ? "start" : point === last ? "end" : "middle");
+    label.textContent = useTimeLabels
+      ? chartDateTime.format(new Date(point.time))
+      : chartDate.format(new Date(`${point.date}T00:00:00Z`));
+    svg.append(label);
+  });
+
+  const adrPoints = history.map((point, index) => ({ x: x(index), y: y(point.adrConverted) }));
+  const kospiPoints = history.map((point, index) => ({ x: x(index), y: y(point.kospi) }));
+
+  [
+    ["chart-line chart-line-adr", adrPoints],
+    ["chart-line chart-line-kospi", kospiPoints],
+  ].forEach(([className, points]) => {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("class", className);
+    path.setAttribute("d", pathFromPoints(points));
+    svg.append(path);
+  });
 }
 
 function renderQuote(quote, valueEl, timeEl, formatter, suffix = "") {
@@ -98,6 +195,7 @@ async function refreshQuotes() {
   try {
     const data = await fetchQuotes();
     renderResult(data.quotes, data.result);
+    renderChart(data.history);
     setStatus("시세 반영 완료. 데이터는 거래소·제공사 기준으로 지연될 수 있습니다.", "ok");
   } catch (error) {
     setStatus(`${error.message} 잠시 후 다시 새로고침해 주세요.`, "error");
