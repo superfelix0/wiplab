@@ -215,8 +215,21 @@ function renderPerChart(markets) {
       perChart.appendChild(value);
     });
 
+    const legendX = left + 12 + marketIndex * 150;
+    const legendY = height - 22;
+    const color = colors[marketIndex % colors.length];
+
+    perChart.appendChild(svgEl("rect", {
+      x: legendX,
+      y: legendY,
+      width: 18,
+      height: 6,
+      rx: 3,
+      fill: color,
+    }));
+
     const legend = svgEl("text", {
-      x: left + 12 + marketIndex * 150,
+      x: legendX + 26,
       y: height - 16,
       fill: colors[marketIndex % colors.length],
       class: "market-legend-text",
