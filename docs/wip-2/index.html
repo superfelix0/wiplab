@@ -11,20 +11,17 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="WIP Labs의 두 번째 실험은 아직 개발 중입니다.">
+  <meta name="description" content="KOSPI 200, Nasdaq 100, S&P 500의 현재 지수와 기사 기반 연말 목표, Forward PER를 비교합니다.">
   <meta name="theme-color" content="#f6f3ec">
-  <meta property="og:title" content="WIP 2 — In Development">
-  <meta property="og:description" content="WIP Labs의 두 번째 실험은 아직 개발 중입니다.">
+  <meta property="og:title" content="WIP 2 — Market PER Monitor">
+  <meta property="og:description" content="KOSPI 200, Nasdaq 100, S&P 500의 현재 지수와 기사 기반 연말 목표, Forward PER를 비교합니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/wip-2/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
   <link rel="canonical" href="https://wiplabs.pages.dev/wip-2/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
-  <title>WIP 2 — In Development</title>
+  <title>WIP 2 — Market PER Monitor</title>
 </head>
 <body>
   <header class="site-header">
@@ -37,20 +34,61 @@
   <main>
     <section class="hero service-hero">
       <p class="eyebrow">WIP 2</p>
-      <h1>In development</h1>
-      <p class="hero-copy">
-        두 번째 실험은 아직 준비 중입니다.
-      </p>
+      <h1>Market PER Monitor</h1>
+      <p class="hero-copy">KOSPI 200, Nasdaq 100, S&amp;P 500의 현재 지수와 기사 기반 연말 목표, Forward PER를 한 화면에서 비교합니다.</p>
+    </section>
+
+    <section class="market-dashboard" aria-labelledby="market-title">
+      <div class="section-title">
+        <div>
+          <h2 id="market-title">현재 지수 vs 연말 예상 지수</h2>
+          <p class="section-copy">실시간 지수는 Yahoo Finance 공개 차트 데이터를 사용하고, 목표치와 PER는 기사 기반 기준값으로 표시합니다.</p>
+        </div>
+        <button class="refresh-button" id="marketRefresh" type="button">새로고침</button>
+      </div>
+
+      <div class="status" id="marketStatus">시장 데이터를 불러오는 중입니다.</div>
+      <div class="market-card-grid" id="marketCards" aria-live="polite"></div>
+
+      <div class="chart-panel market-chart-panel">
+        <div class="chart-head">
+          <h3>현재 지수와 연말 예상 지수 비교</h3>
+          <div class="chart-legend">
+            <span><i class="legend-current"></i>현재</span>
+            <span><i class="legend-target"></i>예상/목표</span>
+          </div>
+        </div>
+        <div class="chart-wrap market-chart-wrap">
+          <svg id="targetChart" viewBox="0 0 900 300" role="img" aria-label="현재 지수와 연말 예상 지수 비교 그래프"></svg>
+        </div>
+      </div>
+
+      <div class="chart-panel market-chart-panel">
+        <div class="chart-head">
+          <h3>Forward PER 추이</h3>
+          <p class="chart-caption">공개 기사 수치가 부족한 구간은 페이지 안에 기준 성격을 명시했습니다.</p>
+        </div>
+        <div class="chart-wrap market-chart-wrap">
+          <svg id="perChart" viewBox="0 0 900 300" role="img" aria-label="Forward PER 추이 그래프"></svg>
+        </div>
+      </div>
+
+      <div class="source-panel">
+        <h2>출처와 계산 기준</h2>
+        <p>이 화면은 투자 판단을 대신하지 않는 실험용 대시보드입니다. 기사 수치가 바뀌면 기준값도 갱신해야 합니다.</p>
+        <ul id="sourceList"></ul>
+      </div>
     </section>
   </main>
 
   <footer>
     <div>
       <strong>WIP 2</strong>
-      <p>아직 만드는 중입니다.</p>
+      <p>시장 밸류에이션 비교 실험.</p>
     </div>
-    <p>준비가 끝나면 별도 페이지로 공개하겠습니다.</p>
+    <p>실시간 지수와 기사 기반 예상치를 함께 보되, 수치는 검토용 기준으로만 사용합니다.</p>
     <span>© 2026</span>
   </footer>
+  <script src="../market.js" defer></script>
 </body>
 </html>

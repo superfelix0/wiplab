@@ -363,6 +363,14 @@ h1 em {
   background: var(--blue);
 }
 
+.legend-current {
+  background: var(--blue);
+}
+
+.legend-target {
+  background: var(--gold);
+}
+
 .chart-wrap {
   position: relative;
   overflow: hidden;
@@ -586,6 +594,193 @@ h1 em {
   color: var(--ink);
 }
 
+.market-dashboard {
+  padding: 18px 0 28px;
+}
+
+.section-copy,
+.chart-caption {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.market-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.market-card-grid article {
+  min-height: 244px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 14px;
+  background: var(--panel);
+}
+
+.market-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.market-badge {
+  border: 1px solid rgba(167, 123, 45, 0.42);
+  border-radius: 999px;
+  padding: 3px 7px;
+  color: var(--gold);
+  background: var(--panel-2);
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.market-card-grid strong {
+  display: block;
+  margin-top: 12px;
+  color: var(--ink);
+  font: 800 18px "Malgun Gothic", "맑은 고딕", sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.market-card-grid dl {
+  display: grid;
+  gap: 7px;
+  margin: 14px 0 0;
+}
+
+.market-card-grid dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 7px;
+}
+
+.market-card-grid dt,
+.market-card-grid dd {
+  margin: 0;
+  font-size: 12px;
+}
+
+.market-card-grid dt {
+  color: var(--muted);
+}
+
+.market-card-grid dd {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.market-card-grid p,
+.market-card-grid small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.market-card-grid p {
+  margin: 12px 0 0;
+}
+
+.market-card-grid small {
+  margin-top: 10px;
+}
+
+.market-chart-panel {
+  margin-top: 12px;
+}
+
+.market-chart-wrap svg {
+  display: block;
+  width: 100%;
+  min-height: 260px;
+}
+
+.market-axis-label,
+.bar-value,
+.market-legend-text {
+  fill: var(--muted);
+  font: 700 11px "Malgun Gothic", "맑은 고딕", sans-serif;
+}
+
+.market-legend-text {
+  font-weight: 800;
+}
+
+.market-guide-line,
+.chart-grid-line {
+  stroke: rgba(104, 113, 131, 0.22);
+  stroke-width: 1;
+}
+
+.bar-current {
+  fill: var(--blue);
+}
+
+.bar-target {
+  fill: var(--gold);
+}
+
+.source-panel {
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 14px;
+  background: var(--panel);
+}
+
+.source-panel h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.source-panel p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.source-panel ul {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.source-panel li {
+  display: grid;
+  gap: 3px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.source-panel a {
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.source-panel a:hover {
+  text-decoration: underline;
+}
+
+.source-panel span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
 footer {
   display: grid;
   grid-template-columns: 1fr 1.3fr auto;
@@ -610,6 +805,7 @@ footer p {
 @media (max-width: 900px) {
   .service-grid,
   .quote-grid,
+  .market-card-grid,
   .result-panel,
   .guide {
     grid-template-columns: repeat(2, 1fr);
@@ -658,6 +854,7 @@ footer p {
 
   .quote-grid,
   .result-panel,
+  .market-card-grid,
   .service-grid {
     grid-template-columns: 1fr;
   }
