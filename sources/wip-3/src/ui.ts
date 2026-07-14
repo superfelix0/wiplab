@@ -18,6 +18,7 @@ export function mountApp(root: HTMLElement, puzzle: Puzzle): void {
   const state = loadState();
   const game = new Game(puzzle.numbers, puzzle.target);
   const sel: Selection = { tileA: null, op: null };
+  let solvedState: SavedState | null = null;
 
   root.innerHTML = '';
   root.append(buildHeader(puzzle, state));
@@ -32,6 +33,7 @@ export function mountApp(root: HTMLElement, puzzle: Puzzle): void {
   const tilesGrid = el('div', 'tiles');
   const opsRow = el('div', 'ops');
   const controls = el('div', 'controls');
+  const statusBox = el('div', 'status-box');
   const historyBox = el('div', 'history');
 
   const undoBtn = button('ctrl', '되돌리기', () => {
@@ -58,7 +60,7 @@ export function mountApp(root: HTMLElement, puzzle: Puzzle): void {
     opsRow.append(b);
   }
 
-  root.append(targetZone, tilesGrid, opsRow, controls, historyBox);
+  root.append(targetZone, tilesGrid, opsRow, controls, statusBox, historyBox);
 
   function clearSelection(): void {
     sel.tileA = null;
@@ -66,6 +68,8 @@ export function mountApp(root: HTMLElement, puzzle: Puzzle): void {
   }
 
   function onTileTap(id: number): void {
+    if (solvedState) return;
+
     if (sel.tileA === null) {
       sel.tileA = id;
     } else if (sel.tileA === id && sel.op === null) {
@@ -98,13 +102,15 @@ export function mountApp(root: HTMLElement, puzzle: Puzzle): void {
       if (sel.tileA === t.id) b.classList.add('selected');
       if (newTileId === t.id) b.classList.add('new');
       b.setAttribute('aria-pressed', String(sel.tileA === t.id));
+      b.disabled = solvedState !== null;
       tilesGrid.append(b);
     }
     for (const b of opsRow.querySelectorAll<HTMLButtonElement>('.op')) {
       b.classList.toggle('selected', sel.op === b.dataset.op);
+      b.disabled = solvedState !== null;
     }
-    undoBtn.disabled = game.opsCount === 0;
-    resetBtn.disabled = game.opsCount === 0;
+    undoBtn.disabled = solvedState !== null || game.opsCount === 0;
+    resetBtn.disabled = solvedState !== null || game.opsCount === 0;
 
     historyBox.innerHTML = '';
     for (const h of game.history) {
@@ -113,12 +119,45 @@ export function mountApp(root: HTMLElement, puzzle: Puzzle): void {
       historyBox.append(row);
     }
     targetValue.classList.toggle('hit', game.solved);
+    renderStatus();
   }
 
   function onSolved(): void {
+    if (solvedState) return;
+
     const stars = starsFor(game.opsCount, puzzle.minOps);
-    const saved = recordSolve(puzzle.dateStr, game.opsCount, stars);
-    setTimeout(() => root.append(buildResultOverlay(puzzle, saved)), 350);
+    solvedState = recordSolve(puzzle.dateStr, game.opsCount, stars);
+    clearSelection();
+    render();
+    setTimeout(() => {
+      if (solvedState) root.append(buildResultOverlay(puzzle, solvedState));
+    }, 350);
+  }
+
+  function renderStatus(): void {
+    statusBox.innerHTML = '';
+
+    if (solvedState) {
+      statusBox.className = 'status-box success';
+      const msg = el('div');
+      msg.innerHTML = `<strong>정답입니다.</strong> 목표 ${puzzle.target}을 만들었습니다.`;
+      const resultBtn = button('btn compact', '결과 보기', () => {
+        if (solvedState) root.append(buildResultOverlay(puzzle, solvedState));
+      });
+      statusBox.append(msg, resultBtn);
+      return;
+    }
+
+    const currentValues = game.tiles.map((t) => t.value);
+    const closest = currentValues.reduce((best, value) => {
+      const diff = Math.abs(value - puzzle.target);
+      return diff < best.diff ? { value, diff } : best;
+    }, { value: currentValues[0], diff: Math.abs(currentValues[0] - puzzle.target) });
+
+    statusBox.className = 'status-box';
+    statusBox.textContent = game.opsCount === 0
+      ? '숫자 두 개와 연산자를 골라 목표 숫자를 정확히 만들어보세요.'
+      : `아직 정답은 아닙니다. 현재 가장 가까운 숫자는 ${closest.value}입니다.`;
   }
 
   render();
