@@ -153,7 +153,54 @@ function renderChart(history) {
 function renderQuote(quote, valueEl, timeEl, formatter, suffix = "") {
   valueEl.textContent = `${formatter.format(quote.price)}${suffix}`;
   const time = quote.marketTime ? dateTime.format(new Date(quote.marketTime)) : "시간 정보 없음";
-  timeEl.textContent = `${quote.exchange} · ${time}`;
+  const freshness = quote.marketTime ? ` · ${formatAge(Date.now() - quote.marketTime)} 기준` : "";
+  timeEl.textContent = `${quote.exchange} · ${time}${freshness}`;
+}
+
+function formatAge(ageMs) {
+  if (!Number.isFinite(ageMs) || ageMs < 0) {
+    return "방금";
+  }
+
+  const minutes = Math.round(ageMs / 60000);
+
+  if (minutes < 1) {
+    return "방금";
+  }
+
+  if (minutes < 60) {
+    return `${minutes}분 전`;
+  }
+
+  const hours = Math.round(minutes / 60);
+
+  if (hours < 24) {
+    return `${hours}시간 전`;
+  }
+
+  const days = Math.round(hours / 24);
+  return `${days}일 전`;
+}
+
+function buildTimingNotice(quotes) {
+  const times = [quotes.adr.marketTime, quotes.kospi.marketTime, quotes.fx.marketTime].filter(Number.isFinite);
+
+  if (times.length < 2) {
+    return "일부 시세의 기준 시각을 확인하지 못했습니다.";
+  }
+
+  const spreadMs = Math.max(...times) - Math.min(...times);
+  const oldestMs = Date.now() - Math.min(...times);
+
+  if (spreadMs >= 2 * 60 * 60 * 1000) {
+    return `세션 불일치 가능성이 있습니다. 세 가격의 기준 시각 차이가 약 ${formatAge(spreadMs)}입니다.`;
+  }
+
+  if (oldestMs >= 6 * 60 * 60 * 1000) {
+    return `일부 가격이 오래된 값일 수 있습니다. 가장 오래된 기준 시각은 약 ${formatAge(oldestMs)}입니다.`;
+  }
+
+  return "";
 }
 
 function renderResult({ adr, kospi, fx }, result) {
@@ -166,16 +213,21 @@ function renderResult({ adr, kospi, fx }, result) {
   output.priceGap.textContent = won.format(result.gap);
   output.premiumRate.textContent = percent.format(result.premium);
 
+  let premiumMessage = "";
+
   if (result.premium > 0.0025) {
     output.premiumRate.dataset.state = "premium";
-    output.premiumLabel.textContent = "ADR 환산 본주가가 코스피보다 높습니다.";
+    premiumMessage = "ADR 환산 본주가가 코스피보다 높습니다.";
   } else if (result.premium < -0.0025) {
     output.premiumRate.dataset.state = "discount";
-    output.premiumLabel.textContent = "ADR 환산 본주가가 코스피보다 낮습니다.";
+    premiumMessage = "ADR 환산 본주가가 코스피보다 낮습니다.";
   } else {
     output.premiumRate.dataset.state = "neutral";
-    output.premiumLabel.textContent = "두 시장 가격이 거의 비슷한 구간입니다.";
+    premiumMessage = "두 시장 가격이 거의 비슷한 구간입니다.";
   }
+
+  const timingNotice = buildTimingNotice({ adr, kospi, fx });
+  output.premiumLabel.textContent = timingNotice ? `${premiumMessage} ⚠ ${timingNotice}` : premiumMessage;
 }
 
 function setLoading(isLoading) {
