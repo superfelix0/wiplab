@@ -156,8 +156,8 @@ export function mountApp(root: HTMLElement, puzzle: Puzzle): void {
 
     statusBox.className = 'status-box';
     statusBox.textContent = game.opsCount === 0
-      ? '숫자 두 개와 연산자를 골라 목표 숫자를 정확히 만들어보세요.'
-      : `아직 정답은 아닙니다. 현재 가장 가까운 숫자는 ${closest.value}입니다.`;
+      ? '숫자 두 개와 연산자를 고르면 두 숫자가 사라지고 결과 숫자 하나가 생깁니다. 이 과정을 반복해 목표 숫자를 만드세요.'
+      : `계산은 계속 이어갈 수 있습니다. 최종 숫자 하나가 목표 ${puzzle.target}이 되면 정답입니다. 현재 가장 가까운 숫자는 ${closest.value}, 차이는 ${closest.diff}입니다.`;
   }
 
   render();
@@ -250,7 +250,8 @@ function buildHelpOverlay(firstVisit: boolean): HTMLElement {
   const card = el('div', 'card');
   card.innerHTML = `
     <h2>오늘의 셈</h2>
-    <p>숫자 두 개와 연산 하나를 골라 결합하면 새 숫자가 됩니다.</p>
+    <p>숫자 두 개와 연산 하나를 고르면 두 숫자가 사라지고 계산 결과 숫자 하나가 생깁니다.</p>
+    <p>새로 만든 숫자를 다시 써서 계산을 반복할 수 있습니다.</p>
     <p>중간 결과는 항상 양의 정수. 목표 숫자를 정확히 만들면 클리어.</p>
     <p>하루 한 문제, 모두 같은 문제입니다. 되돌리기는 무제한이에요.</p>`;
   const ok = button('btn', firstVisit ? '시작' : '닫기', () => {
