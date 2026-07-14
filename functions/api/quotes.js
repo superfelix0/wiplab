@@ -3,6 +3,7 @@ const ADR_SHARE_RATIO = 0.1;
 const SYMBOLS = {
   adrCandidates: ["SKHY", "SKHYV"],
   kospi: "000660.KS",
+  naverKospi: "000660",
   fx: "KRW=X",
 };
 
@@ -12,6 +13,10 @@ function yahooChartUrl(symbol) {
 
 function yahooHistoryUrl(symbol) {
   return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=max`;
+}
+
+function naverStockUrl(symbol) {
+  return `https://m.stock.naver.com/api/stock/${encodeURIComponent(symbol)}/basic`;
 }
 
 function json(data, init = {}) {
@@ -56,6 +61,52 @@ async function fetchQuote(symbol) {
     currency: meta.currency,
     exchange: meta.fullExchangeName || meta.exchangeName || "",
     marketTime: meta.regularMarketTime ? meta.regularMarketTime * 1000 : null,
+  };
+}
+
+function parseNaverNumber(value) {
+  if (typeof value !== "string") {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  const parsed = Number(value.replaceAll(",", ""));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+async function fetchNaverStockQuote(symbol) {
+  const response = await fetch(naverStockUrl(symbol), {
+    headers: {
+      "user-agent": "Mozilla/5.0 wiplab-quote-checker/1.0",
+      accept: "application/json",
+      referer: `https://m.stock.naver.com/domestic/stock/${encodeURIComponent(symbol)}`,
+    },
+    cf: {
+      cacheTtl: 0,
+      cacheEverything: false,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`${symbol} Naver quote request failed with ${response.status}`);
+  }
+
+  const data = await response.json();
+  const price = parseNaverNumber(data?.closePrice);
+  const marketTime = data?.localTradedAt ? Date.parse(data.localTradedAt) : null;
+
+  if (!Number.isFinite(price)) {
+    throw new Error(`${symbol} Naver quote is unavailable`);
+  }
+
+  return {
+    symbol: `${symbol}.KS`,
+    price,
+    currency: "KRW",
+    exchange: `Naver · ${data.stockExchangeName || "KOSPI"}`,
+    marketTime: Number.isFinite(marketTime) ? marketTime : null,
+    provider: "Naver Stock",
+    marketStatus: data.marketStatus || "",
+    delayTimeName: data.delayTimeName || "",
   };
 }
 
@@ -185,7 +236,7 @@ export async function onRequestGet() {
   try {
     const [adr, kospi, fx, adrHistory, kospiHistory, fxHistory] = await Promise.all([
       fetchFirstValidQuote(SYMBOLS.adrCandidates),
-      fetchQuote(SYMBOLS.kospi),
+      fetchNaverStockQuote(SYMBOLS.naverKospi),
       fetchQuote(SYMBOLS.fx),
       fetchFirstValidHistory(SYMBOLS.adrCandidates),
       fetchHistory(SYMBOLS.kospi),
