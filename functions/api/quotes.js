@@ -2,6 +2,7 @@ const ADR_SHARE_RATIO = 0.1;
 
 const SYMBOLS = {
   adrCandidates: ["SKHY", "SKHYV"],
+  naverAdrCandidates: ["SKHY.O", "SKHYV.O"],
   kospi: "000660.KS",
   naverKospi: "000660",
   fx: "KRW=X",
@@ -17,6 +18,10 @@ function yahooHistoryUrl(symbol) {
 
 function naverStockUrl(symbol) {
   return `https://m.stock.naver.com/api/stock/${encodeURIComponent(symbol)}/basic`;
+}
+
+function naverWorldStockUrl(symbol) {
+  return `https://api.stock.naver.com/stock/${encodeURIComponent(symbol)}/basic`;
 }
 
 function json(data, init = {}) {
@@ -110,6 +115,66 @@ async function fetchNaverStockQuote(symbol) {
   };
 }
 
+function pickNaverWorldPrice(data) {
+  const overMarket = data?.overMarketPriceInfo;
+  const overPrice = parseNaverNumber(overMarket?.overPriceRaw || overMarket?.overPrice);
+  const overTime = overMarket?.localTradedAt ? Date.parse(overMarket.localTradedAt) : null;
+
+  if (overMarket?.overMarketStatus === "OPEN" && Number.isFinite(overPrice)) {
+    return {
+      price: overPrice,
+      marketTime: Number.isFinite(overTime) ? overTime : null,
+      sessionLabel: overMarket.tradingSessionType || "OVER_MARKET",
+    };
+  }
+
+  const regularPrice = parseNaverNumber(data?.closePrice);
+  const regularTime = data?.localTradedAt ? Date.parse(data.localTradedAt) : null;
+
+  return {
+    price: regularPrice,
+    marketTime: Number.isFinite(regularTime) ? regularTime : null,
+    sessionLabel: data?.marketStatus || "REGULAR",
+  };
+}
+
+async function fetchNaverWorldStockQuote(symbol) {
+  const response = await fetch(naverWorldStockUrl(symbol), {
+    headers: {
+      "user-agent": "Mozilla/5.0 wiplab-quote-checker/1.0",
+      accept: "application/json",
+      referer: `https://stock.naver.com/worldstock/stock/${encodeURIComponent(symbol)}/price`,
+    },
+    cf: {
+      cacheTtl: 0,
+      cacheEverything: false,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`${symbol} Naver world quote request failed with ${response.status}`);
+  }
+
+  const data = await response.json();
+  const selected = pickNaverWorldPrice(data);
+
+  if (!Number.isFinite(selected.price)) {
+    throw new Error(`${symbol} Naver world quote is unavailable`);
+  }
+
+  return {
+    symbol,
+    price: selected.price,
+    currency: data?.currencyType?.code || "USD",
+    exchange: `Naver · ${data.stockExchangeName || "NASDAQ"}`,
+    marketTime: selected.marketTime,
+    provider: "Naver World Stock",
+    marketStatus: data?.marketStatus || "",
+    delayTimeName: data?.delayTimeName || "",
+    sessionLabel: selected.sessionLabel,
+  };
+}
+
 async function fetchChart(symbol, url) {
   const response = await fetch(url, {
     headers: {
@@ -195,6 +260,20 @@ async function fetchFirstValidQuote(symbols) {
   throw new Error(errors.at(-1) || "ADR quote is unavailable");
 }
 
+async function fetchFirstValidNaverWorldQuote(symbols) {
+  const errors = [];
+
+  for (const symbol of symbols) {
+    try {
+      return await fetchNaverWorldStockQuote(symbol);
+    } catch (error) {
+      errors.push(error.message);
+    }
+  }
+
+  throw new Error(errors.at(-1) || "ADR quote is unavailable");
+}
+
 async function fetchFirstValidHistory(symbols) {
   const errors = [];
 
@@ -235,7 +314,7 @@ function buildHistory({ adr, kospi, fx }) {
 export async function onRequestGet() {
   try {
     const [adr, kospi, fx, adrHistory, kospiHistory, fxHistory] = await Promise.all([
-      fetchFirstValidQuote(SYMBOLS.adrCandidates),
+      fetchFirstValidNaverWorldQuote(SYMBOLS.naverAdrCandidates),
       fetchNaverStockQuote(SYMBOLS.naverKospi),
       fetchQuote(SYMBOLS.fx),
       fetchFirstValidHistory(SYMBOLS.adrCandidates),
