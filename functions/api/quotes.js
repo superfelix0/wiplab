@@ -6,6 +6,7 @@ const SYMBOLS = {
   kospi: "000660.KS",
   naverKospi: "000660",
   fx: "KRW=X",
+  naverFx: "FX_USDKRW",
 };
 
 function yahooChartUrl(symbol) {
@@ -22,6 +23,10 @@ function naverStockUrl(symbol) {
 
 function naverWorldStockUrl(symbol) {
   return `https://api.stock.naver.com/stock/${encodeURIComponent(symbol)}/basic`;
+}
+
+function naverExchangeUrl(symbol) {
+  return `https://api.stock.naver.com/marketindex/exchange/${encodeURIComponent(symbol)}`;
 }
 
 function json(data, init = {}) {
@@ -96,22 +101,45 @@ async function fetchNaverStockQuote(symbol) {
   }
 
   const data = await response.json();
-  const price = parseNaverNumber(data?.closePrice);
-  const marketTime = data?.localTradedAt ? Date.parse(data.localTradedAt) : null;
+  const selected = pickNaverDomesticPrice(data);
 
-  if (!Number.isFinite(price)) {
+  if (!Number.isFinite(selected.price)) {
     throw new Error(`${symbol} Naver quote is unavailable`);
   }
 
   return {
     symbol: `${symbol}.KS`,
-    price,
+    price: selected.price,
     currency: "KRW",
     exchange: `Naver · ${data.stockExchangeName || "KOSPI"}`,
-    marketTime: Number.isFinite(marketTime) ? marketTime : null,
+    marketTime: selected.marketTime,
     provider: "Naver Stock",
     marketStatus: data.marketStatus || "",
     delayTimeName: data.delayTimeName || "",
+    sessionLabel: selected.sessionLabel,
+  };
+}
+
+function pickNaverDomesticPrice(data) {
+  const overMarket = data?.overMarketPriceInfo;
+  const overPrice = parseNaverNumber(overMarket?.overPrice);
+  const overTime = overMarket?.localTradedAt ? Date.parse(overMarket.localTradedAt) : null;
+
+  if (overMarket?.overMarketStatus === "OPEN" && Number.isFinite(overPrice)) {
+    return {
+      price: overPrice,
+      marketTime: Number.isFinite(overTime) ? overTime : null,
+      sessionLabel: overMarket.tradingSessionType || "OVER_MARKET",
+    };
+  }
+
+  const regularPrice = parseNaverNumber(data?.closePrice);
+  const regularTime = data?.localTradedAt ? Date.parse(data.localTradedAt) : null;
+
+  return {
+    price: regularPrice,
+    marketTime: Number.isFinite(regularTime) ? regularTime : null,
+    sessionLabel: data?.marketStatus || "REGULAR",
   };
 }
 
@@ -172,6 +200,45 @@ async function fetchNaverWorldStockQuote(symbol) {
     marketStatus: data?.marketStatus || "",
     delayTimeName: data?.delayTimeName || "",
     sessionLabel: selected.sessionLabel,
+  };
+}
+
+async function fetchNaverExchangeQuote(symbol) {
+  const response = await fetch(naverExchangeUrl(symbol), {
+    headers: {
+      "user-agent": "Mozilla/5.0 wiplab-quote-checker/1.0",
+      accept: "application/json",
+      referer: `https://stock.naver.com/marketindex/exchange/${encodeURIComponent(symbol)}/price`,
+    },
+    cf: {
+      cacheTtl: 0,
+      cacheEverything: false,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`${symbol} Naver exchange request failed with ${response.status}`);
+  }
+
+  const data = await response.json();
+  const exchangeInfo = data?.exchangeInfo;
+  const price = parseNaverNumber(exchangeInfo?.calcPrice || exchangeInfo?.closePrice);
+  const marketTime = exchangeInfo?.localTradedAt ? Date.parse(exchangeInfo.localTradedAt) : null;
+
+  if (!Number.isFinite(price)) {
+    throw new Error(`${symbol} Naver exchange quote is unavailable`);
+  }
+
+  return {
+    symbol,
+    price,
+    currency: exchangeInfo?.unit || "KRW",
+    exchange: `Naver · ${exchangeInfo?.stockExchangeType?.nameKor || "Market Index"}`,
+    marketTime: Number.isFinite(marketTime) ? marketTime : null,
+    provider: "Naver Market Index",
+    marketStatus: exchangeInfo?.marketStatus || "",
+    delayTimeName: exchangeInfo?.priceDataType || "",
+    sessionLabel: exchangeInfo?.degreeCount ? `${exchangeInfo.degreeCount}회차` : "",
   };
 }
 
@@ -316,7 +383,7 @@ export async function onRequestGet() {
     const [adr, kospi, fx, adrHistory, kospiHistory, fxHistory] = await Promise.all([
       fetchFirstValidNaverWorldQuote(SYMBOLS.naverAdrCandidates),
       fetchNaverStockQuote(SYMBOLS.naverKospi),
-      fetchQuote(SYMBOLS.fx),
+      fetchNaverExchangeQuote(SYMBOLS.naverFx),
       fetchFirstValidHistory(SYMBOLS.adrCandidates),
       fetchHistory(SYMBOLS.kospi),
       fetchHistory(SYMBOLS.fx),
