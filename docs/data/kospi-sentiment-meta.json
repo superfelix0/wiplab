@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-07-16T06:18:02+09:00",
+  "timezone": "Asia/Seoul",
+  "source": "Yahoo Finance ^KS11 + pykrx KRX investor flow",
+  "startDate": "2024-11-04",
+  "lastDataDate": "2026-07-14",
+  "rowCount": 412
+}
