@@ -73,11 +73,13 @@ async function fetchJsonIfAvailable(url) {
 }
 
 function formatUpdateMeta(meta, latestDate) {
+  const dataDate = meta?.lastDataDate || latestDate;
+
   if (meta?.generatedAt) {
-    return `마지막 업데이트 ${fmtDateTime.format(new Date(meta.generatedAt))} · 데이터 기준 ${meta.lastDataDate || latestDate}`;
+    return `자료 기준일 ${dataDate} · 수집 ${fmtDateTime.format(new Date(meta.generatedAt))}`;
   }
 
-  return `데이터 기준 ${latestDate}`;
+  return `자료 기준일 ${dataDate}`;
 }
 
 function latestSentiment(point, threshold) {
