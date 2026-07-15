@@ -334,6 +334,14 @@ h1 em {
   letter-spacing: -0.015em;
 }
 
+.chart-note {
+  max-width: 560px;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
 .chart-legend {
   display: flex;
   gap: 14px;

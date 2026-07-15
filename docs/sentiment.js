@@ -373,9 +373,9 @@ function renderSummary(analysis) {
 
   sentimentEls.summary.innerHTML = `
     <article><span>데이터</span><strong>${modeLabel}</strong><small>${rangeLabel} · ${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"} · ${updateLabel}</small></article>
-    <article><span>평균 수급 기준</span><strong>평소보다 ${Math.abs(latest.residual).toFixed(2)}조원 ${residualDirection}</strong><small>해당 수익률에서 예상 ${latest.expected.toFixed(2)}조원, 실제 ${latest.indivT.toFixed(2)}조원</small></article>
+    <article><span>평균 수급 기준</span><strong>개인 순매수가 평소보다 ${Math.abs(latest.residual).toFixed(2)}조원 ${residualDirection}</strong><small>해당 수익률에서 예상 ${latest.expected.toFixed(2)}조원, 실제 ${latest.indivT.toFixed(2)}조원</small></article>
     <article><span>최근 심리</span><strong>${latestView.short}</strong><small>${latest.date} · ${latestView.note}</small></article>
-    <article><span>이탈 신호</span><strong>공포 ${fearCount} / 탐욕 ${greedCount}</strong><small>z-score 기준 ±${analysis.thr}, 보합 허용폭 ±${analysis.band}%</small></article>
+    <article><span>심리 이탈 시점</span><strong>공포 ${fearCount} / 탐욕 ${greedCount}</strong><small>선택한 기간 안에서 평균적인 개인 수급과 크게 달랐던 날입니다.</small></article>
   `;
 }
 
@@ -386,7 +386,7 @@ function renderDetail(point, analysis) {
   sentimentEls.detail.innerHTML = `
     <strong>${point.date} · ${latestView?.label || `${label} 구간`}</strong>
     <p>KOSPI ${fmt.format(point.close)}, 수익률 ${point.ret.toFixed(2)}%, 개인 순매수 ${point.indivT.toFixed(2)}조원입니다.</p>
-    <p>평소 패턴상 예상 개인 순매수는 ${point.expected.toFixed(2)}조원이고, 실제는 ${Math.abs(point.residual).toFixed(2)}조원 ${miss}했습니다. z-score는 ${point.z.toFixed(2)}입니다.</p>
+    <p>평균적인 개인 수급 기준으로는 ${point.expected.toFixed(2)}조원 정도가 예상됐고, 실제 개인 순매수는 ${Math.abs(point.residual).toFixed(2)}조원 ${miss}했습니다.</p>
     ${latestView ? `<p>${latestView.note}</p>` : ""}
   `;
 }
