@@ -2,8 +2,8 @@ name: Update KOSPI sentiment data
 
 on:
   schedule:
-    # 18:10 KST. KRX daily data can lag, so run after the Korean cash session.
-    - cron: "10 9 * * 1-5"
+    # 00:00 KST every day. GitHub Actions cron uses UTC.
+    - cron: "0 15 * * *"
   workflow_dispatch:
 
 permissions:
