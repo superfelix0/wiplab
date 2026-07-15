@@ -1,21 +1,129 @@
 <!doctype html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#f6f3ec" />
-    <meta name="description" content="하루 한 문제. 숫자 여섯 개와 사칙연산으로 목표 숫자를 만드세요. WIP Labs의 세 번째 실험." />
-    <meta property="og:title" content="오늘의 셈 — WIP Labs" />
-    <meta property="og:description" content="하루 한 문제. 숫자 여섯 개로 목표 숫자를 만드세요." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://wiplabs.pages.dev/wip-3/" />
-    <title>오늘의 셈 — WIP Labs</title>
-    <script type="module" crossorigin src="/wip-3/assets/index-xOE3uDkV.js"></script>
-    <link rel="stylesheet" crossorigin href="/wip-3/assets/index-BekLKnEd.css">
-  </head>
-  <body>
-    <div id="app" aria-live="polite">
-      <div class="loading">오늘 문제 준비 중…</div>
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-GD6K8FB589");
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="개인 투자자 순매수와 코스피 수익률의 이탈을 이용해 공포·탐욕 심리 구간을 시각화하는 WIP Labs 실험입니다.">
+  <meta name="theme-color" content="#f6f3ec">
+  <meta property="og:title" content="KOSPI Fear/Greed Sentiment — WIP Labs">
+  <meta property="og:description" content="개인 수급 기반 공포·탐욕 구간으로 코스피 변곡점을 살펴봅니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wiplabs.pages.dev/wip-3/">
+  <link rel="canonical" href="https://wiplabs.pages.dev/wip-3/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css">
+  <title>KOSPI Fear/Greed Sentiment — WIP Labs</title>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="홈으로 이동">
+      <span>WIP</span>
+      <strong>WIP Labs</strong>
+    </a>
+    <nav aria-label="주요 메뉴">
+      <a href="../">Main</a>
+      <a href="../blog/">Blog</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero service-hero">
+      <p class="eyebrow">WIP 3</p>
+      <h1>KOSPI Fear/Greed Sentiment</h1>
+      <p class="hero-copy">코스피 수익률과 개인 순매수의 평소 관계에서 벗어난 날을 공포·탐욕 구간으로 표시합니다.</p>
+    </section>
+
+    <section class="sentiment-dashboard" aria-labelledby="sentiment-title">
+      <div class="section-title">
+        <div>
+          <h2 id="sentiment-title">공포·탐욕 심리 구간</h2>
+          <p class="section-copy">이은택 애널리스트의 개인 수급 기반 프레임을 재현한 실험입니다. 단독 매매 신호가 아니라 과매도·과열 국면을 보는 보조 지표로 봅니다.</p>
+        </div>
+        <button class="refresh-button" id="sentimentRefresh" type="button">새로고침</button>
+      </div>
+
+      <div class="status" id="sentimentStatus" data-state="neutral">데이터를 준비하는 중입니다.</div>
+
+      <div class="sentiment-controls" aria-label="차트 설정">
+        <label><input type="radio" name="sentimentFreq" value="W" checked> 주간</label>
+        <label><input type="radio" name="sentimentFreq" value="D"> 일간</label>
+        <label><input type="checkbox" id="showFear" checked> 공포</label>
+        <label><input type="checkbox" id="showGreed" checked> 탐욕</label>
+        <label class="csv-loader">
+          CSV 업로드
+          <input id="sentimentCsv" type="file" accept=".csv,text/csv">
+        </label>
+      </div>
+
+      <div class="sentiment-summary" id="sentimentSummary"></div>
+
+      <div class="chart-panel sentiment-chart-panel">
+        <div class="chart-head">
+          <h3>코스피와 심리 이탈 구간</h3>
+          <div class="chart-legend">
+            <span><i class="legend-kospi"></i> KOSPI</span>
+            <span><i class="legend-fear"></i> 공포</span>
+            <span><i class="legend-greed"></i> 탐욕</span>
+          </div>
+        </div>
+        <div class="chart-wrap sentiment-chart-wrap">
+          <svg id="kospiSentimentChart" viewBox="0 0 900 340" role="img" aria-label="코스피 지수와 공포 탐욕 마커"></svg>
+        </div>
+      </div>
+
+      <div class="chart-panel sentiment-chart-panel">
+        <div class="chart-head">
+          <h3>수익률 × 개인 순매수 산점도</h3>
+          <div class="chart-legend">
+            <span><i class="legend-regression"></i> 평소 패턴</span>
+            <span><i class="legend-fear"></i> 공포</span>
+            <span><i class="legend-greed"></i> 탐욕</span>
+          </div>
+        </div>
+        <div class="chart-wrap sentiment-chart-wrap">
+          <svg id="flowScatterChart" viewBox="0 0 900 340" role="img" aria-label="수익률과 개인 순매수 산점도"></svg>
+        </div>
+      </div>
+
+      <div class="sentiment-detail" id="sentimentDetail">
+        <strong>마커를 선택하면 해설이 표시됩니다.</strong>
+        <p>공포는 하락·보합인데 개인 매수세가 평소보다 크게 부족한 구간, 탐욕은 상승·보합인데 개인 추격 매수가 과도한 구간입니다.</p>
+      </div>
+    </section>
+
+    <section class="source-panel">
+      <h2>데이터와 방법론</h2>
+      <p>필수 입력은 date, close, indiv_krw 세 열입니다. KRX/pykrx의 개인 순매수 대금은 인증 또는 별도 수집 파이프라인이 필요할 수 있어, 현재 공개 사이트에서는 데이터 소스가 없으면 합성 미리보기로 표시합니다.</p>
+      <ul>
+        <li>
+          <a href="https://blog.naver.com/PostList.naver?blogId=zkdhtm13" target="_blank" rel="noopener noreferrer">이그전 블로그</a>
+          <span>원문 아이디어: 개인 수급 기반 공포·탐욕 구간 시그널 전략. 원문 포스트 자체는 별도 확인 필요.</span>
+        </li>
+        <li>
+          <a href="https://github.com/sharebook-kr/pykrx" target="_blank" rel="noopener noreferrer">pykrx</a>
+          <span>코스피 지수와 투자자별 순매수 대금 수집 후보 라이브러리. 최신 환경에서는 KRX_ID/KRX_PW가 필요할 수 있습니다.</span>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>WIP Labs</strong>
+      <p>계속 만들고 고쳐보는 작은 실험실입니다.</p>
     </div>
-  </body>
+    <p>금융 데이터는 지연·오류 가능성이 있으며, 이 화면은 투자 권유가 아닙니다.</p>
+    <span>© 2026</span>
+  </footer>
+
+  <script src="../sentiment.js"></script>
+</body>
 </html>

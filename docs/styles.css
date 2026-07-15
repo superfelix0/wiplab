@@ -788,6 +788,163 @@ h1 em {
   font-size: 11px;
 }
 
+.sentiment-dashboard {
+  padding: 18px 0 28px;
+}
+
+.sentiment-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.sentiment-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 7px 10px;
+  color: var(--ink);
+  background: var(--panel);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sentiment-controls input {
+  accent-color: var(--blue);
+}
+
+.csv-loader {
+  cursor: pointer;
+}
+
+.csv-loader input {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sentiment-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sentiment-summary article {
+  min-height: 120px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 13px;
+  background: var(--panel);
+}
+
+.sentiment-summary span,
+.sentiment-summary small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.sentiment-summary strong {
+  display: block;
+  margin: 12px 0 8px;
+  color: var(--ink);
+  font: 800 17px "Malgun Gothic", "맑은 고딕", sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.sentiment-chart-panel {
+  margin-top: 12px;
+}
+
+.sentiment-chart-wrap svg {
+  display: block;
+  width: 100%;
+  min-height: 260px;
+}
+
+.legend-fear {
+  background: #d4a62a;
+}
+
+.legend-greed {
+  background: #c75b39;
+}
+
+.legend-regression {
+  background: #687183;
+}
+
+.sentiment-line {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sentiment-marker,
+.sentiment-dot {
+  cursor: pointer;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+
+.sentiment-marker.fear,
+.sentiment-dot.fear {
+  fill: #d4a62a;
+}
+
+.sentiment-marker.greed,
+.sentiment-dot.greed {
+  fill: #c75b39;
+}
+
+.sentiment-dot.normal {
+  fill: rgba(104, 113, 131, 0.42);
+  stroke: transparent;
+}
+
+.sentiment-regression {
+  stroke: #687183;
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+}
+
+.sentiment-axis-zero {
+  stroke: rgba(23, 34, 53, 0.24);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.sentiment-detail {
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 14px;
+  background: var(--panel);
+}
+
+.sentiment-detail strong {
+  display: block;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.sentiment-detail p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .blog-board {
   padding: 18px 0 32px;
 }
@@ -869,6 +1026,7 @@ footer p {
 
 @media (max-width: 900px) {
   .service-grid,
+  .sentiment-summary,
   .quote-grid,
   .market-card-grid,
   .result-panel,
@@ -921,6 +1079,7 @@ footer p {
   .quote-grid,
   .result-panel,
   .market-card-grid,
+  .sentiment-summary,
   .service-grid {
     grid-template-columns: 1fr;
   }

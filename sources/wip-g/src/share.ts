@@ -8,7 +8,7 @@ export function buildShareText(dateStr: string, usedOps: number, minOps: number,
     `오늘의 셈 #${puzzleNumber(dateStr)} ${starStr}`,
     `연산 ${usedOps}회 (최적 ${minOps}회)`,
     '🔢➕➖✖️➡️🎯',
-    'https://wiplabs.pages.dev/wip-3/',
+    'https://wiplabs.pages.dev/wip-g/',
   ].join('\n');
 }
 

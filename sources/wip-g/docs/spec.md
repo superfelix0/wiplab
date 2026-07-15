@@ -1,4 +1,4 @@
-# WIP 3 — 데일리 숫자 퍼즐 (가칭: 오늘의 셈)
+# WIP G — 데일리 숫자 퍼즐 (가칭: 오늘의 셈)
 
 WIP Labs(wiplabs.pages.dev)에 추가할 하루 한 문제 숫자 퍼즐. Digits/Countdown 계열 메커닉.
 이 문서는 Claude Code에 그대로 투입 가능한 구현 스펙이다.
