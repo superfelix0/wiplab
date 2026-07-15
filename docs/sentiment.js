@@ -378,7 +378,7 @@ async function fetchSentimentData() {
   const response = await fetch(`/api/kospi-sentiment?ts=${Date.now()}`, { cache: "no-store" });
   const data = await response.json().catch(() => null);
   if (!response.ok || !data?.ok) {
-    throw new Error(data?.message || "실데이터 API가 아직 연결되지 않았습니다.");
+    throw new Error("실데이터를 준비하는 중입니다.");
   }
 
   const meta = data.fetchedAt
@@ -395,7 +395,7 @@ async function fetchSentimentData() {
 
 async function loadData() {
   sentimentEls.refresh.disabled = true;
-  setSentimentStatus("실데이터 API를 확인하는 중입니다.");
+  setSentimentStatus("데이터를 확인하는 중입니다.");
 
   try {
     const loaded = await fetchSentimentData();
@@ -407,7 +407,7 @@ async function loadData() {
     rawRows = sampleRows();
     dataMeta = null;
     dataMode = "demo";
-    setSentimentStatus(`${error.message} 현재는 합성 미리보기로 화면과 로직만 표시합니다. 자동 수집이 성공하면 실데이터로 전환됩니다.`, "error");
+    setSentimentStatus("실데이터를 준비하는 중입니다. 현재 화면은 예시 데이터로 표시됩니다.", "neutral");
   } finally {
     sentimentEls.refresh.disabled = false;
     render();
