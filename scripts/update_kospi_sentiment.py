@@ -88,6 +88,34 @@ def fetch_kospi_close_from_yahoo(start: str, end: str) -> pd.DataFrame:
     return df
 
 
+def date_chunks(start: str, end: str, chunk_days: int = 180):
+    current = parse_ymd(start)
+    final = parse_ymd(end)
+
+    while current <= final:
+        chunk_end = min(current + dt.timedelta(days=chunk_days - 1), final)
+        yield ymd(current), ymd(chunk_end)
+        current = chunk_end + dt.timedelta(days=1)
+
+
+def fetch_investor_flow_chunked(start: str, end: str) -> pd.DataFrame:
+    frames = []
+
+    for chunk_start, chunk_end in date_chunks(start, end):
+        print(f"Fetching KOSPI investor flow chunk: {chunk_start} ~ {chunk_end}")
+        chunk = stock.get_market_trading_value_by_date(chunk_start, chunk_end, "KOSPI", on="순매수")
+        print(f"  chunk rows: {len(chunk)}")
+        if not chunk.empty:
+            frames.append(chunk)
+
+    if not frames:
+        return pd.DataFrame()
+
+    combined = pd.concat(frames).sort_index()
+    combined = combined[~combined.index.duplicated(keep="last")]
+    return combined
+
+
 def collect(start: str, end: str) -> pd.DataFrame:
     print(f"Collecting KOSPI sentiment data: {start} ~ {end}")
     print(f"KRX_ID configured: {bool(os.getenv('KRX_ID'))}")
@@ -96,7 +124,7 @@ def collect(start: str, end: str) -> pd.DataFrame:
     index_df = fetch_kospi_close_from_yahoo(start, end)
     print(f"KOSPI index rows: {len(index_df)}")
 
-    flow_df = stock.get_market_trading_value_by_date(start, end, "KOSPI", on="순매수")
+    flow_df = fetch_investor_flow_chunked(start, end)
     print(f"KOSPI investor flow rows: {len(flow_df)}")
 
     if flow_df.empty:
