@@ -198,14 +198,15 @@ function weeklySeries(rows) {
   for (const row of sorted) {
     const key = weekKey(row.date);
     if (!weeks.has(key)) {
-      weeks.set(key, { date: key, firstClose: row.close, close: row.close, indivKrw: 0 });
+      weeks.set(key, { key, date: row.date, firstClose: row.close, close: row.close, indivKrw: 0 });
     }
     const week = weeks.get(key);
+    week.date = row.date;
     week.close = row.close;
     week.indivKrw += row.indivKrw;
   }
 
-  const grouped = Array.from(weeks.values()).sort((a, b) => a.date.localeCompare(b.date));
+  const grouped = Array.from(weeks.values()).sort((a, b) => a.key.localeCompare(b.key));
   return grouped.slice(1).map((week, index) => {
     const prev = grouped[index];
     return {
