@@ -410,7 +410,7 @@ async function fetchSentimentData() {
           rows,
           meta,
           mode: "daily-csv",
-          message: `매일 수집 CSV를 불러왔습니다. ${updateLabel}.`,
+          message: `데이터 불러오기 성공. ${updateLabel}.`,
         };
       }
     } catch {
