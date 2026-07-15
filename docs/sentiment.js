@@ -371,10 +371,11 @@ function renderSummary(analysis) {
   const updateLabel = formatUpdateMeta(dataMeta, latest.date);
   const latestView = latestSentiment(latest, analysis.thr);
   const rangeLabel = sentimentEls.range?.selectedOptions?.[0]?.textContent || "1년";
+  const residualDirection = latest.residual < 0 ? "부족" : "초과";
 
   sentimentEls.summary.innerHTML = `
     <article><span>데이터</span><strong>${modeLabel}</strong><small>${rangeLabel} · ${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"} · ${updateLabel}</small></article>
-    <article><span>평소 패턴</span><strong>R² ${analysis.model.r2.toFixed(2)}</strong><small>개인 순매수(조원) = ${analysis.model.slope.toFixed(2)} × 수익률 + ${analysis.model.intercept.toFixed(2)}</small></article>
+    <article><span>평균 수급 기준</span><strong>평소보다 ${Math.abs(latest.residual).toFixed(2)}조원 ${residualDirection}</strong><small>해당 수익률에서 예상 ${latest.expected.toFixed(2)}조원, 실제 ${latest.indivT.toFixed(2)}조원</small></article>
     <article><span>최근 심리</span><strong>${latestView.short}</strong><small>${latest.date} · z ${latest.z.toFixed(2)} · ${latestView.note}</small></article>
     <article><span>이탈 신호</span><strong>공포 ${fearCount} / 탐욕 ${greedCount}</strong><small>z-score 기준 ±${analysis.thr}, 보합 허용폭 ±${analysis.band}%</small></article>
   `;
