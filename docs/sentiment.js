@@ -329,13 +329,19 @@ async function fetchSentimentData() {
   const staticResponse = await fetch(`/data/kospi-sentiment.csv?ts=${Date.now()}`, { cache: "no-store" });
 
   if (staticResponse.ok) {
-    const rows = parseCsv(await staticResponse.text());
-    if (rows.length >= 120) {
-      return {
-        rows,
-        mode: "daily-csv",
-        message: `매일 수집 CSV를 불러왔습니다. ${rows.at(-1).date} 기준입니다.`,
-      };
+    try {
+      const csvText = await staticResponse.text();
+      const rows = parseCsv(csvText);
+      if (rows.length >= 120) {
+        return {
+          rows,
+          mode: "daily-csv",
+          message: `매일 수집 CSV를 불러왔습니다. ${rows.at(-1).date} 기준입니다.`,
+        };
+      }
+    } catch {
+      // Cloudflare can return an HTML fallback before the scheduled CSV exists.
+      // Ignore that and continue to the API/demo fallback.
     }
   }
 
