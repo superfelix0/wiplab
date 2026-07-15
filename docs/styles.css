@@ -817,6 +817,16 @@ h1 em {
   accent-color: var(--blue);
 }
 
+.sentiment-controls select {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  outline: none;
+}
+
 .sentiment-summary {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

@@ -7,6 +7,7 @@ const sentimentEls = {
   detail: document.querySelector("#sentimentDetail"),
   showFear: document.querySelector("#showFear"),
   showGreed: document.querySelector("#showGreed"),
+  range: document.querySelector("#sentimentRange"),
 };
 
 const fmt = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 });
@@ -24,6 +25,7 @@ const fmtDateTime = new Intl.DateTimeFormat("ko-KR", {
 let rawRows = [];
 let dataMode = "loading";
 let selectedFreq = "W";
+let selectedRange = "1y";
 let dataMeta = null;
 
 function setSentimentStatus(message, state = "neutral") {
@@ -365,9 +367,10 @@ function renderSummary(analysis) {
   const modeLabel = dataMode === "live" ? "실데이터" : "합성 미리보기";
   const updateLabel = formatUpdateMeta(dataMeta, latest.date);
   const latestView = latestSentiment(latest, analysis.thr);
+  const rangeLabel = sentimentEls.range?.selectedOptions?.[0]?.textContent || "1년";
 
   sentimentEls.summary.innerHTML = `
-    <article><span>데이터</span><strong>${modeLabel}</strong><small>${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"} · ${updateLabel}</small></article>
+    <article><span>데이터</span><strong>${modeLabel}</strong><small>${rangeLabel} · ${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"} · ${updateLabel}</small></article>
     <article><span>평소 패턴</span><strong>R² ${analysis.model.r2.toFixed(2)}</strong><small>개인 순매수(조원) = ${analysis.model.slope.toFixed(2)} × 수익률 + ${analysis.model.intercept.toFixed(2)}</small></article>
     <article><span>최근 심리</span><strong>${latestView.short}</strong><small>${latest.date} · z ${latest.z.toFixed(2)} · ${latestView.note}</small></article>
     <article><span>이탈 신호</span><strong>공포 ${fearCount} / 탐욕 ${greedCount}</strong><small>z-score 기준 ±${analysis.thr}, 보합 허용폭 ±${analysis.band}%</small></article>
@@ -386,9 +389,28 @@ function renderDetail(point, analysis) {
   `;
 }
 
+function filterRowsByRange(rows) {
+  const sorted = rows.slice().sort((a, b) => a.date.localeCompare(b.date));
+  if (selectedRange === "all" || sorted.length === 0) return sorted;
+
+  const latest = new Date(`${sorted.at(-1).date}T00:00:00+09:00`);
+  const cutoff = new Date(latest);
+
+  if (selectedRange === "1y") {
+    cutoff.setFullYear(cutoff.getFullYear() - 1);
+  } else if (selectedRange === "6m") {
+    cutoff.setMonth(cutoff.getMonth() - 6);
+  } else if (selectedRange === "3m") {
+    cutoff.setMonth(cutoff.getMonth() - 3);
+  }
+
+  return sorted.filter((row) => new Date(`${row.date}T00:00:00+09:00`) >= cutoff);
+}
+
 function render() {
   if (!rawRows.length) return;
-  const analysis = analyze(rawRows, selectedFreq);
+  const displayRows = filterRowsByRange(rawRows);
+  const analysis = analyze(displayRows, selectedFreq);
   renderSummary(analysis);
   renderKospiChart(analysis);
   renderScatterChart(analysis);
@@ -463,6 +485,11 @@ document.querySelectorAll("input[name='sentimentFreq']").forEach((input) => {
     selectedFreq = event.target.value;
     render();
   });
+});
+
+sentimentEls.range?.addEventListener("change", (event) => {
+  selectedRange = event.target.value;
+  render();
 });
 
 [sentimentEls.showFear, sentimentEls.showGreed].forEach((input) => input.addEventListener("change", render));

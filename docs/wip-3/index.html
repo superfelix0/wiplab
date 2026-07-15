@@ -53,6 +53,15 @@
       <div class="status" id="sentimentStatus" data-state="neutral">데이터를 준비하는 중입니다.</div>
 
       <div class="sentiment-controls" aria-label="차트 설정">
+        <label>
+          표시 기간
+          <select id="sentimentRange" aria-label="표시 기간 선택">
+            <option value="all">최대 범위</option>
+            <option value="1y" selected>1년</option>
+            <option value="6m">6개월</option>
+            <option value="3m">3개월</option>
+          </select>
+        </label>
         <label><input type="radio" name="sentimentFreq" value="W" checked> 주간</label>
         <label><input type="radio" name="sentimentFreq" value="D"> 일간</label>
         <label><input type="checkbox" id="showFear" checked> 공포</label>
