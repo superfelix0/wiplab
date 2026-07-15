@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install setuptools pandas pykrx==1.0.51
+          python -m pip install setuptools pandas pykrx
 
       - name: Check KRX secret presence
         run: |

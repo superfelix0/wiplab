@@ -13,6 +13,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -21,18 +22,25 @@ import pandas as pd
 from pykrx import stock
 
 
+KST = dt.timezone(dt.timedelta(hours=9))
+
+
 def ymd(value: dt.date) -> str:
     return value.strftime("%Y%m%d")
 
 
 def parse_args() -> argparse.Namespace:
-    today = dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).date()
+    today = dt.datetime.now(KST).date()
     default_end = today - dt.timedelta(days=1)
     default_start = default_end - dt.timedelta(days=620)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--start", default=ymd(default_start), help="Start date as YYYYMMDD")
-    parser.add_argument("--end", default=ymd(default_end), help="End date as YYYYMMDD. Defaults to the previous KST date.")
+    parser.add_argument(
+        "--end",
+        default=ymd(default_end),
+        help="End date as YYYYMMDD. Defaults to the previous KST date.",
+    )
     parser.add_argument("--out", default="docs/data/kospi-sentiment.csv", help="Output CSV path")
     parser.add_argument("--meta-out", default="docs/data/kospi-sentiment-meta.json", help="Output metadata JSON path")
     return parser.parse_args()
@@ -47,12 +55,14 @@ def fetch_kospi_close_from_yahoo(start: str, end: str) -> pd.DataFrame:
     end_date = parse_ymd(end)
     period1 = int(dt.datetime.combine(start_date, dt.time.min, tzinfo=dt.timezone.utc).timestamp())
     period2 = int(dt.datetime.combine(end_date + dt.timedelta(days=1), dt.time.min, tzinfo=dt.timezone.utc).timestamp())
-    params = urllib.parse.urlencode({
-        "period1": period1,
-        "period2": period2,
-        "interval": "1d",
-        "events": "history",
-    })
+    params = urllib.parse.urlencode(
+        {
+            "period1": period1,
+            "period2": period2,
+            "interval": "1d",
+            "events": "history",
+        }
+    )
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?{params}"
     request = urllib.request.Request(
         url,
@@ -84,8 +94,7 @@ def fetch_kospi_close_from_yahoo(start: str, end: str) -> pd.DataFrame:
         raise RuntimeError("KOSPI index data is empty. Yahoo Finance returned only empty close values.")
 
     df["date"] = pd.to_datetime(df["date"])
-    df = df.set_index("date").sort_index()
-    return df
+    return df.set_index("date").sort_index()
 
 
 def date_chunks(start: str, end: str, chunk_days: int = 180):
@@ -99,11 +108,23 @@ def date_chunks(start: str, end: str, chunk_days: int = 180):
 
 
 def fetch_investor_flow_chunked(start: str, end: str) -> pd.DataFrame:
+    """Fetch daily investor net-buying trend through pykrx's date-by-date API."""
     frames = []
 
     for chunk_start, chunk_end in date_chunks(start, end):
         print(f"Fetching KOSPI investor flow chunk: {chunk_start} ~ {chunk_end}")
-        chunk = stock.get_market_trading_value_by_date(chunk_start, chunk_end, "KOSPI", on="순매수")
+        chunk = stock.get_market_trading_value_by_date(chunk_start, chunk_end, "KOSPI")
+
+        if chunk.empty:
+            chunk = stock.get_market_trading_value_by_date(
+                chunk_start,
+                chunk_end,
+                "KOSPI",
+                etf=True,
+                etn=True,
+                elw=True,
+            )
+
         print(f"  chunk rows: {len(chunk)}")
         if not chunk.empty:
             frames.append(chunk)
@@ -112,8 +133,62 @@ def fetch_investor_flow_chunked(start: str, end: str) -> pd.DataFrame:
         return pd.DataFrame()
 
     combined = pd.concat(frames).sort_index()
-    combined = combined[~combined.index.duplicated(keep="last")]
-    return combined
+    return combined[~combined.index.duplicated(keep="last")]
+
+
+def normalize_number(value) -> int | None:
+    if pd.isna(value):
+        return None
+    return int(str(value).replace(",", "").strip())
+
+
+def fetch_personal_net_buy_for_date(date_str: str) -> int | None:
+    """Fetch 개인 순매수 for one trading date through pykrx's investor aggregate API."""
+    attempts = [
+        {},
+        {"etf": True, "etn": True, "elw": True},
+    ]
+
+    for kwargs in attempts:
+        df = stock.get_market_trading_value_by_investor(date_str, date_str, "KOSPI", **kwargs)
+        if df.empty:
+            continue
+        if "개인" in df.index and "순매수" in df.columns:
+            return normalize_number(df.loc["개인", "순매수"])
+
+    return None
+
+
+def fetch_investor_flow_daily_from_investor_api(trading_dates) -> pd.DataFrame:
+    """Reconstruct the daily 개인 series if pykrx's date-by-date trend API returns empty rows."""
+    rows = []
+    missing = []
+    dates = pd.to_datetime(trading_dates).sort_values()
+
+    print("Falling back to get_market_trading_value_by_investor per trading date.")
+    for idx, date in enumerate(dates, start=1):
+        date_str = date.strftime("%Y%m%d")
+        value = fetch_personal_net_buy_for_date(date_str)
+
+        if value is None:
+            missing.append(date_str)
+        else:
+            rows.append({"date": date, "개인": value})
+
+        if idx % 25 == 0 or idx == len(dates):
+            print(f"  fallback progress: {idx}/{len(dates)} dates, rows: {len(rows)}")
+
+        time.sleep(0.08)
+
+    if missing:
+        preview = ", ".join(missing[:8])
+        suffix = "..." if len(missing) > 8 else ""
+        print(f"  missing investor flow dates: {len(missing)} ({preview}{suffix})")
+
+    if not rows:
+        return pd.DataFrame()
+
+    return pd.DataFrame(rows).set_index("date").sort_index()
 
 
 def collect(start: str, end: str) -> pd.DataFrame:
@@ -125,10 +200,12 @@ def collect(start: str, end: str) -> pd.DataFrame:
     print(f"KOSPI index rows: {len(index_df)}")
 
     flow_df = fetch_investor_flow_chunked(start, end)
+    if flow_df.empty:
+        flow_df = fetch_investor_flow_daily_from_investor_api(index_df.index)
     print(f"KOSPI investor flow rows: {len(flow_df)}")
 
     if flow_df.empty:
-        login_hint = " KRX_ID/KRX_PW GitHub Secrets를 확인하세요." if not os.getenv("KRX_ID") else ""
+        login_hint = " Check KRX_ID/KRX_PW GitHub Secrets." if not os.getenv("KRX_ID") else ""
         raise RuntimeError(f"KOSPI investor flow data is empty. KRX returned no investor flow rows.{login_hint}")
 
     close = index_df[["close"]]
@@ -163,7 +240,7 @@ def main() -> None:
     df = collect(args.start, args.end)
     df.to_csv(out, index=False, encoding="utf-8")
 
-    now_kst = dt.datetime.now(dt.timezone(dt.timedelta(hours=9)))
+    now_kst = dt.datetime.now(KST)
     meta = {
         "generatedAt": now_kst.isoformat(timespec="seconds"),
         "timezone": "Asia/Seoul",
