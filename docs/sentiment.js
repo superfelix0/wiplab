@@ -99,13 +99,11 @@ function latestSentiment(point, threshold) {
     };
   }
 
-  const distance = Math.min(100, Math.round((Math.abs(point.z) / threshold) * 100));
-
   if (Math.abs(point.z) < 0.25) {
     return {
       label: "중립",
       short: "중립",
-      note: `공포·탐욕 어느 쪽으로도 크게 기울지 않았습니다. 신호 임계치의 약 ${distance}% 수준입니다.`,
+      note: "개인 수급이 평균적인 움직임에서 크게 벗어나지 않았습니다.",
     };
   }
 
@@ -113,14 +111,14 @@ function latestSentiment(point, threshold) {
     return {
       label: "공포 쪽에 가까움",
       short: "공포 쪽",
-      note: `정식 공포 신호는 아니지만, 예상보다 개인 순매수가 ${Math.abs(point.residual).toFixed(2)}조원 부족해 공포 쪽에 더 가깝습니다. 신호 임계치의 약 ${distance}% 수준입니다.`,
+      note: `뚜렷한 공포 신호까지는 아니지만, 개인 순매수가 예상보다 ${Math.abs(point.residual).toFixed(2)}조원 적어 공포 쪽으로 기울었습니다.`,
     };
   }
 
   return {
     label: "탐욕 쪽에 가까움",
     short: "탐욕 쪽",
-    note: `정식 탐욕 신호는 아니지만, 예상보다 개인 순매수가 ${Math.abs(point.residual).toFixed(2)}조원 초과해 탐욕 쪽에 더 가깝습니다. 신호 임계치의 약 ${distance}% 수준입니다.`,
+    note: `뚜렷한 탐욕 신호까지는 아니지만, 개인 순매수가 예상보다 ${Math.abs(point.residual).toFixed(2)}조원 많아 탐욕 쪽으로 기울었습니다.`,
   };
 }
 
@@ -376,7 +374,7 @@ function renderSummary(analysis) {
   sentimentEls.summary.innerHTML = `
     <article><span>데이터</span><strong>${modeLabel}</strong><small>${rangeLabel} · ${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"} · ${updateLabel}</small></article>
     <article><span>평균 수급 기준</span><strong>평소보다 ${Math.abs(latest.residual).toFixed(2)}조원 ${residualDirection}</strong><small>해당 수익률에서 예상 ${latest.expected.toFixed(2)}조원, 실제 ${latest.indivT.toFixed(2)}조원</small></article>
-    <article><span>최근 심리</span><strong>${latestView.short}</strong><small>${latest.date} · z ${latest.z.toFixed(2)} · ${latestView.note}</small></article>
+    <article><span>최근 심리</span><strong>${latestView.short}</strong><small>${latest.date} · ${latestView.note}</small></article>
     <article><span>이탈 신호</span><strong>공포 ${fearCount} / 탐욕 ${greedCount}</strong><small>z-score 기준 ±${analysis.thr}, 보합 허용폭 ±${analysis.band}%</small></article>
   `;
 }
