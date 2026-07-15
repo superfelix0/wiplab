@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import json
 import os
 from pathlib import Path
 
@@ -30,6 +31,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--start", default=ymd(default_start), help="Start date as YYYYMMDD")
     parser.add_argument("--end", default=ymd(today), help="End date as YYYYMMDD")
     parser.add_argument("--out", default="docs/data/kospi-sentiment.csv", help="Output CSV path")
+    parser.add_argument("--meta-out", default="docs/data/kospi-sentiment-meta.json", help="Output metadata JSON path")
     return parser.parse_args()
 
 
@@ -68,11 +70,26 @@ def collect(start: str, end: str) -> pd.DataFrame:
 def main() -> None:
     args = parse_args()
     out = Path(args.out)
+    meta_out = Path(args.meta_out)
     out.parent.mkdir(parents=True, exist_ok=True)
+    meta_out.parent.mkdir(parents=True, exist_ok=True)
 
     df = collect(args.start, args.end)
     df.to_csv(out, index=False, encoding="utf-8")
+
+    now_kst = dt.datetime.now(dt.timezone(dt.timedelta(hours=9)))
+    meta = {
+        "generatedAt": now_kst.isoformat(timespec="seconds"),
+        "timezone": "Asia/Seoul",
+        "source": "pykrx",
+        "startDate": str(df.iloc[0]["date"]),
+        "lastDataDate": str(df.iloc[-1]["date"]),
+        "rowCount": int(len(df)),
+    }
+    meta_out.write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
     print(f"Wrote {len(df)} rows to {out}. Last date: {df.iloc[-1]['date']}")
+    print(f"Wrote metadata to {meta_out}. Generated at: {meta['generatedAt']}")
 
 
 if __name__ == "__main__":

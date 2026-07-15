@@ -12,10 +12,19 @@ const sentimentEls = {
 const fmt = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 });
 const fmt0 = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 0 });
 const fmtDate = new Intl.DateTimeFormat("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" });
+const fmtDateTime = new Intl.DateTimeFormat("ko-KR", {
+  year: "2-digit",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "Asia/Seoul",
+});
 
 let rawRows = [];
 let dataMode = "loading";
 let selectedFreq = "W";
+let dataMeta = null;
 
 function setSentimentStatus(message, state = "neutral") {
   sentimentEls.status.textContent = message;
@@ -49,6 +58,24 @@ function parseCsv(text) {
       indivKrw: toNumber(cells[flowIndex]),
     };
   }).filter((row) => row.date && Number.isFinite(row.close) && Number.isFinite(row.indivKrw));
+}
+
+async function fetchJsonIfAvailable(url) {
+  try {
+    const response = await fetch(`${url}?ts=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+function formatUpdateMeta(meta, latestDate) {
+  if (meta?.generatedAt) {
+    return `마지막 업데이트 ${fmtDateTime.format(new Date(meta.generatedAt))} · 데이터 기준 ${meta.lastDataDate || latestDate}`;
+  }
+
+  return `데이터 기준 ${latestDate}`;
 }
 
 function sampleRows() {
@@ -294,9 +321,10 @@ function renderSummary(analysis) {
   const fearCount = analysis.points.filter((p) => p.type === "fear").length;
   const greedCount = analysis.points.filter((p) => p.type === "greed").length;
   const modeLabel = dataMode === "live" ? "실데이터" : "합성 미리보기";
+  const updateLabel = formatUpdateMeta(dataMeta, latest.date);
 
   sentimentEls.summary.innerHTML = `
-    <article><span>데이터</span><strong>${modeLabel}</strong><small>${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"}</small></article>
+    <article><span>데이터</span><strong>${modeLabel}</strong><small>${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"} · ${updateLabel}</small></article>
     <article><span>평소 패턴</span><strong>R² ${analysis.model.r2.toFixed(2)}</strong><small>개인 순매수(조원) = ${analysis.model.slope.toFixed(2)} × 수익률 + ${analysis.model.intercept.toFixed(2)}</small></article>
     <article><span>최근 구간</span><strong>${latest.date}</strong><small>KOSPI ${fmt.format(latest.close)} · 수익률 ${latest.ret.toFixed(2)}% · 개인 ${latest.indivT.toFixed(2)}조원</small></article>
     <article><span>이탈 신호</span><strong>공포 ${fearCount} / 탐욕 ${greedCount}</strong><small>z-score 기준 ±${analysis.thr}, 보합 허용폭 ±${analysis.band}%</small></article>
@@ -332,10 +360,13 @@ async function fetchSentimentData() {
       const csvText = await staticResponse.text();
       const rows = parseCsv(csvText);
       if (rows.length >= 120) {
+        const meta = await fetchJsonIfAvailable("/data/kospi-sentiment-meta.json");
+        const updateLabel = formatUpdateMeta(meta, rows.at(-1).date);
         return {
           rows,
+          meta,
           mode: "daily-csv",
-          message: `매일 수집 CSV를 불러왔습니다. ${rows.at(-1).date} 기준입니다.`,
+          message: `매일 수집 CSV를 불러왔습니다. ${updateLabel}.`,
         };
       }
     } catch {
@@ -349,10 +380,16 @@ async function fetchSentimentData() {
   if (!response.ok || !data?.ok) {
     throw new Error(data?.message || "실데이터 API가 아직 연결되지 않았습니다.");
   }
+
+  const meta = data.fetchedAt
+    ? { generatedAt: new Date(data.fetchedAt).toISOString(), lastDataDate: data.rows.at(-1)?.date }
+    : null;
+
   return {
     rows: data.rows,
+    meta,
     mode: "live-api",
-    message: "실데이터 API를 불러왔습니다. KRX/데이터 제공처 기준으로 지연될 수 있습니다.",
+    message: `실데이터 API를 불러왔습니다. ${formatUpdateMeta(meta, data.rows.at(-1)?.date)}.`,
   };
 }
 
@@ -363,10 +400,12 @@ async function loadData() {
   try {
     const loaded = await fetchSentimentData();
     rawRows = loaded.rows;
+    dataMeta = loaded.meta;
     dataMode = "live";
     setSentimentStatus(loaded.message, "ok");
   } catch (error) {
     rawRows = sampleRows();
+    dataMeta = null;
     dataMode = "demo";
     setSentimentStatus(`${error.message} 현재는 합성 미리보기로 화면과 로직만 표시합니다. 자동 수집이 성공하면 실데이터로 전환됩니다.`, "error");
   } finally {
