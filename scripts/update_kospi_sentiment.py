@@ -25,11 +25,12 @@ def ymd(value: dt.date) -> str:
 
 def parse_args() -> argparse.Namespace:
     today = dt.datetime.now(dt.timezone(dt.timedelta(hours=9))).date()
-    default_start = today - dt.timedelta(days=620)
+    default_end = today - dt.timedelta(days=1)
+    default_start = default_end - dt.timedelta(days=620)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--start", default=ymd(default_start), help="Start date as YYYYMMDD")
-    parser.add_argument("--end", default=ymd(today), help="End date as YYYYMMDD")
+    parser.add_argument("--end", default=ymd(default_end), help="End date as YYYYMMDD. Defaults to the previous KST date.")
     parser.add_argument("--out", default="docs/data/kospi-sentiment.csv", help="Output CSV path")
     parser.add_argument("--meta-out", default="docs/data/kospi-sentiment-meta.json", help="Output metadata JSON path")
     return parser.parse_args()
