@@ -5,14 +5,13 @@ const sentimentEls = {
   kospiChart: document.querySelector("#kospiSentimentChart"),
   scatterChart: document.querySelector("#flowScatterChart"),
   detail: document.querySelector("#sentimentDetail"),
-  csv: document.querySelector("#sentimentCsv"),
   showFear: document.querySelector("#showFear"),
   showGreed: document.querySelector("#showGreed"),
 };
 
 const fmt = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 });
 const fmt0 = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 0 });
-const fmtDate = new Intl.DateTimeFormat("ko-KR", { month: "2-digit", day: "2-digit" });
+const fmtDate = new Intl.DateTimeFormat("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" });
 
 let rawRows = [];
 let dataMode = "loading";
@@ -294,7 +293,7 @@ function renderSummary(analysis) {
   const latest = analysis.points.at(-1);
   const fearCount = analysis.points.filter((p) => p.type === "fear").length;
   const greedCount = analysis.points.filter((p) => p.type === "greed").length;
-  const modeLabel = dataMode === "live" ? "실데이터" : dataMode === "csv" ? "업로드 CSV" : "합성 미리보기";
+  const modeLabel = dataMode === "live" ? "실데이터" : "합성 미리보기";
 
   sentimentEls.summary.innerHTML = `
     <article><span>데이터</span><strong>${modeLabel}</strong><small>${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"}</small></article>
@@ -369,7 +368,7 @@ async function loadData() {
   } catch (error) {
     rawRows = sampleRows();
     dataMode = "demo";
-    setSentimentStatus(`${error.message} 현재는 합성 미리보기로 화면과 로직만 표시합니다. 실제 CSV를 올리면 즉시 재계산됩니다.`, "error");
+    setSentimentStatus(`${error.message} 현재는 합성 미리보기로 화면과 로직만 표시합니다. 자동 수집이 성공하면 실데이터로 전환됩니다.`, "error");
   } finally {
     sentimentEls.refresh.disabled = false;
     render();
@@ -384,19 +383,6 @@ document.querySelectorAll("input[name='sentimentFreq']").forEach((input) => {
 });
 
 [sentimentEls.showFear, sentimentEls.showGreed].forEach((input) => input.addEventListener("change", render));
-
-sentimentEls.csv.addEventListener("change", async (event) => {
-  const file = event.target.files?.[0];
-  if (!file) return;
-  try {
-    rawRows = parseCsv(await file.text());
-    dataMode = "csv";
-    setSentimentStatus(`${file.name} 데이터를 분석했습니다.`, "ok");
-    render();
-  } catch (error) {
-    setSentimentStatus(error.message || "CSV를 읽지 못했습니다.", "error");
-  }
-});
 
 sentimentEls.refresh.addEventListener("click", loadData);
 loadData();

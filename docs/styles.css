@@ -817,18 +817,6 @@ h1 em {
   accent-color: var(--blue);
 }
 
-.csv-loader {
-  cursor: pointer;
-}
-
-.csv-loader input {
-  width: 1px;
-  height: 1px;
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
 .sentiment-summary {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
