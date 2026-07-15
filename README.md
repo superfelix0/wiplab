@@ -9,6 +9,19 @@
 - Cloudflare Pages
 - Build command: 없음
 - Build output directory: `docs`
-- Pages Function: `functions/api/quotes.js`
+- Pages Function: `functions/api/quotes.js`, `functions/api/market-dashboard.js`, `functions/api/kospi-sentiment.js`
 
 Cloudflare가 빌드 설정을 잘못 읽지 않도록 `wrangler.toml`에도 Pages 출력 경로를 명시했습니다.
+
+## WIP 3 데이터 갱신
+
+`WIP 3 — KOSPI Fear/Greed Sentiment`는 `docs/data/kospi-sentiment.csv`가 있으면 이 파일을 우선 읽습니다.
+
+CSV 형식:
+
+```csv
+date,close,indiv_krw
+2026-07-15,3215.28,-123456789000
+```
+
+GitHub Actions의 `Update KOSPI sentiment data` 워크플로가 평일 18:10 KST에 `scripts/update_kospi_sentiment.py`를 실행해 CSV를 갱신합니다. pykrx/KRX 인증이 필요한 경우 GitHub 저장소 Settings → Secrets and variables → Actions에 `KRX_ID`, `KRX_PW`를 등록해야 합니다.

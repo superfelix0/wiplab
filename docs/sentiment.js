@@ -326,12 +326,29 @@ function render() {
 }
 
 async function fetchSentimentData() {
+  const staticResponse = await fetch(`/data/kospi-sentiment.csv?ts=${Date.now()}`, { cache: "no-store" });
+
+  if (staticResponse.ok) {
+    const rows = parseCsv(await staticResponse.text());
+    if (rows.length >= 120) {
+      return {
+        rows,
+        mode: "daily-csv",
+        message: `매일 수집 CSV를 불러왔습니다. ${rows.at(-1).date} 기준입니다.`,
+      };
+    }
+  }
+
   const response = await fetch(`/api/kospi-sentiment?ts=${Date.now()}`, { cache: "no-store" });
   const data = await response.json().catch(() => null);
   if (!response.ok || !data?.ok) {
     throw new Error(data?.message || "실데이터 API가 아직 연결되지 않았습니다.");
   }
-  return data.rows;
+  return {
+    rows: data.rows,
+    mode: "live-api",
+    message: "실데이터 API를 불러왔습니다. KRX/데이터 제공처 기준으로 지연될 수 있습니다.",
+  };
 }
 
 async function loadData() {
@@ -339,9 +356,10 @@ async function loadData() {
   setSentimentStatus("실데이터 API를 확인하는 중입니다.");
 
   try {
-    rawRows = await fetchSentimentData();
+    const loaded = await fetchSentimentData();
+    rawRows = loaded.rows;
     dataMode = "live";
-    setSentimentStatus("실데이터를 불러왔습니다. KRX/데이터 제공처 기준으로 지연될 수 있습니다.", "ok");
+    setSentimentStatus(loaded.message, "ok");
   } catch (error) {
     rawRows = sampleRows();
     dataMode = "demo";
