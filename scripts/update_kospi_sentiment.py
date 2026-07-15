@@ -37,15 +37,22 @@ def parse_args() -> argparse.Namespace:
 
 
 def collect(start: str, end: str) -> pd.DataFrame:
+    print(f"Collecting KOSPI sentiment data: {start} ~ {end}")
+    print(f"KRX_ID configured: {bool(os.getenv('KRX_ID'))}")
+    print(f"KRX_PW configured: {bool(os.getenv('KRX_PW'))}")
+
     index_df = stock.get_index_ohlcv_by_date(start, end, "1001")
+    print(f"KOSPI index rows: {len(index_df)}")
+
     flow_df = stock.get_market_trading_value_by_date(start, end, "KOSPI", on="순매수")
+    print(f"KOSPI investor flow rows: {len(flow_df)}")
 
     if index_df.empty:
-        raise RuntimeError("KOSPI index data is empty")
+        raise RuntimeError("KOSPI index data is empty. KRX returned no index rows.")
 
     if flow_df.empty:
         login_hint = " KRX_ID/KRX_PW GitHub Secrets를 확인하세요." if not os.getenv("KRX_ID") else ""
-        raise RuntimeError(f"KOSPI investor flow data is empty.{login_hint}")
+        raise RuntimeError(f"KOSPI investor flow data is empty. KRX returned no investor flow rows.{login_hint}")
 
     close = index_df[["종가"]].rename(columns={"종가": "close"})
 
