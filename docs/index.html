@@ -71,11 +71,11 @@
       <h2 id="wip-list-title">WIP 목록</h2>
       <div class="wip-tabs" aria-label="서비스 분류">
         <span>wip://</span>
-        <button class="active" type="button">Finance</button>
-        <button type="button">Game</button>
+        <button class="active" type="button" data-wip-tab="finance" aria-pressed="true">Finance</button>
+        <button type="button" data-wip-tab="game" aria-pressed="false">Game</button>
       </div>
       <div class="wip-index">
-        <a href="wip-1/">
+        <a href="wip-1/" data-category="finance">
           <span>F1</span>
           <strong>SK Hynix ADR</strong>
           <small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small>
@@ -83,7 +83,7 @@
           <svg class="spark" viewBox="0 0 62 24" aria-hidden="true"><polyline points="1,18 12,15 24,17 36,10 48,12 61,6"/></svg>
           <small class="live-dot">● LIVE</small>
         </a>
-        <a href="wip-2/">
+        <a href="wip-2/" data-category="finance">
           <span>F2</span>
           <strong>PER Monitor</strong>
           <small class="cmd"><b>$</b> ./per-monitor <em>--forward</em></small>
@@ -91,7 +91,7 @@
           <svg class="spark" viewBox="0 0 62 24" aria-hidden="true"><polyline points="1,16 12,11 24,12 36,8 48,9 61,5"/></svg>
           <small class="live-dot">● LIVE</small>
         </a>
-        <a href="wip-3/">
+        <a href="wip-3/" data-category="finance">
           <span>F3</span>
           <strong>Fear/Greed</strong>
           <small class="cmd"><b>$</b> ./sentiment <em>--kospi</em></small>
@@ -99,7 +99,7 @@
           <svg class="spark" viewBox="0 0 62 24" aria-hidden="true"><polyline points="1,12 12,18 24,10 36,16 48,7 61,13"/></svg>
           <small class="live-dot">● LIVE</small>
         </a>
-        <a href="wip-g/">
+        <a href="wip-g/" data-category="game" hidden>
           <span>G1</span>
           <strong>오늘의 셈</strong>
           <small class="cmd"><b>$</b> ./number-game <em>--daily</em></small>
@@ -120,5 +120,24 @@
     <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
     <span>© 2026</span>
   </footer>
+  <script>
+    const tabButtons = document.querySelectorAll("[data-wip-tab]");
+    const serviceRows = document.querySelectorAll("[data-category]");
+
+    function showCategory(category) {
+      tabButtons.forEach((button) => {
+        const isActive = button.dataset.wipTab === category;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+      serviceRows.forEach((row) => {
+        row.hidden = row.dataset.category !== category;
+      });
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => showCategory(button.dataset.wipTab));
+    });
+  </script>
 </body>
 </html>
