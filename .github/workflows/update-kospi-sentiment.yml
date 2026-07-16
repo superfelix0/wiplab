@@ -47,8 +47,16 @@ jobs:
 
       - name: Collect KOSPI sentiment data
         run: |
-          python scripts/update_kospi_sentiment.py
-          python scripts/update_market_per.py
+          for attempt in 1 2 3; do
+            echo "Collection attempt ${attempt}/3"
+            if python scripts/update_kospi_sentiment.py && python scripts/update_market_per.py; then
+              exit 0
+            fi
+            if [ "$attempt" = "3" ]; then
+              exit 1
+            fi
+            sleep $((attempt * 30))
+          done
 
       - name: Commit updated data
         run: |
