@@ -29,6 +29,10 @@ function naverExchangeUrl(symbol) {
   return `https://api.stock.naver.com/marketindex/exchange/${encodeURIComponent(symbol)}`;
 }
 
+function naverDomesticHistoryUrl(symbol) {
+  return `https://api.stock.naver.com/chart/domestic/item/${encodeURIComponent(symbol)}?periodType=dayCandle`;
+}
+
 function json(data, init = {}) {
   return new Response(JSON.stringify(data), {
     ...init,
@@ -242,6 +246,51 @@ async function fetchNaverExchangeQuote(symbol) {
   };
 }
 
+async function fetchNaverDomesticHistory(symbol) {
+  const response = await fetch(naverDomesticHistoryUrl(symbol), {
+    headers: {
+      "user-agent": "Mozilla/5.0 wiplab-quote-checker/1.0",
+      accept: "application/json",
+      referer: `https://m.stock.naver.com/domestic/stock/${encodeURIComponent(symbol)}`,
+    },
+    cf: {
+      cacheTtl: 300,
+      cacheEverything: false,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`${symbol} Naver history request failed with ${response.status}`);
+  }
+
+  const data = await response.json();
+  const priceInfos = Array.isArray(data?.priceInfos) ? data.priceInfos : [];
+  const series = priceInfos
+    .map((item) => {
+      const localDate = String(item.localDate || "");
+      const date = localDate.length === 8
+        ? `${localDate.slice(0, 4)}-${localDate.slice(4, 6)}-${localDate.slice(6, 8)}`
+        : "";
+
+      return {
+        date,
+        time: date ? Date.parse(`${date}T00:00:00+09:00`) : null,
+        value: Number(item.closePrice),
+      };
+    })
+    .filter((point) => point.date && Number.isFinite(point.value))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  if (!series.length) {
+    throw new Error(`${symbol} Naver history is unavailable`);
+  }
+
+  return {
+    symbol: `${symbol}.KS`,
+    series,
+  };
+}
+
 async function fetchChart(symbol, url) {
   const response = await fetch(url, {
     headers: {
@@ -395,7 +444,7 @@ export async function onRequestGet() {
       fetchNaverStockQuote(SYMBOLS.naverKospi),
       fetchNaverExchangeQuote(SYMBOLS.naverFx),
       fetchFirstValidHistory(SYMBOLS.adrCandidates),
-      fetchHistory(SYMBOLS.kospi),
+      fetchNaverDomesticHistory(SYMBOLS.naverKospi),
       fetchHistory(SYMBOLS.fx),
     ]);
 

@@ -31,7 +31,7 @@ def ymd(value: dt.date) -> str:
 
 def parse_args() -> argparse.Namespace:
     today = dt.datetime.now(KST).date()
-    default_end = today - dt.timedelta(days=1)
+    default_end = today
     default_start = default_end - dt.timedelta(days=620)
 
     parser = argparse.ArgumentParser()
@@ -39,7 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--end",
         default=ymd(default_end),
-        help="End date as YYYYMMDD. Defaults to the previous KST date.",
+        help="End date as YYYYMMDD. Defaults to the current KST date; non-trading dates are naturally skipped by the data join.",
     )
     parser.add_argument("--out", default="docs/data/kospi-sentiment.csv", help="Output CSV path")
     parser.add_argument("--meta-out", default="docs/data/kospi-sentiment-meta.json", help="Output metadata JSON path")
@@ -191,6 +191,60 @@ def fetch_investor_flow_daily_from_investor_api(trading_dates) -> pd.DataFrame:
     return pd.DataFrame(rows).set_index("date").sort_index()
 
 
+def fetch_kospi200_volatility(end: str) -> dict | None:
+    """Fetch the latest KOSPI 200 volatility index value when KRX exposes it through pykrx."""
+    target_names = ("코스피 200 변동성", "VKOSPI", "변동성지수")
+    markets = ("KOSPI", "KRX", "테마")
+
+    try:
+        for market in markets:
+            try:
+                tickers = stock.get_index_ticker_list(end, market=market)
+            except Exception as error:
+                print(f"KOSPI 200 volatility ticker lookup skipped for {market}: {error}")
+                continue
+
+            for ticker in tickers:
+                try:
+                    name = stock.get_index_ticker_name(ticker)
+                except Exception:
+                    continue
+
+                normalized = str(name).replace(" ", "").upper()
+                is_candidate = (
+                    "변동성" in str(name)
+                    and ("200" in str(name) or "VKOSPI" in normalized)
+                ) or any(token in str(name) for token in target_names)
+
+                if not is_candidate:
+                    continue
+
+                start = ymd(parse_ymd(end) - dt.timedelta(days=14))
+                df = stock.get_index_ohlcv_by_date(start, end, ticker)
+                if df.empty or "종가" not in df.columns:
+                    continue
+
+                latest = df.dropna(subset=["종가"]).tail(1)
+                if latest.empty:
+                    continue
+
+                latest_date = pd.to_datetime(latest.index[0]).strftime("%Y-%m-%d")
+                value = float(latest.iloc[0]["종가"])
+                print(f"KOSPI 200 volatility index: {ticker} {name} {latest_date} {value}")
+                return {
+                    "name": str(name),
+                    "ticker": str(ticker),
+                    "date": latest_date,
+                    "value": value,
+                    "source": "pykrx KRX index",
+                }
+    except Exception as error:
+        print(f"KOSPI 200 volatility index fetch failed: {error}")
+
+    print("KOSPI 200 volatility index unavailable.")
+    return None
+
+
 def collect(start: str, end: str) -> pd.DataFrame:
     print(f"Collecting KOSPI sentiment data: {start} ~ {end}")
     print(f"KRX_ID configured: {bool(os.getenv('KRX_ID'))}")
@@ -239,6 +293,7 @@ def main() -> None:
 
     df = collect(args.start, args.end)
     df.to_csv(out, index=False, encoding="utf-8")
+    kospi200_volatility = fetch_kospi200_volatility(args.end)
 
     now_kst = dt.datetime.now(KST)
     meta = {
@@ -248,6 +303,7 @@ def main() -> None:
         "startDate": str(df.iloc[0]["date"]),
         "lastDataDate": str(df.iloc[-1]["date"]),
         "rowCount": int(len(df)),
+        "kospi200Volatility": kospi200_volatility,
     }
     meta_out.write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 

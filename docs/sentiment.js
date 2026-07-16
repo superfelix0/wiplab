@@ -370,12 +370,17 @@ function renderSummary(analysis) {
   const latestView = latestSentiment(latest, analysis.thr);
   const rangeLabel = sentimentEls.range?.selectedOptions?.[0]?.textContent || "1년";
   const residualDirection = latest.residual < 0 ? "부족" : "초과";
+  const volatility = dataMeta?.kospi200Volatility;
+  const volatilityCard = volatility?.value
+    ? `<article><span>KOSPI 200 변동성</span><strong>${fmt.format(volatility.value)}</strong><small>${volatility.date} 기준 · 옵션시장이 예상하는 KOSPI 200의 향후 변동성입니다. 값이 높을수록 시장이 큰 등락을 더 경계한다는 뜻입니다.</small></article>`
+    : "";
 
   sentimentEls.summary.innerHTML = `
     <article><span>데이터</span><strong>${modeLabel}</strong><small>${rangeLabel} · ${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"} · ${updateLabel}</small></article>
     <article><span>평균 수급 기준</span><strong>개인 순매수가 평소보다 ${Math.abs(latest.residual).toFixed(2)}조원 ${residualDirection}</strong><small>해당 수익률에서 예상 ${latest.expected.toFixed(2)}조원, 실제 ${latest.indivT.toFixed(2)}조원</small></article>
     <article><span>최근 심리</span><strong>${latestView.short}</strong><small>${latest.date} · ${latestView.note}</small></article>
     <article><span>심리 이탈 시점</span><strong>공포 ${fearCount} / 탐욕 ${greedCount}</strong><small>선택한 기간 안에서 평균적인 개인 수급과 크게 달랐던 날입니다.</small></article>
+    ${volatilityCard}
   `;
 }
 

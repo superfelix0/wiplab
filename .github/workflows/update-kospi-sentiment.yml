@@ -2,8 +2,8 @@ name: Update KOSPI sentiment data
 
 on:
   schedule:
-    # 00:00 KST every day. GitHub Actions cron uses UTC.
-    - cron: "0 15 * * *"
+    # 19:00 KST every day. GitHub Actions cron uses UTC.
+    - cron: "0 10 * * *"
   workflow_dispatch:
 
 permissions:
