@@ -372,7 +372,7 @@ function renderSummary(analysis) {
   const residualDirection = latest.residual < 0 ? "부족" : "초과";
   const volatility = dataMeta?.kospi200Volatility;
   const volatilityCard = volatility?.value
-    ? `<article><span>KOSPI 200 변동성</span><strong>${fmt.format(volatility.value)}</strong><small>${volatility.date} 기준 · 옵션시장이 예상하는 KOSPI 200의 향후 변동성입니다. 값이 높을수록 시장이 큰 등락을 더 경계한다는 뜻입니다.</small></article>`
+    ? `<article><span>${volatility.name || "KOSPI 200 변동성"}</span><strong>${fmt.format(volatility.value)}</strong><small>${volatility.date} 기준 · 옵션시장이 예상하는 한국 주식시장의 향후 변동성입니다. 값이 높을수록 시장이 큰 등락을 더 경계한다는 뜻입니다.${volatility.source ? ` 출처: ${volatility.source}` : ""}</small></article>`
     : "";
 
   sentimentEls.summary.innerHTML = `

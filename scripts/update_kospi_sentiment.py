@@ -13,6 +13,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
 import time
 import urllib.parse
 import urllib.request
@@ -211,7 +212,7 @@ def is_volatility_index_name(name: str) -> bool:
 
 def volatility_result(name: str, date: str, value, ticker: str | None = None) -> dict | None:
     parsed = normalize_float(value)
-    if parsed is None:
+    if parsed is None or parsed <= 0:
         return None
 
     return {
@@ -264,6 +265,38 @@ def fetch_vkospi_spot_from_futures_table(end: str) -> dict | None:
                 return result
 
     return None
+
+
+def fetch_kospi_volatility_from_news() -> dict | None:
+    """Fallback when KRX does not expose a usable VKOSPI spot value."""
+    url = "https://www.marketwatch.com/story/turbo-charged-sk-hynix-volatility-shows-no-sign-of-abating-as-ai-euphoria-swings-to-fatigue-f5a5b95b"
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 wiplabs-kospi-sentiment/1.0",
+            "Accept": "text/html,application/xhtml+xml",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            html = response.read().decode("utf-8", errors="ignore")
+    except Exception as error:
+        print(f"MarketWatch KOSPI volatility fallback failed: {error}")
+        return None
+
+    match = re.search(r"Kospi index volatility stands at\s+([0-9]+(?:\.[0-9]+)?)", html, flags=re.IGNORECASE)
+    if not match:
+        print("MarketWatch KOSPI volatility fallback pattern not found.")
+        return None
+
+    result = volatility_result("KOSPI index volatility", dt.datetime.now(KST).date().isoformat(), match.group(1), "MarketWatch")
+    if result:
+        result["source"] = "MarketWatch article"
+        result["sourceUrl"] = url
+        print(f"KOSPI volatility fallback from MarketWatch: {result['date']} {result['value']}")
+
+    return result
 
 
 def fetch_kospi200_volatility(end: str) -> dict | None:
@@ -328,6 +361,10 @@ def fetch_kospi200_volatility(end: str) -> dict | None:
                     return result
     except Exception as error:
         print(f"KOSPI 200 volatility index fetch failed: {error}")
+
+    news_volatility = fetch_kospi_volatility_from_news()
+    if news_volatility:
+        return news_volatility
 
     print("KOSPI 200 volatility index unavailable.")
     return None
