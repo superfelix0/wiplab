@@ -237,7 +237,7 @@ async function loadLiquidity() {
   setLiquidityStatus("미국 유동성 데이터를 불러오는 중입니다.");
 
   try {
-    const response = await fetch(`/api/us-liquidity?ts=${Date.now()}`, { cache: "no-store" });
+    const response = await fetch(`/api/liquidity?ts=${Date.now()}`, { cache: "no-store" });
     const data = await response.json().catch(() => null);
 
     if (!response.ok || !data?.ok) {
