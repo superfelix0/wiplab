@@ -852,8 +852,7 @@ h3 {
 
 .sentiment-detail,
 .source-panel,
-.guide,
-.blog-board {
+.guide {
   background: var(--panel);
 }
 
@@ -868,8 +867,7 @@ h3 {
 }
 
 .source-panel ul,
-.guide ol,
-.blog-list {
+.guide ol {
   display: grid;
   gap: 8px;
   margin: 14px 0 0;
@@ -878,46 +876,19 @@ h3 {
 }
 
 .source-panel li,
-.guide li,
-.blog-list article {
+.guide li {
   border-top: 1px solid var(--line-soft);
   padding-top: 10px;
 }
 
-.source-panel a,
-.blog-list a strong {
+.source-panel a {
   color: var(--amber);
 }
 
-.source-panel span,
-.blog-list small,
-.blog-list span {
+.source-panel span {
   display: block;
   color: var(--muted);
   font-size: 11px;
-}
-
-.post-article {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 34px 22px 42px;
-}
-
-.post-article h1 {
-  margin: 0 0 18px;
-  color: var(--title);
-  font-size: clamp(24px, 4vw, 30px);
-  line-height: 1.25;
-  letter-spacing: -0.04em;
-}
-
-.post-article p {
-  color: var(--text);
-  font-size: 13px;
-}
-
-.post-article p + p {
-  margin-top: 14px;
 }
 
 .guide ol {
