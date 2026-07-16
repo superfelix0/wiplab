@@ -11,17 +11,17 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="KOSPI 200, Nasdaq 100, S&P 500의 현재 지수와 기사 기반 연말 목표, PER를 비교합니다.">
+  <meta name="description" content="KOSPI 역사적 평균 PER, KRX 기준 현행 PER, Forward PER 컨센서스를 한 화면에서 비교합니다.">
   <meta name="theme-color" content="#0e100d">
-  <meta property="og:title" content="WIP 2 — Market PER Monitor">
-  <meta property="og:description" content="KOSPI 200, Nasdaq 100, S&P 500의 현재 지수와 기사 기반 연말 목표, PER를 비교합니다.">
+  <meta property="og:title" content="WIP 2 — KOSPI PER Monitor">
+  <meta property="og:description" content="KOSPI 역사적 평균 PER, KRX 기준 현행 PER, Forward PER 컨센서스를 한 화면에서 비교합니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/wip-2/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
   <link rel="canonical" href="https://wiplabs.pages.dev/wip-2/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../styles.css">
-  <title>WIP 2 — Market PER Monitor</title>
+  <title>WIP 2 — KOSPI PER Monitor</title>
 </head>
 <body>
   <header class="site-header">
@@ -35,7 +35,7 @@
         <div>
           <a href="../">HOME</a>
           <a href="../wip-1/">F1 · SK Hynix ADR</a>
-          <a href="../wip-2/" aria-current="page">F2 · PER Monitor</a>
+          <a href="../wip-2/" aria-current="page">F2 · KOSPI PER</a>
           <a href="../wip-3/">F3 · Fear/Greed</a>
           <a href="../wip-g/">G1 · 오늘의 셈</a>
         </div>
@@ -51,49 +51,26 @@
 
   <main>
     <section class="hero service-hero">
-      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./per-monitor <span class="flag">--forward</span></p>
-      <h1>Market PER Monitor</h1>
-      <p class="hero-copy">KOSPI 200, Nasdaq 100, S&amp;P 500의 현재 지수와 기사 기반 연말 목표, PER를 한 화면에서 비교합니다.</p>
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./kospi-per <span class="flag">--krx</span></p>
+      <h1>KOSPI PER Monitor</h1>
+      <p class="hero-copy">KOSPI 역사적 평균 PER, KRX 기준 현행 PER, Forward PER 컨센서스만 간단히 비교합니다.</p>
     </section>
 
     <section class="market-dashboard" aria-labelledby="market-title">
       <div class="section-title">
         <div>
-          <h2 id="market-title">현재 지수 vs 연말 예상 지수</h2>
-          <p class="section-copy">실시간 지수는 Yahoo Finance 공개 차트 데이터를 사용하고, KOSPI 200 PER는 KRX 일별 데이터를 우선 사용합니다.</p>
+          <h2 id="market-title">KOSPI PER 비교</h2>
+          <p class="section-copy">현행 PER와 역사적 평균은 KRX 데이터를 기준으로 갱신하고, Forward PER는 공개 출처 기반 컨센서스 보조값으로 표시합니다.</p>
         </div>
         <button class="refresh-button" id="marketRefresh" type="button">새로고침</button>
       </div>
 
-      <div class="status" id="marketStatus">시장 데이터를 불러오는 중입니다.</div>
+      <div class="status" id="marketStatus">KRX PER 데이터를 불러오는 중입니다.</div>
       <div class="market-card-grid" id="marketCards" aria-live="polite"></div>
-
-      <div class="chart-panel market-chart-panel">
-        <div class="chart-head">
-          <h3>현재 지수와 연말 예상 지수 비교</h3>
-          <div class="chart-legend">
-            <span><i class="legend-current"></i>현재</span>
-            <span><i class="legend-target"></i>예상/목표</span>
-          </div>
-        </div>
-        <div class="chart-wrap market-chart-wrap">
-          <svg id="targetChart" viewBox="0 0 900 300" role="img" aria-label="현재 지수와 연말 예상 지수 비교 그래프"></svg>
-        </div>
-      </div>
-
-      <div class="chart-panel market-chart-panel">
-        <div class="chart-head">
-          <h3>PER 역사 평균 vs 현재</h3>
-          <p class="chart-caption">각 지수별로 역사 평균과 현재 PER를 막대그래프로 나란히 비교합니다.</p>
-        </div>
-        <div class="chart-wrap market-chart-wrap">
-          <svg id="perChart" viewBox="0 0 900 300" role="img" aria-label="Forward PER 역사 평균과 현재 비교 막대그래프"></svg>
-        </div>
-      </div>
 
       <div class="source-panel">
         <h2>출처와 계산 기준</h2>
-        <p>이 화면은 투자 판단을 대신하지 않는 실험용 대시보드입니다. 기사 수치가 바뀌면 기준값도 갱신해야 합니다.</p>
+        <p>이 화면은 투자 판단을 대체하지 않는 참고용 실험 화면입니다. 현행 PER와 역사적 평균 PER는 KRX 기준 데이터를 사용하고, Forward PER 컨센서스는 더 안정적인 원천을 확보하면 교체할 예정입니다.</p>
         <ul id="sourceList"></ul>
       </div>
     </section>
@@ -102,7 +79,7 @@
   <footer>
     <div>
       <strong>WIP 2</strong>
-      <p>시장 밸류에이션 비교 실험.</p>
+      <p>KOSPI PER 비교 실험.</p>
     </div>
     <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 시세 지연 가능</p>
     <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
