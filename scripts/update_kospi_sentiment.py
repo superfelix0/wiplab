@@ -20,6 +20,7 @@ from pathlib import Path
 
 import pandas as pd
 from pykrx import stock
+from pykrx.website.krx.future import core as krx_future_core
 
 
 KST = dt.timezone(dt.timedelta(hours=9))
@@ -222,10 +223,57 @@ def volatility_result(name: str, date: str, value, ticker: str | None = None) ->
     }
 
 
+def get_krx_future_fetcher(bld: str):
+    for item_name in dir(krx_future_core):
+        item = getattr(krx_future_core, item_name)
+        if not isinstance(item, type):
+            continue
+
+        try:
+            instance = item()
+        except Exception:
+            continue
+
+        if getattr(instance, "bld", None) == bld and hasattr(instance, "fetch"):
+            return instance
+
+    return None
+
+
+def fetch_vkospi_spot_from_futures_table(end: str) -> dict | None:
+    fetcher = get_krx_future_fetcher("dbms/MDC/STAT/standard/MDCSTAT12501")
+    if fetcher is None:
+        print("V-KOSPI futures fetcher unavailable.")
+        return None
+
+    for date_str in [ymd(parse_ymd(end) - dt.timedelta(days=offset)) for offset in range(0, 15)]:
+        try:
+            df = fetcher.fetch(date_str, "KRDRVFUVKI")
+        except Exception as error:
+            print(f"V-KOSPI futures table skipped for {date_str}: {error}")
+            continue
+
+        if df.empty or "SPOT_PRC" not in df.columns:
+            continue
+
+        for _, row in df.iterrows():
+            result = volatility_result("KOSPI 200 Volatility Index (VKOSPI)", pd.to_datetime(date_str).strftime("%Y-%m-%d"), row.get("SPOT_PRC"), "KRDRVFUVKI")
+            if result:
+                result["source"] = "pykrx KRX V-KOSPI futures table"
+                print(f"KOSPI 200 volatility index from V-KOSPI futures: {result['date']} {result['value']}")
+                return result
+
+    return None
+
+
 def fetch_kospi200_volatility(end: str) -> dict | None:
     """Fetch the latest KOSPI 200 volatility index value from KRX index tables."""
     markets = ("KOSPI", "KRX", "테마")
     search_dates = [ymd(parse_ymd(end) - dt.timedelta(days=offset)) for offset in range(0, 15)]
+
+    vkospi_spot = fetch_vkospi_spot_from_futures_table(end)
+    if vkospi_spot:
+        return vkospi_spot
 
     for date_str in search_dates:
         for market in markets:
