@@ -43,10 +43,10 @@
     </nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
-    <span>KOSPI <b>LIVE</b></span>
-    <span>NDX <b>WATCH</b></span>
-    <span>SPX <b>WATCH</b></span>
-    <span>USD/KRW <b>FX</b></span>
+    <span>KOSPI <b id="tickerKospi">—</b></span>
+    <span>NASDAQ <b id="tickerNasdaq">—</b></span>
+    <span>S&amp;P500 <b id="tickerSp500">—</b></span>
+    <span>USD/KRW <b id="tickerUsdKrw">—</b></span>
   </div>
 
   <main>
@@ -114,24 +114,6 @@
         한국장과 미국장은 정규 거래 시간이 겹치지 않으므로, 각 가격의 기준 시각이 다를 수 있습니다.
       </p>
 
-      <section class="chart-panel" aria-labelledby="chart-title">
-        <div class="chart-head">
-          <div>
-        <p class="eyebrow">LINE CHART SLOT</p>
-            <h3 id="chart-title">ADR 상장 이후 가격 추이</h3>
-          </div>
-          <div class="chart-legend" aria-label="차트 범례">
-            <span><i class="legend-adr"></i>ADR 환산 본주가</span>
-            <span><i class="legend-kospi"></i>코스피 본주</span>
-          </div>
-        </div>
-        <div class="chart-wrap">
-          <svg id="priceChart" viewBox="0 0 900 360" role="img" aria-labelledby="chart-title chart-desc">
-            <desc id="chart-desc">ADR 상장일 이후 현재까지 ADR 환산 본주가와 코스피 본주 가격을 비교하는 그래프</desc>
-          </svg>
-          <p id="chartEmpty" class="chart-empty">가격 추이 데이터를 불러오는 중입니다.</p>
-        </div>
-      </section>
     </section>
 
     <section class="guide" aria-labelledby="guide-title">
@@ -161,7 +143,7 @@
 
     <section class="source-panel" aria-labelledby="wip1-source-title">
       <h2 id="wip1-source-title">출처와 계산 기준</h2>
-      <p>시세 데이터는 서버 함수에서 ADR, 국내 본주, 환율은 네이버증권 JSON 응답을 조회하고, 과거 가격 추이는 Yahoo Finance 공개 chart 응답을 조회해 표시합니다. 국내 본주는 본장 전후 NXT/시간외 가격이 열려 있으면 해당 가격을 우선 사용합니다. ADR 비율은 이 페이지의 계산 가정으로 고정해두었으며, 실제 예탁 비율이 바뀌면 함께 수정해야 합니다.</p>
+      <p>시세 데이터는 서버 함수에서 ADR, 국내 본주, 환율의 네이버증권 JSON 응답을 조회해 표시합니다. 국내 본주는 본장 전후 NXT/시간외 가격이 열려 있으면 해당 가격을 우선 사용합니다. ADR 비율은 이 페이지의 계산 가정으로 고정해두었으며, 실제 예탁 비율이 바뀌면 함께 수정해야 합니다.</p>
       <ul>
         <li>
           <a href="https://stock.naver.com/worldstock/stock/SKHY.O/price" target="_blank" rel="noopener noreferrer">Naver World Stock — SKHY.O</a>
@@ -170,14 +152,6 @@
         <li>
           <a href="https://m.stock.naver.com/domestic/stock/000660" target="_blank" rel="noopener noreferrer">Naver Stock — 000660</a>
           <span>SK Hynix 코스피 본주 현재 가격과 기준 시각 조회에 사용합니다. NXT/시간외 가격이 열려 있으면 해당 가격을 우선 사용합니다.</span>
-        </li>
-        <li>
-          <a href="https://query1.finance.yahoo.com/v8/finance/chart/SKHY" target="_blank" rel="noopener noreferrer">Yahoo Finance chart API — SKHY</a>
-          <span>SK Hynix ADR의 과거 가격 추이 그래프 조회에 사용합니다.</span>
-        </li>
-        <li>
-          <a href="https://query1.finance.yahoo.com/v8/finance/chart/000660.KS" target="_blank" rel="noopener noreferrer">Yahoo Finance chart API — 000660.KS</a>
-          <span>SK Hynix 코스피 본주의 과거 가격 추이 그래프 조회에 사용합니다.</span>
         </li>
         <li>
           <a href="https://stock.naver.com/marketindex/exchange/FX_USDKRW/price" target="_blank" rel="noopener noreferrer">Naver Market Index — USD/KRW</a>
@@ -197,6 +171,7 @@
     <span>© 2026</span>
   </footer>
 
+  <script src="../ticker.js"></script>
   <script src="../app.js"></script>
 </body>
 </html>

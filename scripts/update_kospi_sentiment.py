@@ -142,6 +142,15 @@ def normalize_number(value) -> int | None:
     return int(str(value).replace(",", "").strip())
 
 
+def normalize_float(value) -> float | None:
+    if pd.isna(value):
+        return None
+    try:
+        return float(str(value).replace(",", "").strip())
+    except ValueError:
+        return None
+
+
 def fetch_personal_net_buy_for_date(date_str: str) -> int | None:
     """Fetch 개인 순매수 for one trading date through pykrx's investor aggregate API."""
     attempts = [
@@ -191,10 +200,52 @@ def fetch_investor_flow_daily_from_investor_api(trading_dates) -> pd.DataFrame:
     return pd.DataFrame(rows).set_index("date").sort_index()
 
 
+def is_volatility_index_name(name: str) -> bool:
+    normalized = str(name).replace(" ", "").replace("-", "").upper()
+    return (
+        "VKOSPI" in normalized
+        or ("변동성" in str(name) and ("200" in str(name) or "코스피" in str(name)))
+    )
+
+
+def volatility_result(name: str, date: str, value, ticker: str | None = None) -> dict | None:
+    parsed = normalize_float(value)
+    if parsed is None:
+        return None
+
+    return {
+        "name": str(name),
+        "ticker": str(ticker or ""),
+        "date": date,
+        "value": parsed,
+        "source": "pykrx KRX index",
+    }
+
+
 def fetch_kospi200_volatility(end: str) -> dict | None:
-    """Fetch the latest KOSPI 200 volatility index value when KRX exposes it through pykrx."""
-    target_names = ("코스피 200 변동성", "VKOSPI", "변동성지수")
+    """Fetch the latest KOSPI 200 volatility index value from KRX index tables."""
     markets = ("KOSPI", "KRX", "테마")
+    search_dates = [ymd(parse_ymd(end) - dt.timedelta(days=offset)) for offset in range(0, 15)]
+
+    for date_str in search_dates:
+        for market in markets:
+            try:
+                daily = stock.get_index_ohlcv_by_ticker(date_str, market=market, alternative=True)
+            except Exception as error:
+                print(f"KOSPI 200 volatility daily table skipped for {market} {date_str}: {error}")
+                continue
+
+            if daily.empty:
+                continue
+
+            for index_name, row in daily.iterrows():
+                if not is_volatility_index_name(str(index_name)):
+                    continue
+
+                result = volatility_result(str(index_name), pd.to_datetime(date_str).strftime("%Y-%m-%d"), row.get("종가"))
+                if result:
+                    print(f"KOSPI 200 volatility index: {result['name']} {result['date']} {result['value']}")
+                    return result
 
     try:
         for market in markets:
@@ -210,13 +261,7 @@ def fetch_kospi200_volatility(end: str) -> dict | None:
                 except Exception:
                     continue
 
-                normalized = str(name).replace(" ", "").upper()
-                is_candidate = (
-                    "변동성" in str(name)
-                    and ("200" in str(name) or "VKOSPI" in normalized)
-                ) or any(token in str(name) for token in target_names)
-
-                if not is_candidate:
+                if not is_volatility_index_name(str(name)):
                     continue
 
                 start = ymd(parse_ymd(end) - dt.timedelta(days=14))
@@ -229,15 +274,10 @@ def fetch_kospi200_volatility(end: str) -> dict | None:
                     continue
 
                 latest_date = pd.to_datetime(latest.index[0]).strftime("%Y-%m-%d")
-                value = float(latest.iloc[0]["종가"])
-                print(f"KOSPI 200 volatility index: {ticker} {name} {latest_date} {value}")
-                return {
-                    "name": str(name),
-                    "ticker": str(ticker),
-                    "date": latest_date,
-                    "value": value,
-                    "source": "pykrx KRX index",
-                }
+                result = volatility_result(str(name), latest_date, latest.iloc[0]["종가"], ticker)
+                if result:
+                    print(f"KOSPI 200 volatility index: {ticker} {name} {latest_date} {result['value']}")
+                    return result
     except Exception as error:
         print(f"KOSPI 200 volatility index fetch failed: {error}")
 

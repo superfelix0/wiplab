@@ -74,13 +74,16 @@ function pathFromPoints(points) {
 function renderChart(history) {
   const svg = output.priceChart;
 
+  if (!svg) return;
+
   if (!svg || !Array.isArray(history) || history.length < 2) {
+    if (!output.chartEmpty) return;
     output.chartEmpty.textContent = "ADR 일자별 가격 데이터가 아직 충분하지 않습니다. 2거래일 이상 쌓이면 본주와 함께 그래프로 표시됩니다.";
     output.chartEmpty.hidden = false;
     return;
   }
 
-  output.chartEmpty.hidden = true;
+  if (output.chartEmpty) output.chartEmpty.hidden = true;
   svg.replaceChildren();
 
   const width = 900;

@@ -42,10 +42,10 @@
     </nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
-    <span>KOSPI <b>LIVE</b></span>
-    <span>NDX <b>WATCH</b></span>
-    <span>SPX <b>WATCH</b></span>
-    <span>USD/KRW <b>FX</b></span>
+    <span>KOSPI <b id="tickerKospi">—</b></span>
+    <span>NASDAQ <b id="tickerNasdaq">—</b></span>
+    <span>S&amp;P500 <b id="tickerSp500">—</b></span>
+    <span>USD/KRW <b id="tickerUsdKrw">—</b></span>
   </div>
 
   <main>
@@ -148,6 +148,7 @@
     <span>© 2026</span>
   </footer>
 
+  <script src="../ticker.js"></script>
   <script src="../sentiment.js"></script>
 </body>
 </html>
