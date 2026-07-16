@@ -2,17 +2,12 @@ const sentimentEls = {
   status: document.querySelector("#sentimentStatus"),
   refresh: document.querySelector("#sentimentRefresh"),
   summary: document.querySelector("#sentimentSummary"),
-  kospiChart: document.querySelector("#kospiSentimentChart"),
-  scatterChart: document.querySelector("#flowScatterChart"),
   detail: document.querySelector("#sentimentDetail"),
-  showFear: document.querySelector("#showFear"),
-  showGreed: document.querySelector("#showGreed"),
   range: document.querySelector("#sentimentRange"),
 };
 
 const fmt = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 });
 const fmt0 = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 0 });
-const fmtDate = new Intl.DateTimeFormat("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" });
 const fmtDateTime = new Intl.DateTimeFormat("ko-KR", {
   year: "2-digit",
   month: "2-digit",
@@ -29,6 +24,7 @@ let selectedRange = "1y";
 let dataMeta = null;
 
 function setSentimentStatus(message, state = "neutral") {
+  if (!sentimentEls.status) return;
   sentimentEls.status.textContent = message;
   sentimentEls.status.dataset.state = state;
 }
@@ -76,50 +72,10 @@ function formatUpdateMeta(meta, latestDate) {
   const dataDate = meta?.lastDataDate || latestDate;
 
   if (meta?.generatedAt) {
-    return `자료 기준일 ${dataDate} · 수집 ${fmtDateTime.format(new Date(meta.generatedAt))}`;
+    return `자료 기준 ${dataDate} · 수집 ${fmtDateTime.format(new Date(meta.generatedAt))}`;
   }
 
-  return `자료 기준일 ${dataDate}`;
-}
-
-function latestSentiment(point, threshold) {
-  if (point.type === "fear") {
-    return {
-      label: "공포 구간",
-      short: "공포",
-      note: `정식 공포 신호입니다. 예상보다 개인 순매수가 ${Math.abs(point.residual).toFixed(2)}조원 부족했습니다.`,
-    };
-  }
-
-  if (point.type === "greed") {
-    return {
-      label: "탐욕 구간",
-      short: "탐욕",
-      note: `정식 탐욕 신호입니다. 예상보다 개인 순매수가 ${Math.abs(point.residual).toFixed(2)}조원 초과했습니다.`,
-    };
-  }
-
-  if (Math.abs(point.z) < 0.25) {
-    return {
-      label: "중립",
-      short: "중립",
-      note: "개인 수급이 평균적인 움직임에서 크게 벗어나지 않았습니다.",
-    };
-  }
-
-  if (point.z < 0) {
-    return {
-      label: "공포 쪽에 가까움",
-      short: "공포 쪽",
-      note: `뚜렷한 공포 신호까지는 아니지만, 개인 순매수가 예상보다 ${Math.abs(point.residual).toFixed(2)}조원 적어 공포 쪽으로 기울었습니다.`,
-    };
-  }
-
-  return {
-    label: "탐욕 쪽에 가까움",
-    short: "탐욕 쪽",
-    note: `뚜렷한 탐욕 신호까지는 아니지만, 개인 순매수가 예상보다 ${Math.abs(point.residual).toFixed(2)}조원 많아 탐욕 쪽으로 기울었습니다.`,
-  };
+  return `자료 기준 ${dataDate}`;
 }
 
 function sampleRows() {
@@ -233,167 +189,49 @@ function analyze(rows, freq) {
   return { points: analyzed, model, thr, band };
 }
 
-function svgEl(name, attrs = {}) {
-  const element = document.createElementNS("http://www.w3.org/2000/svg", name);
-  Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
-  return element;
-}
+function latestSentiment(point) {
+  if (point.type === "fear") {
+    return {
+      tone: "fear",
+      label: "공포 신호",
+      short: "공포",
+      note: `개인 순매수가 평소 예상보다 ${Math.abs(point.residual).toFixed(2)}조원 부족했습니다.`,
+    };
+  }
 
-function clearSvg(svg) {
-  while (svg.firstChild) svg.removeChild(svg.firstChild);
-}
+  if (point.type === "greed") {
+    return {
+      tone: "greed",
+      label: "탐욕 신호",
+      short: "탐욕",
+      note: `개인 순매수가 평소 예상보다 ${Math.abs(point.residual).toFixed(2)}조원 많았습니다.`,
+    };
+  }
 
-function pathFrom(points) {
-  return points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
-}
+  if (Math.abs(point.z) < 0.25) {
+    return {
+      tone: "neutral",
+      label: "중립",
+      short: "중립",
+      note: "개인 순매수가 평소 움직임에서 크게 벗어나지 않았습니다.",
+    };
+  }
 
-function visibleSignal(point) {
-  if (point.type === "fear") return sentimentEls.showFear.checked;
-  if (point.type === "greed") return sentimentEls.showGreed.checked;
-  return false;
-}
+  if (point.z < 0) {
+    return {
+      tone: "fear-soft",
+      label: "공포 쪽에 가까움",
+      short: "공포 근접",
+      note: `정식 공포 신호는 아니지만 개인 순매수가 예상보다 ${Math.abs(point.residual).toFixed(2)}조원 부족했습니다.`,
+    };
+  }
 
-function renderKospiChart(analysis) {
-  const svg = sentimentEls.kospiChart;
-  clearSvg(svg);
-
-  const width = 900;
-  const height = 340;
-  const pad = { top: 26, right: 28, bottom: 44, left: 70 };
-  const points = analysis.points;
-  const closes = points.map((p) => p.close);
-  const min = Math.min(...closes) * 0.985;
-  const max = Math.max(...closes) * 1.015;
-  const x = (i) => pad.left + (i / Math.max(1, points.length - 1)) * (width - pad.left - pad.right);
-  const y = (v) => height - pad.bottom - ((v - min) / (max - min || 1)) * (height - pad.top - pad.bottom);
-
-  [0, 0.25, 0.5, 0.75, 1].forEach((ratio) => {
-    const yy = pad.top + ratio * (height - pad.top - pad.bottom);
-    const value = max - ratio * (max - min);
-    svg.append(svgEl("line", { x1: pad.left, y1: yy, x2: width - pad.right, y2: yy, class: "chart-grid-line" }));
-    const label = svgEl("text", { x: pad.left - 10, y: yy + 4, "text-anchor": "end", class: "market-axis-label" });
-    label.textContent = fmt0.format(value);
-    svg.append(label);
-  });
-
-  const line = svgEl("path", {
-    d: pathFrom(points.map((p, i) => ({ x: x(i), y: y(p.close) }))),
-    class: "sentiment-line",
-  });
-  svg.append(line);
-
-  [points[0], points[Math.floor(points.length / 2)], points.at(-1)].forEach((point) => {
-    const i = points.indexOf(point);
-    const label = svgEl("text", { x: x(i), y: height - 14, "text-anchor": i === 0 ? "start" : point === points.at(-1) ? "end" : "middle", class: "market-axis-label" });
-    label.textContent = fmtDate.format(new Date(`${point.date}T00:00:00+09:00`));
-    svg.append(label);
-  });
-
-  points.forEach((point, index) => {
-    if (!visibleSignal(point)) return;
-    const marker = svgEl("circle", {
-      cx: x(index),
-      cy: y(point.close),
-      r: point.type === "fear" ? 6 : 5,
-      class: `sentiment-marker ${point.type}`,
-      tabindex: "0",
-    });
-    marker.addEventListener("click", () => renderDetail(point, analysis));
-    svg.append(marker);
-  });
-}
-
-function renderScatterChart(analysis) {
-  const svg = sentimentEls.scatterChart;
-  clearSvg(svg);
-
-  const width = 900;
-  const height = 340;
-  const pad = { top: 26, right: 32, bottom: 52, left: 72 };
-  const points = analysis.points;
-  const retValues = points.map((p) => p.ret);
-  const flowValues = points.map((p) => p.indivT);
-  const minX = Math.min(-1, ...retValues) * 1.12;
-  const maxX = Math.max(1, ...retValues) * 1.12;
-  const minY = Math.min(-1, ...flowValues) * 1.12;
-  const maxY = Math.max(1, ...flowValues) * 1.12;
-  const x = (v) => pad.left + ((v - minX) / (maxX - minX || 1)) * (width - pad.left - pad.right);
-  const y = (v) => height - pad.bottom - ((v - minY) / (maxY - minY || 1)) * (height - pad.top - pad.bottom);
-
-  [0, 0.25, 0.5, 0.75, 1].forEach((ratio) => {
-    const yy = pad.top + ratio * (height - pad.top - pad.bottom);
-    const value = maxY - ratio * (maxY - minY);
-    svg.append(svgEl("line", { x1: pad.left, y1: yy, x2: width - pad.right, y2: yy, class: "chart-grid-line" }));
-    const label = svgEl("text", { x: pad.left - 10, y: yy + 4, "text-anchor": "end", class: "market-axis-label" });
-    label.textContent = `${fmt.format(value)}조`;
-    svg.append(label);
-  });
-
-  svg.append(svgEl("line", { x1: x(0), y1: pad.top, x2: x(0), y2: height - pad.bottom, class: "sentiment-axis-zero" }));
-  svg.append(svgEl("line", { x1: pad.left, y1: y(0), x2: width - pad.right, y2: y(0), class: "sentiment-axis-zero" }));
-
-  const regX1 = minX;
-  const regX2 = maxX;
-  const reg = svgEl("line", {
-    x1: x(regX1),
-    y1: y(analysis.model.intercept + analysis.model.slope * regX1),
-    x2: x(regX2),
-    y2: y(analysis.model.intercept + analysis.model.slope * regX2),
-    class: "sentiment-regression",
-  });
-  svg.append(reg);
-
-  points.forEach((point) => {
-    const dot = svgEl("circle", {
-      cx: x(point.ret),
-      cy: y(point.indivT),
-      r: point.type === "normal" ? 3 : 5,
-      class: `sentiment-dot ${point.type}`,
-      opacity: point.type === "normal" || visibleSignal(point) ? "1" : "0.12",
-      tabindex: "0",
-    });
-    dot.addEventListener("click", () => renderDetail(point, analysis));
-    svg.append(dot);
-  });
-
-  const xLabel = svgEl("text", { x: width - pad.right, y: height - 16, "text-anchor": "end", class: "market-axis-label" });
-  xLabel.textContent = "수익률 %";
-  svg.append(xLabel);
-}
-
-function renderSummary(analysis) {
-  const latest = analysis.points.at(-1);
-  const fearCount = analysis.points.filter((p) => p.type === "fear").length;
-  const greedCount = analysis.points.filter((p) => p.type === "greed").length;
-  const modeLabel = dataMode === "live" ? "실데이터" : "합성 미리보기";
-  const updateLabel = formatUpdateMeta(dataMeta, latest.date);
-  const latestView = latestSentiment(latest, analysis.thr);
-  const rangeLabel = sentimentEls.range?.selectedOptions?.[0]?.textContent || "1년";
-  const residualDirection = latest.residual < 0 ? "부족" : "초과";
-  const volatility = dataMeta?.kospi200Volatility;
-  const volatilityCard = volatility?.value
-    ? `<article><span>${volatility.name || "KOSPI 200 변동성"}</span><strong>${fmt.format(volatility.value)}</strong><small>${volatility.date} 기준 · 옵션시장이 예상하는 한국 주식시장의 향후 변동성입니다. 값이 높을수록 시장이 큰 등락을 더 경계한다는 뜻입니다.${volatility.source ? ` 출처: ${volatility.source}` : ""}</small></article>`
-    : "";
-
-  sentimentEls.summary.innerHTML = `
-    <article><span>데이터</span><strong>${modeLabel}</strong><small>${rangeLabel} · ${analysis.points.length}개 관측치 · ${selectedFreq === "W" ? "주간" : "일간"} · ${updateLabel}</small></article>
-    <article><span>평균 수급 기준</span><strong>개인 순매수가 평소보다 ${Math.abs(latest.residual).toFixed(2)}조원 ${residualDirection}</strong><small>해당 수익률에서 예상 ${latest.expected.toFixed(2)}조원, 실제 ${latest.indivT.toFixed(2)}조원</small></article>
-    <article><span>최근 심리</span><strong>${latestView.short}</strong><small>${latest.date} · ${latestView.note}</small></article>
-    <article><span>심리 이탈 시점</span><strong>공포 ${fearCount} / 탐욕 ${greedCount}</strong><small>선택한 기간 안에서 평균적인 개인 수급과 크게 달랐던 날입니다.</small></article>
-    ${volatilityCard}
-  `;
-}
-
-function renderDetail(point, analysis) {
-  const label = point.type === "fear" ? "공포" : point.type === "greed" ? "탐욕" : "일반";
-  const miss = point.residual < 0 ? "부족" : "초과";
-  const latestView = analysis ? latestSentiment(point, analysis.thr) : null;
-  sentimentEls.detail.innerHTML = `
-    <strong>${point.date} · ${latestView?.label || `${label} 구간`}</strong>
-    <p>KOSPI ${fmt.format(point.close)}, 수익률 ${point.ret.toFixed(2)}%, 개인 순매수 ${point.indivT.toFixed(2)}조원입니다.</p>
-    <p>평균적인 개인 수급 기준으로는 ${point.expected.toFixed(2)}조원 정도가 예상됐고, 실제 개인 순매수는 ${Math.abs(point.residual).toFixed(2)}조원 ${miss}했습니다.</p>
-    ${latestView ? `<p>${latestView.note}</p>` : ""}
-  `;
+  return {
+    tone: "greed-soft",
+    label: "탐욕 쪽에 가까움",
+    short: "탐욕 근접",
+    note: `정식 탐욕 신호는 아니지만 개인 순매수가 예상보다 ${Math.abs(point.residual).toFixed(2)}조원 많았습니다.`,
+  };
 }
 
 function filterRowsByRange(rows) {
@@ -414,15 +252,92 @@ function filterRowsByRange(rows) {
   return sorted.filter((row) => new Date(`${row.date}T00:00:00+09:00`) >= cutoff);
 }
 
+function card({ label, value, sub, tone = "", wide = false }) {
+  return `
+    <article class="${wide ? "featured" : ""}" data-tone="${tone}">
+      <span>${label}</span>
+      <strong>${value}</strong>
+      <small>${sub}</small>
+    </article>
+  `;
+}
+
+function renderSummary(analysis) {
+  const latest = analysis.points.at(-1);
+  const previous = analysis.points.at(-2);
+  const fearCount = analysis.points.filter((p) => p.type === "fear").length;
+  const greedCount = analysis.points.filter((p) => p.type === "greed").length;
+  const modeLabel = dataMode === "live" ? "실데이터" : "합성 미리보기";
+  const rangeLabel = sentimentEls.range?.selectedOptions?.[0]?.textContent || "1년";
+  const updateLabel = formatUpdateMeta(dataMeta, latest.date);
+  const latestView = latestSentiment(latest);
+  const residualDirection = latest.residual < 0 ? "부족" : "초과";
+  const kospiChange = previous ? ((latest.close / previous.close) - 1) * 100 : null;
+  const volatility = dataMeta?.kospi200Volatility;
+
+  const cards = [
+    card({
+      label: "최근 심리",
+      value: latestView.short,
+      sub: `${latest.date} · ${latestView.note}`,
+      tone: latestView.tone,
+      wide: true,
+    }),
+    card({
+      label: "KOSPI",
+      value: fmt.format(latest.close),
+      sub: `${selectedFreq === "W" ? "주간" : "일간"} 수익률 ${latest.ret.toFixed(2)}%${kospiChange === null ? "" : ` · 직전 대비 ${kospiChange >= 0 ? "+" : ""}${kospiChange.toFixed(2)}%`}`,
+    }),
+    card({
+      label: "개인 순매수",
+      value: `${latest.indivT.toFixed(2)}조원`,
+      sub: `평소 예상 ${latest.expected.toFixed(2)}조원 대비 ${Math.abs(latest.residual).toFixed(2)}조원 ${residualDirection}`,
+      tone: latest.residual < 0 ? "fear-soft" : "greed-soft",
+      wide: true,
+    }),
+    card({
+      label: "심리 이탈 시점",
+      value: `공포 ${fearCount} / 탐욕 ${greedCount}`,
+      sub: `${rangeLabel} · ${analysis.points.length}개 관측치 기준`,
+    }),
+    card({
+      label: "데이터 상태",
+      value: modeLabel,
+      sub: updateLabel,
+    }),
+  ];
+
+  if (volatility?.value) {
+    cards.push(card({
+      label: volatility.name || "KOSPI 200 변동성",
+      value: fmt.format(volatility.value),
+      sub: `${volatility.date} 기준 · 값이 높을수록 시장이 예상하는 향후 변동성이 크다는 뜻입니다.`,
+      tone: "volatility",
+      wide: true,
+    }));
+  }
+
+  sentimentEls.summary.innerHTML = cards.join("");
+}
+
+function renderDetail(point) {
+  const latestView = latestSentiment(point);
+  const miss = point.residual < 0 ? "부족" : "초과";
+
+  sentimentEls.detail.innerHTML = `
+    <strong>${point.date} · ${latestView.label}</strong>
+    <p>KOSPI는 ${fmt.format(point.close)}이고, 해당 구간 수익률은 ${point.ret.toFixed(2)}%입니다.</p>
+    <p>이 수익률에서 평소라면 개인 순매수는 약 ${point.expected.toFixed(2)}조원으로 예상됩니다. 실제 개인 순매수는 ${point.indivT.toFixed(2)}조원으로, 평소보다 ${Math.abs(point.residual).toFixed(2)}조원 ${miss}했습니다.</p>
+    <p>${latestView.note} 이 지표는 매수·매도 신호가 아니라, 시장 심리가 평소 패턴에서 얼마나 벗어났는지 보는 보조 지표입니다.</p>
+  `;
+}
+
 function render() {
   if (!rawRows.length) return;
   const displayRows = filterRowsByRange(rawRows);
   const analysis = analyze(displayRows, selectedFreq);
   renderSummary(analysis);
-  renderKospiChart(analysis);
-  renderScatterChart(analysis);
-
-  renderDetail(analysis.points.at(-1), analysis);
+  renderDetail(analysis.points.at(-1));
 }
 
 async function fetchSentimentData() {
@@ -480,7 +395,7 @@ async function loadData() {
     rawRows = sampleRows();
     dataMeta = null;
     dataMode = "demo";
-    setSentimentStatus("실데이터를 준비하는 중입니다. 현재 화면은 예시 데이터로 표시됩니다.", "neutral");
+    setSentimentStatus("실데이터를 준비하는 중입니다. 현재 화면은 예시 데이터로 표시합니다.", "neutral");
   } finally {
     sentimentEls.refresh.disabled = false;
     render();
@@ -498,8 +413,6 @@ sentimentEls.range?.addEventListener("change", (event) => {
   selectedRange = event.target.value;
   render();
 });
-
-[sentimentEls.showFear, sentimentEls.showGreed].forEach((input) => input.addEventListener("change", render));
 
 sentimentEls.refresh.addEventListener("click", loadData);
 loadData();

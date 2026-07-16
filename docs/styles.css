@@ -534,6 +534,11 @@ h3 {
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
 
+.sentiment-card-board {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  align-items: stretch;
+}
+
 .quote-grid article,
 .result-panel article,
 .market-card-grid article,
@@ -543,6 +548,29 @@ h3 {
   border: 1px solid var(--line);
   background: var(--panel);
   padding: 13px;
+}
+
+.sentiment-card-board article {
+  min-height: 126px;
+  padding: 15px;
+}
+
+.sentiment-card-board article.featured {
+  grid-column: span 2;
+}
+
+.sentiment-card-board article[data-tone="fear"],
+.sentiment-card-board article[data-tone="fear-soft"] {
+  border-color: rgba(216, 161, 58, 0.45);
+}
+
+.sentiment-card-board article[data-tone="greed"],
+.sentiment-card-board article[data-tone="greed-soft"] {
+  border-color: rgba(194, 82, 66, 0.45);
+}
+
+.sentiment-card-board article[data-tone="volatility"] {
+  border-color: rgba(111, 191, 115, 0.38);
 }
 
 .quote-grid article::after,
@@ -593,6 +621,11 @@ h3 {
   font-size: 22px;
   font-weight: 800;
   line-height: 1.2;
+}
+
+.sentiment-card-board strong {
+  font-size: 20px;
+  letter-spacing: -0.02em;
 }
 
 .quote-grid small,
@@ -876,6 +909,12 @@ h3 {
   border: 1px solid var(--line);
   padding: 16px;
   margin-top: 18px;
+}
+
+.sentiment-reading {
+  display: grid;
+  gap: 8px;
+  border-left: 3px solid var(--amber);
 }
 
 .sentiment-detail strong {
