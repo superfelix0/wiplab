@@ -12,7 +12,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
   <meta name="description" content="WIP Labs의 개발 기록, 서비스 실험 메모, 시장 데이터 해석을 모아두는 블로그형 게시판입니다.">
-  <meta name="theme-color" content="#f6f3ec">
+  <meta name="theme-color" content="#0e100d">
   <meta property="og:title" content="WIP Labs Blog">
   <meta property="og:description" content="WIP Labs의 개발 기록과 서비스 실험 메모를 모아둡니다.">
   <meta property="og:type" content="website">
@@ -30,13 +30,29 @@
       <strong>WIP Labs</strong>
     </a>
     <nav aria-label="주요 메뉴">
-      <a href="../">Home</a>
+      <details class="jump-menu">
+        <summary>Jump to · BLOG</summary>
+        <div>
+          <a href="../">HOME</a>
+          <a href="../wip-1/">F1 · SK hynix ADR</a>
+          <a href="../wip-2/">F2 · PER Monitor</a>
+          <a href="../wip-3/">F3 · Fear/Greed</a>
+          <a href="../wip-g/">G1 · 오늘의 셈</a>
+          <a href="../blog/" aria-current="page">BLOG</a>
+        </div>
+      </details>
     </nav>
   </header>
+  <div class="ticker-strip" aria-label="시장 티커">
+    <span>KOSPI <b>LIVE</b></span>
+    <span>NDX <b>WATCH</b></span>
+    <span>SPX <b>WATCH</b></span>
+    <span>USD/KRW <b>FX</b></span>
+  </div>
 
   <main>
     <section class="hero service-hero">
-      <p class="eyebrow">BLOG</p>
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./blog <span class="flag">--notes</span></p>
       <h1>WIP Labs 게시판</h1>
       <p class="hero-copy">서비스를 만들며 남기는 개발 기록, 아이디어 메모, 데이터 해석 노트를 쌓아두는 공간입니다.</p>
     </section>
@@ -73,7 +89,8 @@
       <strong>WIP Labs Blog</strong>
       <p>개발 기록과 실험 메모를 남기는 게시판입니다.</p>
     </div>
-    <p>현재는 정적 HTML 방식입니다. 이후 글 작성 폼, 검색, 태그, 댓글 기능을 단계적으로 붙일 수 있습니다.</p>
+    <p>DISCLAIMER · 기록용 노트 · 계속 수정 중</p>
+    <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
     <span>© 2026</span>
   </footer>
 </body>

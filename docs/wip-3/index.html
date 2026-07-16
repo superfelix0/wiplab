@@ -12,7 +12,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
   <meta name="description" content="개인 투자자 순매수와 코스피 수익률의 이탈을 이용해 공포·탐욕 심리 구간을 시각화하는 WIP Labs 실험입니다.">
-  <meta name="theme-color" content="#f6f3ec">
+  <meta name="theme-color" content="#0e100d">
   <meta property="og:title" content="KOSPI Fear/Greed Sentiment — WIP Labs">
   <meta property="og:description" content="개인 수급 기반 공포·탐욕 구간으로 코스피 변곡점을 살펴봅니다.">
   <meta property="og:type" content="website">
@@ -29,14 +29,29 @@
       <strong>WIP Labs</strong>
     </a>
     <nav aria-label="주요 메뉴">
-      <a href="../">Main</a>
-      <a href="../blog/">Blog</a>
+      <details class="jump-menu">
+        <summary>Jump to · F3</summary>
+        <div>
+          <a href="../">HOME</a>
+          <a href="../wip-1/">F1 · SK hynix ADR</a>
+          <a href="../wip-2/">F2 · PER Monitor</a>
+          <a href="../wip-3/" aria-current="page">F3 · Fear/Greed</a>
+          <a href="../wip-g/">G1 · 오늘의 셈</a>
+          <a href="../blog/">BLOG</a>
+        </div>
+      </details>
     </nav>
   </header>
+  <div class="ticker-strip" aria-label="시장 티커">
+    <span>KOSPI <b>LIVE</b></span>
+    <span>NDX <b>WATCH</b></span>
+    <span>SPX <b>WATCH</b></span>
+    <span>USD/KRW <b>FX</b></span>
+  </div>
 
   <main>
     <section class="hero service-hero">
-      <p class="eyebrow">WIP 3</p>
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./sentiment <span class="flag">--kospi</span></p>
       <h1>KOSPI Fear/Greed Sentiment</h1>
       <p class="hero-copy">코스피 수익률과 개인 순매수의 평소 관계에서 벗어난 날을 공포·탐욕 구간으로 표시합니다.</p>
     </section>
@@ -129,7 +144,8 @@
       <strong>WIP Labs</strong>
       <p>계속 만들고 고쳐보는 작은 실험실입니다.</p>
     </div>
-    <p>금융 데이터는 지연·오류 가능성이 있으며, 이 화면은 투자 권유가 아닙니다.</p>
+    <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 시세 지연 가능</p>
+    <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
     <span>© 2026</span>
   </footer>
 
