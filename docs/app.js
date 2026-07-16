@@ -75,7 +75,7 @@ function renderChart(history) {
   const svg = output.priceChart;
 
   if (!svg || !Array.isArray(history) || history.length < 2) {
-    output.chartEmpty.textContent = "아직 그래프로 그릴 만큼의 가격 추이 데이터가 충분하지 않습니다.";
+    output.chartEmpty.textContent = "ADR 일자별 가격 데이터가 아직 충분하지 않습니다. 2거래일 이상 쌓이면 본주와 함께 그래프로 표시됩니다.";
     output.chartEmpty.hidden = false;
     return;
   }

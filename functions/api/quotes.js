@@ -276,13 +276,23 @@ function parseHistorySeries(symbol, result) {
   const timestamps = result?.timestamp || [];
   const close = result?.indicators?.quote?.[0]?.close || [];
 
-  return timestamps
+  const dailyLast = new Map();
+
+  timestamps
     .map((time, index) => ({
       date: toDateKey(time),
       time: time * 1000,
       value: close[index],
     }))
-    .filter((point) => Number.isFinite(point.value));
+    .filter((point) => Number.isFinite(point.value))
+    .forEach((point) => {
+      const previous = dailyLast.get(point.date);
+      if (!previous || point.time >= previous.time) {
+        dailyLast.set(point.date, point);
+      }
+    });
+
+  return Array.from(dailyLast.values()).sort((a, b) => a.date.localeCompare(b.date));
 }
 
 function latestValueOnOrBefore(series, date) {
