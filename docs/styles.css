@@ -512,6 +512,8 @@ h3 {
 .quote-grid,
 .result-panel,
 .market-card-grid,
+.liquidity-summary,
+.liquidity-card-grid,
 .sentiment-summary {
   display: grid;
   gap: 10px;
@@ -530,6 +532,14 @@ h3 {
   grid-template-columns: repeat(3, 1fr);
 }
 
+.liquidity-summary {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.liquidity-card-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 .sentiment-summary {
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
@@ -542,6 +552,8 @@ h3 {
 .quote-grid article,
 .result-panel article,
 .market-card-grid article,
+.liquidity-summary article,
+.liquidity-card-grid article,
 .sentiment-summary article {
   position: relative;
   min-height: 112px;
@@ -573,6 +585,20 @@ h3 {
   border-color: rgba(111, 191, 115, 0.38);
 }
 
+.liquidity-summary article[data-tone="positive"],
+.liquidity-card-grid article[data-tone="positive"] {
+  border-color: rgba(111, 191, 115, 0.45);
+}
+
+.liquidity-summary article[data-tone="negative"],
+.liquidity-card-grid article[data-tone="negative"] {
+  border-color: rgba(194, 82, 66, 0.45);
+}
+
+.liquidity-summary article[data-tone="neutral"] {
+  border-color: rgba(216, 161, 58, 0.45);
+}
+
 .quote-grid article::after,
 .result-panel article::after {
   content: "LIVE";
@@ -601,6 +627,8 @@ h3 {
 .quote-grid span,
 .result-panel span,
 .market-card-grid h3,
+.liquidity-summary span,
+.liquidity-card-grid span,
 .sentiment-summary span,
 .market-card-grid dt {
   display: block;
@@ -614,6 +642,8 @@ h3 {
 .quote-grid strong,
 .result-panel strong,
 .market-card-grid strong,
+.liquidity-summary strong,
+.liquidity-card-grid strong,
 .sentiment-summary strong {
   display: block;
   margin-top: 16px;
@@ -632,6 +662,9 @@ h3 {
 .result-panel small,
 .market-card-grid small,
 .market-card-grid p,
+.liquidity-summary small,
+.liquidity-card-grid small,
+.liquidity-card-grid p,
 .sentiment-summary small,
 .market-card-grid dd {
   color: var(--muted);
@@ -745,6 +778,7 @@ h3 {
 
 .chart-wrap,
 .market-chart-wrap,
+.liquidity-chart-wrap,
 .sentiment-chart-wrap {
   position: relative;
   min-height: 260px;
@@ -756,6 +790,7 @@ h3 {
 
 .chart-wrap::before,
 .market-chart-wrap::before,
+.liquidity-chart-wrap::before,
 .sentiment-chart-wrap::before {
   content: "▚ DATA VISUAL SLOT ▚";
   position: absolute;
@@ -770,6 +805,7 @@ h3 {
 
 .chart-wrap svg,
 .market-chart-wrap svg,
+.liquidity-chart-wrap svg,
 .sentiment-chart-wrap svg {
   position: relative;
   z-index: 1;
@@ -1035,6 +1071,8 @@ footer p {
   .quote-grid,
   .result-panel,
   .market-card-grid,
+  .liquidity-summary,
+  .liquidity-card-grid,
   .sentiment-summary {
     grid-template-columns: 1fr;
   }

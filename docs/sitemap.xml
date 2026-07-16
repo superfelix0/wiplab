@@ -25,6 +25,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://wiplabs.pages.dev/wip-4/</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://wiplabs.pages.dev/wip-g/</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>daily</changefreq>

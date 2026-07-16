@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-GD6K8FB589");
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="M2, 지급준비금, 역레포, TGA로 미국 유동성 상황을 요약합니다.">
+  <meta name="theme-color" content="#0e100d">
+  <meta property="og:title" content="US Liquidity Monitor — WIP Labs">
+  <meta property="og:description" content="FRED 공개 시계열로 미국 거시·시장 유동성 흐름을 확인합니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wiplabs.pages.dev/wip-4/">
+  <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
+  <link rel="canonical" href="https://wiplabs.pages.dev/wip-4/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css">
+  <title>US Liquidity Monitor — WIP Labs</title>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="홈으로 이동">
+      <span>WIP</span>
+      <strong>WIP Labs</strong>
+    </a>
+    <nav aria-label="주요 메뉴">
+      <details class="jump-menu">
+        <summary>Jump to · F4</summary>
+        <div>
+          <a href="../">HOME</a>
+          <a href="../wip-1/">F1 · SK Hynix ADR</a>
+          <a href="../wip-2/">F2 · KOSPI PER</a>
+          <a href="../wip-3/">F3 · Fear/Greed</a>
+          <a href="../wip-4/" aria-current="page">F4 · US Liquidity</a>
+          <a href="../wip-g/">G1 · 오늘의 셈</a>
+        </div>
+      </details>
+    </nav>
+  </header>
+  <div class="ticker-strip" aria-label="시장 티커">
+    <span>KOSPI <b id="tickerKospi">—</b></span>
+    <span>NASDAQ <b id="tickerNasdaq">—</b></span>
+    <span>S&amp;P500 <b id="tickerSp500">—</b></span>
+    <span>USD/KRW <b id="tickerUsdKrw">—</b></span>
+  </div>
+
+  <main>
+    <section class="hero service-hero">
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./us-liquidity <span class="flag">--fred</span></p>
+      <h1>US Liquidity Monitor</h1>
+      <p class="hero-copy">M2, 지급준비금, 역레포(RRP), 재무부 일반계정(TGA)을 묶어 미국 유동성 상황을 봅니다.</p>
+    </section>
+
+    <section class="liquidity-dashboard" aria-labelledby="liquidity-title">
+      <div class="section-title">
+        <div>
+          <h2 id="liquidity-title">미국 유동성 종합판단</h2>
+          <p class="section-copy">최근 약 3개월 변화 기준입니다. M2·지급준비금 증가는 우호적, RRP·TGA 증가는 유동성 흡수로 해석합니다.</p>
+        </div>
+        <button class="refresh-button" id="liquidityRefresh" type="button">새로고침</button>
+      </div>
+
+      <div class="status" id="liquidityStatus" data-state="neutral">미국 유동성 데이터를 불러오는 중입니다.</div>
+      <div class="liquidity-summary" id="liquiditySummary"></div>
+      <div class="liquidity-card-grid" id="liquidityCards" aria-live="polite"></div>
+
+      <div class="sentiment-controls" aria-label="차트 설정">
+        <label>
+          표시 기간
+          <select id="liquidityRange" aria-label="표시 기간 선택">
+            <option value="all">최대 범위</option>
+            <option value="1y" selected>1년</option>
+            <option value="6m">6개월</option>
+            <option value="3m">3개월</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="chart-panel liquidity-chart-panel">
+        <div class="chart-head">
+          <div>
+            <h3>유동성 지표 표준화 추이</h3>
+            <p class="chart-note">각 지표의 시작값을 100으로 맞춰 방향성만 비교합니다. 단위와 발표 주기가 다르므로 절대값 비교용은 아닙니다.</p>
+          </div>
+          <div class="chart-legend" id="liquidityLegend"></div>
+        </div>
+        <div class="chart-wrap liquidity-chart-wrap">
+          <svg id="liquidityChart" viewBox="0 0 900 340" role="img" aria-label="미국 유동성 지표 표준화 추이"></svg>
+        </div>
+      </div>
+
+      <div class="source-panel">
+        <h2>읽는 방법</h2>
+        <p><strong>거시 유동성</strong>은 M2 통화량으로, <strong>시장에 도는 돈의 압력</strong>은 지급준비금·RRP·TGA로 봅니다. RRP와 TGA는 돈이 연준·재무부 계정에 묶이는 성격이 있어 감소하면 시장 유동성에는 대체로 우호적입니다.</p>
+        <p>실질 유동성 보조값은 <code>지급준비금 - RRP - TGA</code>로 단순화해 표시합니다. 공식 지표가 아니라 방향성을 보기 위한 실험적 보조값입니다.</p>
+        <ul id="liquiditySources"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>WIP 4</strong>
+      <p>미국 유동성 모니터링 실험.</p>
+    </div>
+    <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 데이터 지연·수정 가능</p>
+    <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
+    <span>© 2026</span>
+  </footer>
+  <script src="../ticker.js"></script>
+  <script src="../liquidity.js?v=20260716"></script>
+</body>
+</html>
