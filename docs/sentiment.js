@@ -265,8 +265,6 @@ function card({ label, value, sub, tone = "", wide = false }) {
 function renderSummary(analysis) {
   const latest = analysis.points.at(-1);
   const previous = analysis.points.at(-2);
-  const fearCount = analysis.points.filter((p) => p.type === "fear").length;
-  const greedCount = analysis.points.filter((p) => p.type === "greed").length;
   const modeLabel = dataMode === "live" ? "실데이터" : "합성 미리보기";
   const rangeLabel = sentimentEls.range?.selectedOptions?.[0]?.textContent || "1년";
   const updateLabel = formatUpdateMeta(dataMeta, latest.date);
@@ -291,14 +289,9 @@ function renderSummary(analysis) {
     card({
       label: "개인 순매수",
       value: `${latest.indivT.toFixed(2)}조원`,
-      sub: `평소 예상 ${latest.expected.toFixed(2)}조원 대비 ${Math.abs(latest.residual).toFixed(2)}조원 ${residualDirection}`,
+      sub: `${rangeLabel} 기준 · 평소 예상 ${latest.expected.toFixed(2)}조원 대비 ${Math.abs(latest.residual).toFixed(2)}조원 ${residualDirection}`,
       tone: latest.residual < 0 ? "fear-soft" : "greed-soft",
       wide: true,
-    }),
-    card({
-      label: "심리 이탈 시점",
-      value: `공포 ${fearCount} / 탐욕 ${greedCount}`,
-      sub: `${rangeLabel} · ${analysis.points.length}개 관측치 기준`,
     }),
     card({
       label: "데이터 상태",
