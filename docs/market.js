@@ -42,6 +42,62 @@ function formatTime(value) {
   }).format(new Date(value));
 }
 
+async function fetchMarketPerData() {
+  try {
+    const response = await fetch(`/data/market-per.json?ts=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+function applyKrxPerData(data, perData) {
+  const kospi200Per = perData?.markets?.kospi200;
+  if (!kospi200Per || !Number.isFinite(kospi200Per.per)) {
+    return data;
+  }
+
+  const markets = data.markets.map((market) => {
+    if (market.id !== "kospi200") return market;
+
+    const historicalAverage = Number.isFinite(kospi200Per.historicalAveragePer)
+      ? kospi200Per.historicalAveragePer
+      : market.historicalAveragePer;
+
+    return {
+      ...market,
+      perMetricLabel: "KRX PER",
+      forwardPer: kospi200Per.per,
+      forwardPerLabel: `${kospi200Per.per.toFixed(2)}x`,
+      forwardPerBasis: `KRX 지수 PER 기준입니다. 기준일: ${kospi200Per.date}`,
+      historicalAveragePer: historicalAverage,
+      historicalAverageLabel: `${historicalAverage.toFixed(2)}x`,
+      historicalAverageBasis: `수집 기간 평균 PER입니다. 표본: ${kospi200Per.history?.length || "확인"}개 거래일`,
+      perVsAverage: Number.isFinite(historicalAverage) && historicalAverage !== 0
+        ? (kospi200Per.per - historicalAverage) / historicalAverage
+        : null,
+      trend: [
+        { label: "수집 평균", value: historicalAverage, basis: "KRX 일별 PER 평균" },
+        { label: "현재 PER", value: kospi200Per.per, basis: `KRX ${kospi200Per.date}` },
+      ],
+      krxPer: true,
+      manualAverage: false,
+    };
+  });
+
+  const sources = [
+    ...(data.sources || []),
+    {
+      title: "KRX index fundamentals via pykrx",
+      url: "https://github.com/sharebook-kr/pykrx",
+      note: `KOSPI 200 현행 PER와 수집 기간 평균 PER를 매일 KRX 기준으로 갱신합니다. 최근 기준일: ${kospi200Per.date}`,
+    },
+  ];
+
+  return { ...data, markets, sources, perData };
+}
+
 function clearSvg(svg) {
   if (!svg) return;
   while (svg.firstChild) {
@@ -69,6 +125,7 @@ function renderCards(data) {
       const badges = [
         market.manualBenchmark ? '<span class="market-badge">목표 수동 기준</span>' : "",
         market.manualAverage ? '<span class="market-badge">평균 보완 필요</span>' : "",
+        market.krxPer ? '<span class="market-badge">KRX PER</span>' : "",
       ].join("");
 
       return `
@@ -81,7 +138,7 @@ function renderCards(data) {
           <dl>
             <div><dt>연말 예상</dt><dd>${formatNumber(market.target)}</dd></div>
             <div><dt>목표 대비</dt><dd>${formatPercent(market.upside)}</dd></div>
-            <div><dt>Forward PER</dt><dd>${market.forwardPerLabel}</dd></div>
+            <div><dt>${market.perMetricLabel || "Forward PER"}</dt><dd>${market.forwardPerLabel}</dd></div>
             <div><dt>역사적 평균 PER</dt><dd>${market.historicalAverageLabel}</dd></div>
             <div><dt>평균 대비</dt><dd>${formatPercent(market.perVsAverage)}</dd></div>
           </dl>
@@ -288,10 +345,13 @@ async function loadMarketDashboard() {
       throw new Error(data.message || "시장 데이터를 불러오지 못했습니다.");
     }
 
-    renderCards(data);
-    renderTargetChart(data.markets);
-    renderPerChart(data.markets);
-    renderSources(data.sources || []);
+    const perData = await fetchMarketPerData();
+    const dashboardData = applyKrxPerData(data, perData);
+
+    renderCards(dashboardData);
+    renderTargetChart(dashboardData.markets);
+    renderPerChart(dashboardData.markets);
+    renderSources(dashboardData.sources || []);
     setStatus(`업데이트 완료: ${formatTime(data.fetchedAt)} · ${data.disclaimer}`, "ok");
   } catch (error) {
     setStatus(error.message || "시장 데이터를 불러오지 못했습니다.", "error");
