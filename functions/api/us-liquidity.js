@@ -45,6 +45,25 @@ const SERIES = [
   },
 ];
 
+const FALLBACK_OBSERVATIONS = {
+  M2SL: [
+    { date: "2026-01-01", value: 22429.3 },
+    { date: "2026-05-01", value: 23052.3 },
+  ],
+  WRESBAL: [
+    { date: "2026-04-08", value: 3116.247 },
+    { date: "2026-07-08", value: 3098.911 },
+  ],
+  RRPONTSYD: [
+    { date: "2026-04-16", value: 0.158 },
+    { date: "2026-07-15", value: 0.151 },
+  ],
+  WTREGEN: [
+    { date: "2026-04-08", value: 748.376 },
+    { date: "2026-07-08", value: 774.062 },
+  ],
+};
+
 function json(data, init = {}) {
   return new Response(JSON.stringify(data), {
     ...init,
@@ -115,22 +134,35 @@ function buildSignal(def, latest, previous) {
 }
 
 async function fetchSeries(def) {
-  const response = await fetch(fredCsvUrl(def.fredId), {
-    headers: {
-      "user-agent": "wiplabs-us-liquidity/1.0",
-      accept: "text/csv,*/*",
-    },
-    cf: {
-      cacheTtl: 3600,
-      cacheEverything: false,
-    },
-  });
+  let observations;
+  let stale = false;
+  let fetchError = "";
 
-  if (!response.ok) {
-    throw new Error(`${def.fredId} request failed with ${response.status}`);
+  try {
+    const response = await fetch(fredCsvUrl(def.fredId), {
+      headers: {
+        "user-agent": "wiplabs-us-liquidity/1.0",
+        accept: "text/csv,*/*",
+      },
+      cf: {
+        cacheTtl: 3600,
+        cacheEverything: false,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`${def.fredId} request failed with ${response.status}`);
+    }
+
+    observations = parseFredCsv(await response.text(), def.scale);
+  } catch (error) {
+    const fallback = FALLBACK_OBSERVATIONS[def.fredId];
+    if (!fallback) throw error;
+    observations = fallback;
+    stale = true;
+    fetchError = error.message || `${def.fredId} fallback used`;
   }
 
-  const observations = parseFredCsv(await response.text(), def.scale);
   const latest = observations.at(-1);
   const previous = findLookback(observations, latest.date, 90);
   const signal = buildSignal(def, latest, previous);
@@ -146,6 +178,8 @@ async function fetchSeries(def) {
     note: def.note,
     latest,
     lookback: previous,
+    stale,
+    fetchError,
     change: latest.value - previous.value,
     pctChange: pctChange(latest, previous),
     signal,

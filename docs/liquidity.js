@@ -137,15 +137,16 @@ function renderCards(data) {
     .map((item) => {
       const directionText = item.positiveWhen === "up" ? "증가하면 우호적" : "감소하면 우호적";
       const signalText = item.signal.favorable ? "유동성 우호" : "유동성 부담";
+      const staleText = item.stale ? " · 임시 fallback 데이터" : "";
       return `
         <article data-tone="${item.signal.tone}">
           <div class="market-card-head">
             <span>${item.label}</span>
-            <span class="market-badge-row"><span class="market-badge">${item.fredId}</span></span>
+            <span class="market-badge-row"><span class="market-badge">${item.stale ? "FALLBACK" : item.fredId}</span></span>
           </div>
           <strong>${formatUsdBillions(item.latest.value)}</strong>
           <p>${item.latest.date} 기준 · 약 3개월 변화 ${formatChange(item.change)} (${formatPercent(item.pctChange)})</p>
-          <small>${signalText} · ${directionText}. ${item.note}</small>
+          <small>${signalText} · ${directionText}${staleText}. ${item.note}</small>
         </article>
       `;
     })
