@@ -45,7 +45,7 @@ def parse_ymd(value: str) -> dt.date:
 def parse_args() -> argparse.Namespace:
     today = dt.datetime.now(KST).date()
     default_end = today
-    default_start = default_end - dt.timedelta(days=620)
+    default_start = default_end - dt.timedelta(days=370)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--start", default=ymd(default_start), help="Start date as YYYYMMDD")
@@ -112,6 +112,67 @@ def fetch_kospi200_per_for_date(date_str: str) -> dict | None:
     }
 
 
+def discover_kospi200_ticker(end: str) -> str | None:
+    candidates = ["1028", "2001"]
+
+    for ticker in candidates:
+        try:
+            name = stock.get_index_ticker_name(ticker)
+        except Exception:
+            continue
+
+        if TARGET_NAME.replace(" ", "") in str(name).replace(" ", ""):
+            return ticker
+
+    try:
+        tickers = stock.get_index_ticker_list(end, market="KOSPI")
+    except Exception as error:
+        print(f"KOSPI 200 ticker discovery skipped: {error}")
+        return None
+
+    for ticker in tickers:
+        try:
+            name = stock.get_index_ticker_name(ticker)
+        except Exception:
+            continue
+
+        if TARGET_NAME.replace(" ", "") in str(name).replace(" ", ""):
+            print(f"Discovered KOSPI 200 ticker: {ticker} {name}")
+            return ticker
+
+    return None
+
+
+def collect_by_date_api(start: str, end: str) -> list[dict]:
+    ticker = discover_kospi200_ticker(end)
+    if not ticker:
+        return []
+
+    try:
+        df = stock.get_index_fundamental_by_date(start, end, ticker)
+    except Exception as error:
+        print(f"KOSPI 200 PER by-date API skipped for {ticker}: {error}")
+        return []
+
+    if df.empty or "PER" not in df.columns:
+        return []
+
+    rows = []
+    for date, row in df.sort_index().iterrows():
+        per = normalize_float(row.get("PER"))
+        if per is None:
+            continue
+
+        rows.append({
+            "date": pd.to_datetime(date).strftime("%Y-%m-%d"),
+            "name": TARGET_NAME,
+            "per": per,
+        })
+
+    print(f"KOSPI 200 PER by-date rows: {len(rows)}")
+    return rows
+
+
 def collect(start: str, end: str) -> list[dict]:
     start_date = parse_ymd(start)
     end_date = parse_ymd(end)
@@ -122,6 +183,11 @@ def collect(start: str, end: str) -> list[dict]:
     print(f"KRX_ID configured: {bool(os.getenv('KRX_ID'))}")
     print(f"KRX_PW configured: {bool(os.getenv('KRX_PW'))}")
 
+    rows = collect_by_date_api(start, end)
+    if rows:
+        return rows
+
+    print("Falling back to daily KRX PER table lookup.")
     for index, offset in enumerate(range(total_days), start=1):
         date = start_date + dt.timedelta(days=offset)
         if date.weekday() >= 5:
