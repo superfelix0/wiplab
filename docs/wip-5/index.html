@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-GD6K8FB589");
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="메모리 반도체와 미국 하이퍼스케일러의 분기 이익, CAPEX, 현금흐름을 비교합니다.">
+  <meta name="theme-color" content="#0e100d">
+  <meta property="og:title" content="AI Earnings Monitor — WIP Labs">
+  <meta property="og:description" content="AI 공급망 주요 기업의 최근 분기 실적과 현금흐름을 비교합니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wiplabs.pages.dev/wip-5/">
+  <link rel="canonical" href="https://wiplabs.pages.dev/wip-5/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css">
+  <title>AI Earnings Monitor — WIP Labs</title>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="홈으로 이동">
+      <span>WIP</span>
+      <strong>WIP Labs</strong>
+    </a>
+    <nav aria-label="주요 메뉴">
+      <details class="jump-menu">
+        <summary>Jump to · F5</summary>
+        <div>
+          <a href="../">HOME</a>
+          <a href="../wip-1/">F1 · SK Hynix ADR</a>
+          <a href="../wip-2/">F2 · KOSPI PER</a>
+          <a href="../wip-3/">F3 · Fear/Greed</a>
+          <a href="../wip-4/">F4 · US Liquidity</a>
+          <a href="../wip-5/" aria-current="page">F5 · AI Earnings</a>
+          <a href="../wip-g/">G1 · 오늘의 셈</a>
+        </div>
+      </details>
+    </nav>
+  </header>
+  <div class="ticker-strip" aria-label="시장 티커">
+    <span>KOSPI <b id="tickerKospi">—</b></span>
+    <span>NASDAQ <b id="tickerNasdaq">—</b></span>
+    <span>S&amp;P500 <b id="tickerSp500">—</b></span>
+    <span>USD/KRW <b id="tickerUsdKrw">—</b></span>
+  </div>
+
+  <main>
+    <section class="hero service-hero">
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./ai-earnings <span class="flag">--supply-chain</span></p>
+      <h1>AI Earnings Monitor</h1>
+      <p class="hero-copy">메모리 반도체 업체와 미국 하이퍼스케일러의 최근 분기 이익, CAPEX, 현금흐름을 비교합니다.</p>
+    </section>
+
+    <section class="earnings-dashboard" aria-labelledby="earnings-title">
+      <div class="section-title">
+        <div>
+          <h2 id="earnings-title">실적·현금흐름 비교</h2>
+          <p class="section-copy">순이익이 있으면 순이익, 없으면 영업이익을 기준으로 증감률을 계산합니다. PER/PBR/컨센서스는 공개 데이터 확보 전까지 N/A로 표시합니다.</p>
+        </div>
+        <button class="refresh-button" id="earningsRefresh" type="button">새로고침</button>
+      </div>
+
+      <div class="status" id="earningsStatus" data-state="neutral">AI 실적 데이터를 불러오는 중입니다.</div>
+      <div class="sentiment-controls" aria-label="그룹 필터">
+        <label>
+          그룹
+          <select id="earningsGroup" aria-label="그룹 선택">
+            <option value="all">전체</option>
+            <option value="memory">메모리/반도체</option>
+            <option value="hyperscaler">하이퍼스케일러</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="earnings-card-grid" id="earningsCards"></div>
+
+      <div class="chart-panel">
+        <div class="chart-head">
+          <div>
+            <h3>최근 분기 이익 증감률</h3>
+            <p class="chart-note">각 회사의 최근 분기 이익 증감률(QoQ)을 막대로 비교합니다. 적자 전환·흑자 전환 구간은 변동률 해석에 주의가 필요합니다.</p>
+          </div>
+        </div>
+        <div class="earnings-table-wrap">
+          <table class="earnings-table" id="earningsTable"></table>
+        </div>
+      </div>
+
+      <div class="source-panel">
+        <h2>데이터 한계</h2>
+        <p>분기 실적과 현금흐름은 Yahoo Finance 공개 fundamentals time-series를 사용합니다. Kioxia처럼 일부 종목은 공개 시계열이 비어 있을 수 있습니다.</p>
+        <p>PER, PBR, 실적 예측치 컨센서스는 일관된 무료 공개 API가 제한되어 1차 버전에서는 N/A로 표시합니다. 추후 유료/공식 데이터 소스를 연결하면 같은 화면에 채울 수 있습니다.</p>
+        <ul id="earningsSources"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>WIP 5</strong>
+      <p>AI 공급망 실적 비교 실험.</p>
+    </div>
+    <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 데이터 지연·누락 가능</p>
+    <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
+    <span>© 2026</span>
+  </footer>
+  <script src="../ticker.js"></script>
+  <script src="../ai-earnings.js?v=20260717"></script>
+</body>
+</html>

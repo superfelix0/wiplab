@@ -514,6 +514,7 @@ h3 {
 .market-card-grid,
 .liquidity-summary,
 .liquidity-card-grid,
+.earnings-card-grid,
 .sentiment-summary {
   display: grid;
   gap: 10px;
@@ -540,6 +541,10 @@ h3 {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.earnings-card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
 .sentiment-summary {
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
@@ -554,6 +559,7 @@ h3 {
 .market-card-grid article,
 .liquidity-summary article,
 .liquidity-card-grid article,
+.earnings-card-grid article,
 .sentiment-summary article {
   position: relative;
   min-height: 112px;
@@ -586,12 +592,14 @@ h3 {
 }
 
 .liquidity-summary article[data-tone="positive"],
-.liquidity-card-grid article[data-tone="positive"] {
+.liquidity-card-grid article[data-tone="positive"],
+.earnings-card-grid article[data-tone="positive"] {
   border-color: rgba(111, 191, 115, 0.45);
 }
 
 .liquidity-summary article[data-tone="negative"],
-.liquidity-card-grid article[data-tone="negative"] {
+.liquidity-card-grid article[data-tone="negative"],
+.earnings-card-grid article[data-tone="negative"] {
   border-color: rgba(194, 82, 66, 0.45);
 }
 
@@ -629,6 +637,7 @@ h3 {
 .market-card-grid h3,
 .liquidity-summary span,
 .liquidity-card-grid span,
+.earnings-card-grid span,
 .sentiment-summary span,
 .market-card-grid dt {
   display: block;
@@ -644,6 +653,7 @@ h3 {
 .market-card-grid strong,
 .liquidity-summary strong,
 .liquidity-card-grid strong,
+.earnings-card-grid strong,
 .sentiment-summary strong {
   display: block;
   margin-top: 16px;
@@ -677,12 +687,15 @@ h3 {
 .liquidity-summary small,
 .liquidity-card-grid small,
 .liquidity-card-grid p,
+.earnings-card-grid small,
+.earnings-card-grid dd,
 .sentiment-summary small,
 .market-card-grid dd {
   color: var(--muted);
   font-size: 11px;
 }
 
+.earnings-card-grid dl,
 .market-card-grid dl {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -690,8 +703,68 @@ h3 {
   margin: 12px 0;
 }
 
+.earnings-card-grid dd,
 .market-card-grid dd {
   margin: 2px 0 0;
+  color: var(--title);
+}
+
+.earnings-table-wrap {
+  overflow-x: auto;
+}
+
+.earnings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.earnings-table th,
+.earnings-table td {
+  border-top: 1px solid var(--line-soft);
+  padding: 9px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.earnings-table th {
+  color: var(--faint);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.earnings-table small {
+  color: var(--muted);
+}
+
+.bar-cell {
+  position: relative;
+  min-width: 120px;
+  height: 20px;
+  border: 1px solid var(--line-dash);
+}
+
+.bar-cell span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  opacity: 0.6;
+}
+
+.bar-cell span.positive {
+  background: var(--green);
+}
+
+.bar-cell span.negative {
+  background: var(--red);
+}
+
+.bar-cell b {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
   color: var(--title);
 }
 
@@ -1085,6 +1158,7 @@ footer p {
   .market-card-grid,
   .liquidity-summary,
   .liquidity-card-grid,
+  .earnings-card-grid,
   .sentiment-summary {
     grid-template-columns: 1fr;
   }
