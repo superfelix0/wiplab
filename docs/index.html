@@ -11,24 +11,24 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="작지만 유용한 아이디어를 연구합니다.">
+  <meta name="description" content="WIP Labs는 KOSPI 밸류에이션, 개인 수급 심리, 미국 유동성, AI CAPEX 흐름을 한 화면에서 가볍게 해석하는 개인용 시장 리서치 터미널입니다.">
   <meta name="theme-color" content="#0e100d">
-  <meta property="og:title" content="WIP Labs — 계속 만드는 실험실">
-  <meta property="og:description" content="작지만 유용한 아이디어를 연구합니다.">
+  <meta property="og:title" content="WIP Labs — 오늘의 시장 리서치 터미널">
+  <meta property="og:description" content="복잡한 금융 데이터를 오늘의 해석 카드로 정리합니다. KOSPI PER, 수급 심리, 미국 유동성, AI 실적 흐름을 확인하세요.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
   <link rel="canonical" href="https://wiplabs.pages.dev/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
-  <title>WIP Labs — 계속 만드는 실험실</title>
+  <title>WIP Labs — 오늘의 시장 리서치 터미널</title>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "WIP Labs",
     "url": "https://wiplabs.pages.dev/",
-    "description": "작지만 유용한 아이디어를 연구합니다.",
+    "description": "KOSPI 밸류에이션, 개인 수급 심리, 미국 유동성, AI CAPEX 흐름을 정리하는 개인용 시장 리서치 터미널입니다.",
     "inLanguage": "ko-KR"
   }
   </script>
@@ -46,7 +46,6 @@
       <a href="wip-3/" title="F3 · Fear/Greed">F3</a>
       <a href="wip-4/" title="F4 · US Liquidity">F4</a>
       <a href="wip-5/" title="F5 · AI Earnings">F5</a>
-      <a href="wip-g/" title="G1 · 오늘의 셈">G1</a>
     </nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
@@ -57,131 +56,99 @@
   </div>
 
   <main>
-    <section class="hero home-hero">
-      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./init <span class="flag">--lab</span></p>
-      <h1>작게 만들고 써보며 고치는 실험실</h1>
-      <p class="hero-copy">작지만 유용한 아이디어를 연구합니다.</p>
+    <section class="hero home-hero research-hero">
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./today <span class="flag">--market-read</span></p>
+      <h1>오늘의 시장 상태를 가볍게 읽는 리서치 터미널</h1>
+      <p class="hero-copy">KOSPI 밸류에이션, 개인 수급 심리, 미국 유동성, AI CAPEX 흐름을 모아 “지금 무엇을 봐야 하는지”부터 정리합니다.</p>
+    </section>
+
+    <section class="today-brief" aria-labelledby="today-brief-title">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">TODAY'S READ</p>
+          <h2 id="today-brief-title">오늘의 시장 리딩</h2>
+          <p class="section-copy">자동 수집 데이터가 있는 지표는 최신 기준으로 읽고, 해석이 필요한 부분은 보조 프레임으로만 표시합니다.</p>
+        </div>
+        <small id="homeUpdatedAt">데이터 확인 중</small>
+      </div>
+      <div class="today-summary" id="todaySummary">
+        <article data-tone="neutral">
+          <span>MARKET READ</span>
+          <strong>데이터를 불러오는 중입니다.</strong>
+          <small>각 WIP 페이지의 최신 자료를 모아 첫 화면 요약을 만듭니다.</small>
+        </article>
+      </div>
     </section>
 
     <section class="wip-list" aria-labelledby="wip-list-title">
-      <h2 id="wip-list-title" class="visually-hidden">WIP 서비스 목록</h2>
-      <div class="wip-tabs" aria-label="서비스 분류">
-        <span>wip://</span>
-        <button class="active" type="button" data-wip-tab="finance" aria-pressed="true">Finance</button>
-        <button type="button" data-wip-tab="game" aria-pressed="false">Game</button>
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">RESEARCH MODULES</p>
+          <h2 id="wip-list-title">지표별 실험실</h2>
+          <p class="section-copy">각 페이지는 숫자 자체보다 “어떻게 읽을지”를 먼저 보여주는 방향으로 계속 다듬고 있습니다.</p>
+        </div>
       </div>
-      <div class="wip-index">
+      <div class="wip-index research-index">
         <a href="wip-1/" data-category="finance">
           <span>F1</span>
-          <strong>SK Hynix ADR</strong>
+          <strong>SK Hynix ADR 가격 비교</strong>
           <small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small>
           <small class="metric">ADR/KRW</small>
-          <svg class="spark" viewBox="0 0 62 24" aria-hidden="true"><polyline points="1,18 12,15 24,17 36,10 48,12 61,6"/></svg>
+          <small class="module-note">ADR과 본주가 같은 원화 기준에서 얼마나 벌어졌는지 확인합니다.</small>
           <small class="live-dot">● LIVE</small>
         </a>
         <a href="wip-2/" data-category="finance">
           <span>F2</span>
-          <strong>KOSPI PER</strong>
+          <strong>KOSPI PER Monitor</strong>
           <small class="cmd"><b>$</b> ./kospi-per <em>--krx</em></small>
           <small class="metric">KRX/PER</small>
-          <svg class="spark" viewBox="0 0 62 24" aria-hidden="true"><polyline points="1,16 12,11 24,12 36,8 48,9 61,5"/></svg>
+          <small class="module-note">현행 PER와 역사적 평균, Forward PER를 비교해 밸류에이션 온도를 봅니다.</small>
           <small class="live-dot">● LIVE</small>
         </a>
         <a href="wip-3/" data-category="finance">
           <span>F3</span>
-          <strong>Fear/Greed</strong>
+          <strong>KOSPI Fear/Greed</strong>
           <small class="cmd"><b>$</b> ./sentiment <em>--kospi</em></small>
           <small class="metric">FLOW/SIGNAL</small>
-          <svg class="spark" viewBox="0 0 62 24" aria-hidden="true"><polyline points="1,12 12,18 24,10 36,16 48,7 61,13"/></svg>
-          <small class="live-dot">● LIVE</small>
+          <small class="module-note">개인 수급이 평소 패턴에서 벗어나는 순간을 변곡점 후보로 표시합니다.</small>
+          <small class="live-dot">● DAILY</small>
         </a>
         <a href="wip-4/" data-category="finance">
           <span>F4</span>
-          <strong>US Liquidity</strong>
+          <strong>US Liquidity Monitor</strong>
           <small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small>
           <small class="metric">M2/RRP/TGA</small>
-          <svg class="spark" viewBox="0 0 62 24" aria-hidden="true"><polyline points="1,17 12,14 24,15 36,9 48,11 61,7"/></svg>
-          <small class="live-dot">● LIVE</small>
+          <small class="module-note">M2, 지급준비금, RRP, TGA로 미국 유동성 환경을 읽습니다.</small>
+          <small class="live-dot">● DAILY</small>
         </a>
         <a href="wip-5/" data-category="finance">
           <span>F5</span>
-          <strong>AI Earnings</strong>
-          <small class="cmd"><b>$</b> ./ai-earnings <em>--supply-chain</em></small>
-          <small class="metric">CAPEX/FCF</small>
-          <svg class="spark" viewBox="0 0 62 24" aria-hidden="true"><polyline points="1,19 12,13 24,16 36,7 48,10 61,4"/></svg>
-          <small class="live-dot">● LIVE</small>
-        </a>
-        <a href="wip-g/" data-category="game" hidden>
-          <span>G1</span>
-          <strong>오늘의 셈</strong>
-          <small class="cmd"><b>$</b> ./number-game <em>--daily</em></small>
-          <small class="metric">PUZZLE</small>
-          <svg class="spark" viewBox="0 0 62 24" aria-hidden="true"><polyline points="1,18 12,8 24,14 36,6 48,18 61,10"/></svg>
-          <small class="game-dot">◆ GAME</small>
+          <strong>AI Earnings Monitor</strong>
+          <small class="cmd"><b>$</b> ./ai-earnings <em>--capex</em></small>
+          <small class="metric">CAPEX/OPEX</small>
+          <small class="module-note">AI 인프라 투자가 이익과 현금흐름으로 연결되는지 비교합니다.</small>
+          <small class="live-dot">● DAILY</small>
         </a>
       </div>
+    </section>
+
+    <section class="source-panel home-method">
+      <h2>WIP Labs는 이렇게 읽습니다</h2>
+      <p>이 사이트는 투자 판단을 대신하지 않습니다. 대신 흩어진 시장 데이터를 한 번에 보고, “밸류에이션·심리·유동성·실적” 네 축에서 지금 시장을 점검하는 보조 도구로 설계했습니다.</p>
+      <ul>
+        <li><span>Who</span><span>개인 투자자가 직접 쓰며 고치는 실험형 리서치 도구입니다.</span></li>
+        <li><span>How</span><span>KRX, FRED, Yahoo Finance, Naver Finance 등 공개 데이터와 명시된 계산식을 사용합니다.</span></li>
+        <li><span>Why</span><span>숫자를 많이 보여주기보다, 오늘 무엇을 확인해야 하는지 빠르게 좁히기 위해 만듭니다.</span></li>
+      </ul>
     </section>
   </main>
 
   <footer>
-    <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 시세 지연 가능</p>
+    <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 데이터 지연·누락 가능</p>
     <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
     <span>© 2026</span>
   </footer>
-  <script>
-    const tabButtons = document.querySelectorAll("[data-wip-tab]");
-    const serviceRows = document.querySelectorAll("[data-category]");
-    const tickerEls = {
-      kospi: document.querySelector("#tickerKospi"),
-      nasdaq: document.querySelector("#tickerNasdaq"),
-      sp500: document.querySelector("#tickerSp500"),
-      usdk: document.querySelector("#tickerUsdKrw"),
-    };
-    const tickerNumber = new Intl.NumberFormat("ko-KR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-
-    function formatTickerChangePct(value) {
-      if (!Number.isFinite(value)) return "";
-      return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(2)}%`;
-    }
-
-    function showCategory(category) {
-      tabButtons.forEach((button) => {
-        const isActive = button.dataset.wipTab === category;
-        button.classList.toggle("active", isActive);
-        button.setAttribute("aria-pressed", String(isActive));
-      });
-      serviceRows.forEach((row) => {
-        row.hidden = row.dataset.category !== category;
-      });
-    }
-
-    tabButtons.forEach((button) => {
-      button.addEventListener("click", () => showCategory(button.dataset.wipTab));
-    });
-
-    async function loadMarketTicker() {
-      try {
-        const response = await fetch(`/api/market-ticker?ts=${Date.now()}`, { cache: "no-store" });
-        const data = await response.json();
-        if (!response.ok || !data?.ok) return;
-
-        data.items.forEach((item) => {
-          const element = tickerEls[item.id];
-          if (!element) return;
-          const changeText = formatTickerChangePct(item.changePct);
-          const changeClass = item.changePct > 0 ? "positive" : item.changePct < 0 ? "negative" : "neutral";
-          element.innerHTML = `${tickerNumber.format(item.close)}${changeText ? ` <em class="${changeClass}">${changeText}</em>` : ""}`;
-          element.closest("span").title = `${item.label} 최근 종가 기준일: ${item.date}`;
-        });
-      } catch {
-        // Keep placeholders if the ticker endpoint is temporarily unavailable.
-      }
-    }
-
-    loadMarketTicker();
-  </script>
+  <script src="ticker.js?v=change-pct-20260717"></script>
+  <script src="home.js?v=market-read-20260717"></script>
 </body>
 </html>

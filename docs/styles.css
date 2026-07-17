@@ -464,6 +464,124 @@ h3 {
   font-style: normal;
 }
 
+.research-hero .hero-copy {
+  max-width: 780px;
+}
+
+.today-brief {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 18px 0 20px;
+}
+
+.today-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.today-card,
+.today-summary article {
+  min-height: 128px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  text-decoration: none;
+}
+
+.today-card:hover {
+  background: var(--panel-3);
+  box-shadow: inset 3px 0 0 var(--amber);
+}
+
+.today-card span,
+.today-summary article span {
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.today-card strong,
+.today-summary article strong {
+  color: var(--title);
+  font-size: 14px;
+}
+
+.today-card small,
+.today-summary article small {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.today-card em {
+  color: var(--green);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+  margin-top: auto;
+}
+
+.module-note {
+  grid-column: 3 / 6;
+  line-height: 1.45;
+}
+
+.home-method ul {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.home-method li {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 10px;
+}
+
+.home-method li span:first-child {
+  color: var(--amber);
+  font-weight: 800;
+}
+
+.reading-note {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  margin-top: 12px;
+  padding: 14px;
+}
+
+.reading-note h2 {
+  color: var(--title);
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.reading-note ul {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.reading-note li {
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.reading-note li::before {
+  color: var(--amber);
+  content: "• ";
+  font-weight: 800;
+}
+
 .metric {
   color: var(--muted);
   font-size: 11px;
@@ -481,16 +599,11 @@ h3 {
   stroke-width: 2;
 }
 
-.live-dot,
-.game-dot {
+.live-dot {
   color: var(--green);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
-}
-
-.game-dot {
-  color: var(--muted);
 }
 
 .quote-grid,
@@ -1279,6 +1392,7 @@ footer p {
   }
 
   .ticker-strip,
+  .today-summary,
   .quote-grid,
   .result-panel,
   .market-card-grid,
@@ -1297,9 +1411,9 @@ footer p {
 
   .wip-index a small,
   .wip-index .metric,
+  .wip-index .module-note,
   .wip-index .spark,
-  .wip-index .live-dot,
-  .wip-index .game-dot {
+  .wip-index .live-dot {
     grid-column: 2;
   }
 
