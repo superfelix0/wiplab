@@ -74,6 +74,19 @@
       <div class="status" id="marketStatus">KRX PER 데이터를 불러오는 중입니다.</div>
       <div class="market-card-grid" id="marketCards" aria-live="polite"></div>
 
+      <div class="chart-panel market-per-chart-panel">
+        <div class="chart-head">
+          <div>
+            <h3>연도별 평균 PER 추이</h3>
+            <p class="chart-note">2010년 이후 KOSPI 연도별 평균 PER와 현재 PER, Forward PER 참고치를 함께 봅니다.</p>
+          </div>
+          <div class="chart-legend" id="marketPerLegend"></div>
+        </div>
+        <div class="market-chart-wrap">
+          <svg id="marketPerChart" viewBox="0 0 900 340" role="img" aria-label="KOSPI 연도별 평균 PER 추이"></svg>
+        </div>
+      </div>
+
       <div class="source-panel">
         <h2>출처와 계산 기준</h2>
         <p>이 화면은 투자 판단을 대체하지 않는 참고용 실험 화면입니다. 현행 PER와 역사적 평균 PER는 KRX 기준 데이터를 사용하고, Forward PER 컨센서스는 더 안정적인 원천을 확보하면 교체할 예정입니다.</p>
@@ -92,6 +105,6 @@
     <span>© 2026</span>
   </footer>
   <script src="../ticker.js?v=change-pct-20260717" defer></script>
-  <script src="../market.js?v=kospi-history-20260718" defer></script>
+  <script src="../market.js?v=per-chart-20260718" defer></script>
 </body>
 </html>

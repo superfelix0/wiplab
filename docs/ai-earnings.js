@@ -215,8 +215,11 @@ function syncCompareTabs() {
 
 function renderCards(data) {
   const rows = companiesWithLatest(data)
-    .sort((a, b) => (b.latest.profitGrowthQoQ ?? -Infinity) - (a.latest.profitGrowthQoQ ?? -Infinity))
-    .slice(0, 4);
+    .sort((a, b) => {
+      const groupCompare = a.company.group.localeCompare(b.company.group);
+      if (groupCompare !== 0) return groupCompare;
+      return a.company.name.localeCompare(b.company.name);
+    });
 
   earningsEls.cards.innerHTML = rows.map(({ company, latest }) => {
     const burden = capexBurden(latest);
@@ -235,7 +238,7 @@ function renderCards(data) {
           <div><dt>FCF</dt><dd>${compactMoney(latest.freeCashFlow, company.currency)}</dd></div>
           <div><dt>FCF Margin</dt><dd>${pct(margin)}</dd></div>
         </dl>
-        <small>상위 성장 기업 요약입니다. PER/PBR/컨센서스는 데이터 원천 연결 전까지 N/A입니다.</small>
+        <small>선택한 그룹의 회사별 요약입니다. PER/PBR/컨센서스는 데이터 원천 연결 전까지 N/A입니다.</small>
       </article>
     `;
   }).join("");

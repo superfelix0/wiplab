@@ -1,5 +1,7 @@
 const marketStatus = document.querySelector("#marketStatus");
 const marketCards = document.querySelector("#marketCards");
+const marketPerChart = document.querySelector("#marketPerChart");
+const marketPerLegend = document.querySelector("#marketPerLegend");
 const sourceList = document.querySelector("#sourceList");
 const refreshButton = document.querySelector("#marketRefresh");
 
@@ -54,6 +56,138 @@ function differenceFromAverage(current, average) {
 function formatPercent(value) {
   if (!Number.isFinite(value)) return "";
   return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%`;
+}
+
+function svgEl(name, attrs = {}) {
+  const element = document.createElementNS("http://www.w3.org/2000/svg", name);
+  Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
+  return element;
+}
+
+function yearlyAveragePer(history = []) {
+  const buckets = new Map();
+  history.forEach((row) => {
+    const per = Number(row.per);
+    const year = String(row.date || "").slice(0, 4);
+    if (!year || !Number.isFinite(per)) return;
+    if (!buckets.has(year)) buckets.set(year, []);
+    buckets.get(year).push(per);
+  });
+
+  return Array.from(buckets.entries())
+    .map(([year, values]) => ({
+      year,
+      per: values.reduce((sum, value) => sum + value, 0) / values.length,
+    }))
+    .sort((a, b) => a.year.localeCompare(b.year));
+}
+
+function renderMarketPerChart(perData) {
+  if (!marketPerChart || !marketPerLegend) return;
+
+  const kospi = perData.markets.kospi200;
+  const annual = yearlyAveragePer(kospi.history || []);
+  if (!annual.length) {
+    marketPerChart.innerHTML = "";
+    marketPerLegend.innerHTML = "";
+    return;
+  }
+
+  const currentPer = Number(kospi.per);
+  const forwardPer = FORWARD_PER_CONSENSUS.value;
+  const values = annual.map((row) => row.per).concat([currentPer, forwardPer]).filter(Number.isFinite);
+  const min = Math.max(0, Math.floor(Math.min(...values) - 2));
+  const max = Math.ceil(Math.max(...values) + 2);
+  const width = 900;
+  const height = 340;
+  const pad = { top: 24, right: 96, bottom: 46, left: 52 };
+  const innerW = width - pad.left - pad.right;
+  const innerH = height - pad.top - pad.bottom;
+  const x = (index) => pad.left + (annual.length === 1 ? innerW / 2 : (index / (annual.length - 1)) * innerW);
+  const y = (value) => pad.top + ((max - value) / (max - min)) * innerH;
+
+  marketPerChart.innerHTML = "";
+  marketPerLegend.innerHTML = `
+    <span><i style="background:var(--amber)"></i>연도별 평균 PER</span>
+    <span><i style="background:var(--green)"></i>현재 PER ${formatPer(currentPer)}</span>
+    <span><i style="background:var(--red)"></i>Forward PER ${formatPer(forwardPer)}</span>
+  `;
+
+  for (let i = 0; i <= 4; i += 1) {
+    const value = min + ((max - min) / 4) * i;
+    const yy = y(value);
+    marketPerChart.append(svgEl("line", {
+      x1: pad.left,
+      x2: width - pad.right,
+      y1: yy,
+      y2: yy,
+      stroke: "rgba(255,255,255,0.08)",
+    }));
+    const label = svgEl("text", {
+      x: pad.left - 10,
+      y: yy + 4,
+      "text-anchor": "end",
+      class: "market-axis-label",
+    });
+    label.textContent = value.toFixed(0);
+    marketPerChart.append(label);
+  }
+
+  const path = annual
+    .map((row, index) => `${index === 0 ? "M" : "L"} ${x(index).toFixed(1)} ${y(row.per).toFixed(1)}`)
+    .join(" ");
+
+  marketPerChart.append(svgEl("path", {
+    d: path,
+    fill: "none",
+    stroke: "var(--amber)",
+    "stroke-width": "3",
+  }));
+
+  annual.forEach((row, index) => {
+    marketPerChart.append(svgEl("circle", {
+      cx: x(index),
+      cy: y(row.per),
+      r: 3,
+      fill: "var(--amber)",
+    }));
+
+    if (index === 0 || index === annual.length - 1 || Number(row.year) % 2 === 0) {
+      const label = svgEl("text", {
+        x: x(index),
+        y: height - 20,
+        "text-anchor": "middle",
+        class: "market-axis-label",
+      });
+      label.textContent = row.year;
+      marketPerChart.append(label);
+    }
+  });
+
+  [
+    { value: currentPer, label: `현재 ${formatPer(currentPer)}`, color: "var(--green)" },
+    { value: forwardPer, label: `Forward ${formatPer(forwardPer)}`, color: "var(--red)" },
+  ].forEach((line) => {
+    if (!Number.isFinite(line.value)) return;
+    const yy = y(line.value);
+    marketPerChart.append(svgEl("line", {
+      x1: pad.left,
+      x2: width - pad.right,
+      y1: yy,
+      y2: yy,
+      stroke: line.color,
+      "stroke-width": "2",
+      "stroke-dasharray": "6 5",
+    }));
+    const label = svgEl("text", {
+      x: width - pad.right + 10,
+      y: yy + 4,
+      class: "market-axis-label",
+      style: `fill:${line.color}`,
+    });
+    label.textContent = line.label;
+    marketPerChart.append(label);
+  });
 }
 
 async function fetchMarketPerData() {
@@ -151,6 +285,7 @@ async function loadMarketDashboard() {
   try {
     const perData = await fetchMarketPerData();
     renderCards(perData);
+    renderMarketPerChart(perData);
     renderSources(perData);
     setStatus(`업데이트 완료: ${formatDateTime(perData.generatedAt)} · 투자 권유가 아닌 참고용 실험 화면입니다.`, "ok");
   } catch (error) {
