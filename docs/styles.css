@@ -99,6 +99,7 @@ footer {
   display: inline-flex;
   align-items: baseline;
   gap: 12px;
+  flex: 0 0 auto;
   min-width: 0;
 }
 
@@ -137,82 +138,43 @@ footer {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
-.site-header nav > a {
+.service-tabs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.service-tabs::-webkit-scrollbar {
   display: none;
 }
 
-.jump-menu {
-  position: relative;
-  z-index: 5;
-}
-
-.jump-menu summary {
-  list-style: none;
-  cursor: pointer;
+.service-tabs a {
+  flex: 0 0 auto;
   border: 1px solid var(--line-dash);
-  padding: 8px 10px;
-  color: var(--text);
-  background: var(--panel);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+  padding: 7px 9px;
   font-size: 11px;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.jump-menu summary::-webkit-details-marker {
-  display: none;
-}
-
-.jump-menu summary::before {
-  content: "[ ";
-  color: var(--ghost);
-}
-
-.jump-menu summary::after {
-  content: " ▾ ]";
-  color: var(--ghost);
-}
-
-.jump-menu div {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  min-width: 250px;
-  border: 1px solid var(--line-dash);
-  background: #0f120e;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-  padding: 6px;
-}
-
-.jump-menu a {
-  display: grid;
-  grid-template-columns: 18px 1fr;
-  gap: 8px;
-  padding: 8px;
-  color: var(--muted);
-  border-bottom: 1px solid var(--line-soft);
-  font-size: 12px;
-}
-
-.jump-menu a:last-child {
-  border-bottom: 0;
-}
-
-.jump-menu a:hover,
-.jump-menu a[aria-current="page"] {
+.service-tabs a:hover,
+.service-tabs a[aria-current="page"] {
+  border-color: rgba(216, 161, 58, 0.5);
   color: var(--title);
   background: var(--panel-3);
 }
 
-.jump-menu a[aria-current="page"]::before {
-  content: "●";
+.service-tabs a[aria-current="page"] {
   color: var(--amber);
-}
-
-.jump-menu a:not([aria-current="page"])::before {
-  content: "·";
-  color: var(--ghost);
 }
 
 .ticker-strip {
@@ -1319,8 +1281,7 @@ footer p {
     grid-column: 2;
   }
 
-  .jump-menu div {
-    left: 0;
-    right: auto;
+  .service-tabs {
+    width: 100%;
   }
 }
