@@ -27,6 +27,9 @@ from pykrx.website.krx.future import core as krx_future_core
 
 KST = dt.timezone(dt.timedelta(hours=9))
 VKOSPI_SEED_CSV = Path("docs/data/vkospi-history.csv")
+DEFAULT_HISTORY_DAYS = 620
+DEFAULT_INCREMENTAL_LOOKBACK_DAYS = 14
+MIN_SENTIMENT_ROWS = 120
 
 
 def ymd(value: dt.date) -> str:
@@ -36,10 +39,9 @@ def ymd(value: dt.date) -> str:
 def parse_args() -> argparse.Namespace:
     today = dt.datetime.now(KST).date()
     default_end = today
-    default_start = default_end - dt.timedelta(days=620)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--start", default=ymd(default_start), help="Start date as YYYYMMDD")
+    parser.add_argument("--start", default=None, help="Start date as YYYYMMDD. If omitted, existing CSV is updated incrementally.")
     parser.add_argument(
         "--end",
         default=ymd(default_end),
@@ -47,11 +49,72 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--out", default="docs/data/kospi-sentiment.csv", help="Output CSV path")
     parser.add_argument("--meta-out", default="docs/data/kospi-sentiment-meta.json", help="Output metadata JSON path")
+    parser.add_argument(
+        "--lookback-days",
+        type=int,
+        default=DEFAULT_INCREMENTAL_LOOKBACK_DAYS,
+        help="When --start is omitted and an existing CSV is present, refetch this many calendar days before the last saved date.",
+    )
+    parser.add_argument(
+        "--full-refresh",
+        action="store_true",
+        help=f"Ignore the existing CSV and refetch the default {DEFAULT_HISTORY_DAYS}-day history.",
+    )
     return parser.parse_args()
 
 
 def parse_ymd(value: str) -> dt.date:
     return dt.datetime.strptime(value, "%Y%m%d").date()
+
+
+def load_existing_sentiment(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        return pd.DataFrame(columns=["date", "close", "indiv_krw"])
+
+    try:
+        df = pd.read_csv(path)
+    except Exception as error:
+        print(f"Existing KOSPI sentiment CSV skipped: {error}")
+        return pd.DataFrame(columns=["date", "close", "indiv_krw"])
+
+    required = {"date", "close", "indiv_krw"}
+    if not required.issubset(df.columns):
+        print(f"Existing KOSPI sentiment CSV skipped because columns are invalid: {list(df.columns)}")
+        return pd.DataFrame(columns=["date", "close", "indiv_krw"])
+
+    df = df[["date", "close", "indiv_krw"]].copy()
+    df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    df["close"] = pd.to_numeric(df["close"], errors="coerce")
+    df["indiv_krw"] = pd.to_numeric(df["indiv_krw"], errors="coerce").round().astype("Int64")
+    return df.dropna(subset=["date", "close", "indiv_krw"]).sort_values("date").reset_index(drop=True)
+
+
+def resolve_collection_start(args: argparse.Namespace, existing: pd.DataFrame) -> str:
+    end_date = parse_ymd(args.end)
+
+    if args.start:
+        return args.start
+
+    if args.full_refresh or existing.empty:
+        return ymd(end_date - dt.timedelta(days=DEFAULT_HISTORY_DAYS))
+
+    last_existing = pd.to_datetime(existing["date"]).max().date()
+    lookback_days = max(0, int(args.lookback_days))
+    return ymd(last_existing - dt.timedelta(days=lookback_days))
+
+
+def merge_sentiment_rows(existing: pd.DataFrame, latest: pd.DataFrame) -> pd.DataFrame:
+    frames = [frame for frame in (existing, latest) if not frame.empty]
+    if not frames:
+        return pd.DataFrame(columns=["date", "close", "indiv_krw"])
+
+    merged = pd.concat(frames, ignore_index=True)
+    merged["date"] = pd.to_datetime(merged["date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    merged["close"] = pd.to_numeric(merged["close"], errors="coerce")
+    merged["indiv_krw"] = pd.to_numeric(merged["indiv_krw"], errors="coerce").round().astype("Int64")
+    merged = merged.dropna(subset=["date", "close", "indiv_krw"])
+    merged = merged.sort_values("date").drop_duplicates(subset=["date"], keep="last")
+    return merged[["date", "close", "indiv_krw"]].reset_index(drop=True)
 
 
 def fetch_kospi_close_from_yahoo(start: str, end: str) -> pd.DataFrame:
@@ -511,8 +574,8 @@ def collect(start: str, end: str) -> pd.DataFrame:
     merged["indiv_krw"] = pd.to_numeric(merged["indiv_krw"], errors="coerce").round().astype("Int64")
     merged = merged[["date", "close", "indiv_krw"]].dropna()
 
-    if len(merged) < 120:
-        raise RuntimeError(f"Not enough observations: {len(merged)}")
+    if len(merged) < MIN_SENTIMENT_ROWS:
+        print(f"Collected only {len(merged)} rows in this run. The existing CSV will be used to keep enough history.")
 
     return merged
 
@@ -524,7 +587,23 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     meta_out.parent.mkdir(parents=True, exist_ok=True)
 
-    df = collect(args.start, args.end)
+    existing_df = load_existing_sentiment(out)
+    collection_start = resolve_collection_start(args, existing_df)
+    if args.start:
+        print(f"Manual start date supplied. Collecting requested range: {collection_start} ~ {args.end}")
+    elif args.full_refresh or existing_df.empty:
+        print(f"No existing CSV or full refresh requested. Collecting initial history: {collection_start} ~ {args.end}")
+    else:
+        print(
+            f"Existing CSV rows: {len(existing_df)}. Last saved date: {existing_df.iloc[-1]['date']}. "
+            f"Incremental collection range: {collection_start} ~ {args.end}"
+        )
+
+    latest_df = collect(collection_start, args.end)
+    df = merge_sentiment_rows(existing_df, latest_df)
+    if len(df) < MIN_SENTIMENT_ROWS:
+        raise RuntimeError(f"Not enough cumulative observations after merge: {len(df)}")
+
     df.to_csv(out, index=False, encoding="utf-8")
     kospi200_volatility = fetch_kospi200_volatility(args.end)
     vkospi_history = fetch_vkospi_history_from_futures_table(args.end)
