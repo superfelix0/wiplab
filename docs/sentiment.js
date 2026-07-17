@@ -22,6 +22,7 @@ let dataMode = "loading";
 let selectedFreq = "W";
 let selectedRange = "1y";
 let dataMeta = null;
+let vixData = null;
 
 function setSentimentStatus(message, state = "neutral") {
   if (!sentimentEls.status) return;
@@ -262,7 +263,21 @@ function card({ label, value, sub, tone = "", wide = false }) {
   `;
 }
 
-function renderMiniLine(rows, color = "#6fbf73") {
+function volatilityCard({ label, value, date, history, source, color = "#6fbf73" }) {
+  if (!Number.isFinite(value)) return "";
+
+  const dailyExpectedMove = value / Math.sqrt(252);
+  return `
+    <article class="featured" data-tone="volatility">
+      <span>${label}</span>
+      <strong>${fmt.format(value)}</strong>
+      ${renderMiniLine(Array.isArray(history) ? history.slice(-66) : [], color, `${label} 최근 3개월 추이`)}
+      <small>${date} 기준 · 최근 3개월 추이. ${label}는 연율화 변동성으로 보고, 1년 총 거래일 약 252일의 제곱근으로 나눠 일일 예상 변동률을 추정합니다. 현재 기준 약 ±${dailyExpectedMove.toFixed(2)}%/일입니다.${source ? ` 출처: ${source}` : ""}</small>
+    </article>
+  `;
+}
+
+function renderMiniLine(rows, color = "#6fbf73", label = "변동성 최근 3개월 추이") {
   if (!Array.isArray(rows) || rows.length < 2) return "";
 
   const values = rows.map((row) => row.value).filter(Number.isFinite);
@@ -279,7 +294,7 @@ function renderMiniLine(rows, color = "#6fbf73") {
   const latest = rows.at(-1);
 
   return `
-    <svg class="mini-line" viewBox="0 0 ${width} ${height}" role="img" aria-label="VKOSPI 최근 3개월 추이">
+    <svg class="mini-line" viewBox="0 0 ${width} ${height}" role="img" aria-label="${label}">
       <path d="${path}" fill="none" stroke="${color}" stroke-width="2.2" />
       <circle cx="${x(rows.length - 1).toFixed(1)}" cy="${y(latest.value).toFixed(1)}" r="3.5" fill="${color}" />
     </svg>
@@ -325,16 +340,25 @@ function renderSummary(analysis) {
   ];
 
   if (volatility?.value) {
-    const dailyExpectedMove = volatility.value / Math.sqrt(252);
-    const history = Array.isArray(volatility.history) ? volatility.history.slice(-66) : [];
-    cards.push(`
-      <article class="featured" data-tone="volatility">
-        <span>${volatility.name || "VKOSPI"}</span>
-        <strong>${fmt.format(volatility.value)}</strong>
-        ${renderMiniLine(history)}
-        <small>${volatility.date} 기준 · 최근 3개월 추이. VKOSPI는 연율화 변동성으로 보고, 1년 총 거래일 약 252일의 제곱근으로 나눠 일일 예상 변동률을 추정합니다. 현재 기준 약 ±${dailyExpectedMove.toFixed(2)}%/일입니다.</small>
-      </article>
-    `);
+    cards.push(volatilityCard({
+      label: "VKOSPI",
+      value: volatility.value,
+      date: volatility.date,
+      history: volatility.history,
+      source: volatility.source,
+      color: "#6fbf73",
+    }));
+  }
+
+  if (vixData?.value) {
+    cards.push(volatilityCard({
+      label: "VIX",
+      value: vixData.value,
+      date: vixData.date,
+      history: vixData.history,
+      source: vixData.source,
+      color: "#d8a13a",
+    }));
   }
 
   sentimentEls.summary.innerHTML = cards.join("");
@@ -401,19 +425,33 @@ async function fetchSentimentData() {
   };
 }
 
+async function fetchVixData() {
+  const response = await fetch(`/api/vix?ts=${Date.now()}`, { cache: "no-store" });
+  const data = await response.json().catch(() => null);
+  if (!response.ok || !data?.ok) {
+    throw new Error(data?.message || "VIX 데이터를 불러오지 못했습니다.");
+  }
+  return data;
+}
+
 async function loadData() {
   sentimentEls.refresh.disabled = true;
   setSentimentStatus("데이터를 확인하는 중입니다.");
 
   try {
-    const loaded = await fetchSentimentData();
+    const [loaded, vix] = await Promise.all([
+      fetchSentimentData(),
+      fetchVixData().catch(() => null),
+    ]);
     rawRows = loaded.rows;
     dataMeta = loaded.meta;
+    vixData = vix;
     dataMode = "live";
     setSentimentStatus(loaded.message, "ok");
   } catch (error) {
     rawRows = sampleRows();
     dataMeta = null;
+    vixData = null;
     dataMode = "demo";
     setSentimentStatus("실데이터를 준비하는 중입니다. 현재 화면은 예시 데이터로 표시합니다.", "neutral");
   } finally {
