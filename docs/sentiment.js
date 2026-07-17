@@ -325,15 +325,14 @@ function renderSummary(analysis) {
   ];
 
   if (volatility?.value) {
-    const vkospiDecimal = volatility.value / 100;
-    const squaredRange = vkospiDecimal ** 2;
+    const dailyExpectedMove = volatility.value / Math.sqrt(252);
     const history = Array.isArray(volatility.history) ? volatility.history.slice(-66) : [];
     cards.push(`
       <article class="featured" data-tone="volatility">
         <span>${volatility.name || "VKOSPI"}</span>
         <strong>${fmt.format(volatility.value)}</strong>
         ${renderMiniLine(history)}
-        <small>${volatility.date} 기준 · 최근 3개월 추이. VKOSPI를 소수로 바꾼 뒤 제곱하면 약 ±${(squaredRange * 100).toFixed(1)}% 범위의 변동성을 예상한다는 의미로 봅니다. 예: 89% → 0.89² = 0.7921.</small>
+        <small>${volatility.date} 기준 · 최근 3개월 추이. VKOSPI는 연율화 변동성으로 보고, 1년 총 거래일 약 252일의 제곱근으로 나눠 일일 예상 변동률을 추정합니다. 현재 기준 약 ±${dailyExpectedMove.toFixed(2)}%/일입니다.</small>
       </article>
     `);
   }
