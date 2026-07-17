@@ -46,10 +46,10 @@ function buildPerCard(data) {
     && Number.isFinite(historicalPer)
     && forwardPer < currentPer
     && forwardPer < historicalPer;
-  const tone = forwardIsLow ? "positive" : "neutral";
-  const title = forwardIsLow ? "미래 이익 기준 저평가 가능" : "PER 기준 혼합 구간";
+  const tone = "neutral";
+  const title = forwardIsLow ? "저평가 가능성·이익 의구심 공존" : "PER 기준 혼합 구간";
   const detail = forwardIsLow
-    ? `Forward PER ${homeNumber.format(forwardPer)}배가 현행 ${homeNumber.format(currentPer)}배와 평균 ${homeNumber.format(historicalPer)}배보다 낮습니다.`
+    ? `Forward PER는 낮지만, 이익 전망 신뢰도와 평균 PER 대비 수준을 함께 봐야 합니다.`
     : `현행 PER ${homeNumber.format(currentPer)}배, 평균 ${homeNumber.format(historicalPer)}배, Forward PER ${homeNumber.format(forwardPer)}배를 함께 봅니다.`;
   return card(
     tone,

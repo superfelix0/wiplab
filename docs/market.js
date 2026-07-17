@@ -58,10 +58,10 @@ function valuationMemo(currentPer, historicalPer, forwardPer) {
   if (forwardIsLow) {
     return {
       title: "PER 판단 메모",
-      value: "미래 이익 기준 저평가 가능",
+      value: "저평가 가능성과 이익 의구심 공존",
       badge: "해석",
-      description: `현행 PER은 역사적 평균보다 ${Number.isFinite(currentVsHistory) && currentVsHistory >= 0 ? "높아" : "낮아"} 보일 수 있지만, Forward PER가 현행·역사적 기준보다 모두 낮으면 이익 전망을 반영한 가격은 낮게 평가된 상태로 볼 수 있습니다.`,
-      footnote: "Forward PER는 예상 이익이 바뀌면 함께 달라지는 참고 지표입니다.",
+      description: `Forward PER가 현행 PER보다 낮으면 미래 이익 기준으로는 저평가 가능성이 있습니다. 다만 시장이 향후 이익 전망을 충분히 신뢰하지 못하는 환경일 수도 있으므로, 평균 PER 대비 현재 수준과 이익 전망의 지속성을 함께 봐야 합니다.`,
+      footnote: `현행 PER은 평균 PER보다 ${Number.isFinite(currentVsHistory) && currentVsHistory >= 0 ? "높은" : "낮은"} 구간입니다. Forward PER는 예상 이익이 바뀌면 함께 달라지는 참고 지표입니다.`,
     };
   }
 
