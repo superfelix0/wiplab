@@ -75,8 +75,14 @@
 
       <div class="earnings-insight-grid" id="earningsSummary"></div>
 
+      <div class="earnings-chart-tabs" role="tablist" aria-label="실적 비교 그래프 선택">
+        <button type="button" class="is-active" data-earnings-tab="growth" role="tab" aria-selected="true">이익 성장률</button>
+        <button type="button" data-earnings-tab="cashflow" role="tab" aria-selected="false">CAPEX/OCF</button>
+        <button type="button" data-earnings-tab="intensity" role="tab" aria-selected="false">CAPEX/OPEX</button>
+      </div>
+
       <div class="earnings-compare-layout">
-        <section class="earnings-panel" aria-labelledby="earnings-rank-title">
+        <section class="earnings-panel" aria-labelledby="earnings-rank-title" data-earnings-panel="growth">
           <div class="panel-head">
             <h3 id="earnings-rank-title">이익 성장률 랭킹</h3>
             <p>최근 분기 QoQ 기준</p>
@@ -84,12 +90,20 @@
           <div class="rank-list" id="earningsRanking"></div>
         </section>
 
-        <section class="earnings-panel" aria-labelledby="earnings-capex-title">
+        <section class="earnings-panel" aria-labelledby="earnings-capex-title" data-earnings-panel="cashflow" hidden>
           <div class="panel-head">
             <h3 id="earnings-capex-title">CAPEX 부담 비교</h3>
             <p>최근 분기 CAPEX / OCF</p>
           </div>
           <div class="rank-list" id="capexRanking"></div>
+        </section>
+
+        <section class="earnings-panel" aria-labelledby="earnings-intensity-title" data-earnings-panel="intensity" hidden>
+          <div class="panel-head">
+            <h3 id="earnings-intensity-title">CAPEX/OPEX 투자강도</h3>
+            <p>최근 분기 CAPEX / OPEX, OPEX가 없으면 EBITDA 기준</p>
+          </div>
+          <div class="rank-list" id="intensityRanking"></div>
         </section>
       </div>
 
@@ -126,6 +140,6 @@
     <span>© 2026</span>
   </footer>
   <script src="../ticker.js?v=change-pct-20260717"></script>
-  <script src="../ai-earnings.js?v=compare-board-20260717"></script>
+  <script src="../ai-earnings.js?v=capex-opex-tabs-20260717"></script>
 </body>
 </html>

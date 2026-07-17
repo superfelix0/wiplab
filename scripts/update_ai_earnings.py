@@ -32,6 +32,9 @@ METRICS = [
     "quarterlyOperatingCashFlow",
     "quarterlyCapitalExpenditure",
     "quarterlyFreeCashFlow",
+    "quarterlyOperatingExpense",
+    "quarterlyEBITDA",
+    "quarterlyNormalizedEBITDA",
 ]
 
 
@@ -91,6 +94,10 @@ def enrich_quarters(rows: list[dict]) -> list[dict]:
             profit = row.get("quarterlyOperatingIncome")
             profit_metric = "Operating income"
 
+        ebitda = row.get("quarterlyEBITDA")
+        if ebitda is None:
+            ebitda = row.get("quarterlyNormalizedEBITDA")
+
         previous = enriched[index - 1]["profit"] if index > 0 else None
         enriched.append({
             **row,
@@ -100,6 +107,8 @@ def enrich_quarters(rows: list[dict]) -> list[dict]:
             "capex": row.get("quarterlyCapitalExpenditure"),
             "operatingCashFlow": row.get("quarterlyOperatingCashFlow"),
             "freeCashFlow": row.get("quarterlyFreeCashFlow"),
+            "operatingExpense": row.get("quarterlyOperatingExpense"),
+            "ebitda": ebitda,
         })
     return enriched[-5:]
 

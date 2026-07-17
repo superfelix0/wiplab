@@ -538,9 +538,31 @@ h3 {
 
 .earnings-compare-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
   margin-top: 14px;
+}
+
+.earnings-chart-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.earnings-chart-tabs button {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 86%, transparent);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  padding: 7px 11px;
+}
+
+.earnings-chart-tabs button.is-active {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
 }
 
 .earnings-panel,
