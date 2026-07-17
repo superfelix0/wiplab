@@ -3,6 +3,9 @@ from __future__ import annotations
 import csv
 import json
 import math
+import socket
+import time
+import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -64,12 +67,23 @@ def fred_csv_url(series_id: str) -> str:
 
 
 def fetch_observations(series: dict) -> list[dict]:
-    req = urllib.request.Request(
-        fred_csv_url(series["fredId"]),
-        headers={"User-Agent": "wiplabs-us-liquidity-action/1.0"},
-    )
-    with urllib.request.urlopen(req, timeout=30) as response:
-        text = response.read().decode("utf-8")
+    last_error: Exception | None = None
+    for attempt in range(1, 4):
+        req = urllib.request.Request(
+            fred_csv_url(series["fredId"]),
+            headers={"User-Agent": "wiplabs-us-liquidity-action/1.0"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=20) as response:
+                text = response.read().decode("utf-8")
+            break
+        except (TimeoutError, socket.timeout, urllib.error.URLError) as error:
+            last_error = error
+            if attempt == 3:
+                raise RuntimeError(f"FRED fetch failed for {series['fredId']} after {attempt} attempts: {error}") from error
+            wait_seconds = attempt * 5
+            print(f"FRED fetch retry {attempt}/3 for {series['fredId']} after error: {error}. Waiting {wait_seconds}s.", flush=True)
+            time.sleep(wait_seconds)
 
     rows = []
     for row in csv.DictReader(text.splitlines()):
@@ -82,6 +96,16 @@ def fetch_observations(series: dict) -> list[dict]:
         if date and math.isfinite(value):
             rows.append({"date": date, "value": value})
     return rows
+
+
+def load_existing_series() -> dict[str, dict]:
+    if not OUTPUT.exists():
+        return {}
+    try:
+        payload = json.loads(OUTPUT.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return {item.get("id"): item for item in payload.get("series", []) if item.get("id")}
 
 
 def find_lookback(observations: list[dict], latest_date: str, days: int = 90) -> dict:
@@ -105,8 +129,34 @@ def build_signal(series: dict, latest: dict, previous: dict) -> dict:
     }
 
 
-def build_series(series: dict) -> dict:
-    observations = fetch_observations(series)
+def build_series(series: dict, existing: dict[str, dict] | None = None) -> dict:
+    existing = existing or {}
+    try:
+        observations = fetch_observations(series)
+    except RuntimeError as error:
+        cached = existing.get(series["id"])
+        if not cached:
+            raise
+        print(f"Using cached US liquidity series for {series['id']} because live fetch failed: {error}")
+        return {
+            **cached,
+            **series,
+            "stale": True,
+            "fetchError": str(error),
+        }
+
+    if not observations:
+        cached = existing.get(series["id"])
+        if cached:
+            print(f"Using cached US liquidity series for {series['id']} because live fetch returned no observations.")
+            return {
+                **cached,
+                **series,
+                "stale": True,
+                "fetchError": "FRED returned no observations",
+            }
+        raise RuntimeError(f"FRED returned no observations for {series['fredId']}")
+
     latest = observations[-1]
     lookback = find_lookback(observations, latest["date"])
     change = latest["value"] - lookback["value"]
@@ -164,7 +214,8 @@ def build_summary(series_data: list[dict]) -> dict:
 
 
 def main() -> None:
-    series_data = [build_series(series) for series in SERIES]
+    existing = load_existing_series()
+    series_data = [build_series(series, existing) for series in SERIES]
     payload = {
         "ok": True,
         "fetchedAt": int(datetime.now(tz=KST).timestamp() * 1000),

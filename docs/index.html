@@ -40,6 +40,7 @@
       <strong>WIP Labs</strong>
     </a>
     <nav class="service-tabs" aria-label="Main menu">
+      <a href="./" aria-current="page" title="HOME">HOME</a>
       <a href="wip-1/" title="F1 - KOSPI PER">F1</a>
       <a href="wip-2/" title="F2 - Fear/Greed">F2</a>
       <a href="wip-3/" title="F3 - AI Earnings">F3</a>
@@ -62,24 +63,6 @@
       <p class="hero-copy">KOSPI 밸류에이션, 개인 수급 심리, 미국 유동성, AI CAPEX 흐름을 모아 “지금 무엇을 봐야 하는지”부터 정리합니다.</p>
     </section>
 
-    <section class="today-brief" aria-labelledby="today-brief-title">
-      <div class="section-title">
-        <div>
-          <p class="eyebrow">TODAY'S READ</p>
-          <h2 id="today-brief-title">오늘의 시장 리딩</h2>
-          <p class="section-copy">자동 수집 데이터가 있는 지표는 최신 기준으로 읽고, 해석이 필요한 부분은 보조 프레임으로만 표시합니다.</p>
-        </div>
-        <small id="homeUpdatedAt">데이터 확인 중</small>
-      </div>
-      <div class="today-summary" id="todaySummary">
-        <article data-tone="neutral">
-          <span>MARKET READ</span>
-          <strong>데이터를 불러오는 중입니다.</strong>
-          <small>각 WIP 페이지의 최신 자료를 모아 첫 화면 요약을 만듭니다.</small>
-        </article>
-      </div>
-    </section>
-
     <section class="wip-list" aria-labelledby="wip-list-title">
       <div class="section-title">
         <div>
@@ -87,6 +70,7 @@
           <h2 id="wip-list-title">지표별 실험실</h2>
           <p class="section-copy">각 페이지는 숫자 자체보다 “어떻게 읽을지”를 먼저 보여주는 방향으로 계속 다듬고 있습니다.</p>
         </div>
+        <small id="homeUpdatedAt">Loading data</small>
       </div>
       <div class="wip-index research-index">
         <a href="wip-1/" data-category="finance">
@@ -95,6 +79,7 @@
           <small class="cmd"><b>$</b> ./kospi-per <em>--krx</em></small>
           <small class="metric">KRX/PER</small>
           <small class="module-note">현행 PER와 역사적 평균, Forward PER를 비교해 밸류에이션 온도를 봅니다.</small>
+          <small class="module-comment" id="commentF1">Loading PER comment.</small>
           <small class="live-dot">● DAILY</small>
         </a>
         <a href="wip-2/" data-category="finance">
@@ -103,6 +88,7 @@
           <small class="cmd"><b>$</b> ./sentiment <em>--kospi</em></small>
           <small class="metric">FLOW/SIGNAL</small>
           <small class="module-note">개인 수급이 평소 패턴에서 얼마나 벗어났는지 공포·탐욕 시점으로 봅니다.</small>
+          <small class="module-comment" id="commentF2">Loading sentiment comment.</small>
           <small class="live-dot">● DAILY</small>
         </a>
         <a href="wip-3/" data-category="finance">
@@ -111,6 +97,7 @@
           <small class="cmd"><b>$</b> ./ai-earnings <em>--capex</em></small>
           <small class="metric">CAPEX/OCF</small>
           <small class="module-note">AI 공급망 기업의 이익 성장률과 CAPEX 감당력을 비교합니다.</small>
+          <small class="module-comment" id="commentF3">Loading AI earnings comment.</small>
           <small class="live-dot">● QUARTERLY</small>
         </a>
         <a href="wip-4/" data-category="finance">
@@ -119,6 +106,7 @@
           <small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small>
           <small class="metric">M2/RRP/TGA</small>
           <small class="module-note">미국 통화량, 지급준비금, RRP, TGA를 묶어 시장 유동성 방향을 봅니다.</small>
+          <small class="module-comment" id="commentF4">Loading liquidity comment.</small>
           <small class="live-dot">● AD HOC</small>
         </a>
         <a href="wip-5/" data-category="finance">
@@ -127,6 +115,7 @@
           <small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small>
           <small class="metric">ADR/KRW</small>
           <small class="module-note">ADR과 본주가 같은 원화 기준에서 얼마나 벌어졌는지 확인합니다.</small>
+          <small class="module-comment" id="commentF5">Refreshes quotes when the page opens.</small>
           <small class="live-dot">● DAILY</small>
         </a>
       </div>
@@ -149,6 +138,6 @@
     <span>© 2026</span>
   </footer>
   <script src="ticker.js?v=change-pct-20260717"></script>
-  <script src="home.js?v=fper-balanced-20260718"></script>
+  <script src="home.js?v=merged-module-comments-20260718"></script>
 </body>
 </html>

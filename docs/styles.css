@@ -468,67 +468,14 @@ h3 {
   max-width: 780px;
 }
 
-.today-brief {
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  padding: 18px 0 20px;
-}
-
-.today-summary {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.today-card,
-.today-summary article {
-  min-height: 128px;
-  border: 1px solid var(--line);
-  background: var(--panel);
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 14px;
-  text-decoration: none;
-}
-
-.today-card:hover {
-  background: var(--panel-3);
-  box-shadow: inset 3px 0 0 var(--amber);
-}
-
-.today-card span,
-.today-summary article span {
-  color: var(--amber);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
-.today-card strong,
-.today-summary article strong {
-  color: var(--title);
-  font-size: 14px;
-}
-
-.today-card small,
-.today-summary article small {
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.today-card em {
-  color: var(--green);
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 800;
-  margin-top: auto;
-}
-
 .module-note {
   grid-column: 3 / 6;
+  line-height: 1.45;
+}
+
+.module-comment {
+  grid-column: 3 / 6;
+  color: var(--title);
   line-height: 1.45;
 }
 
@@ -681,13 +628,56 @@ h3 {
 }
 
 .earnings-panel,
-.earnings-insight-grid article {
+.earnings-insight-grid article,
+.earnings-takeaway-panel {
   border: 1px solid var(--line);
   background: var(--panel);
 }
 
-.earnings-panel {
+.earnings-panel,
+.earnings-takeaway-panel {
   padding: 14px;
+}
+
+.earnings-takeaway-panel {
+  margin-top: 14px;
+}
+
+.earnings-takeaway-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.earnings-takeaway-grid article {
+  border: 1px solid var(--line-soft);
+  background: color-mix(in srgb, var(--panel-2) 76%, transparent);
+  min-height: 116px;
+  padding: 12px;
+}
+
+.earnings-takeaway-grid span {
+  color: var(--faint);
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.earnings-takeaway-grid strong {
+  color: var(--title);
+  display: block;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+.earnings-takeaway-grid p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+  margin: 8px 0 0;
 }
 
 .earnings-insight-grid article {
@@ -1419,6 +1409,7 @@ footer p {
   .wip-index a small,
   .wip-index .metric,
   .wip-index .module-note,
+  .wip-index .module-comment,
   .wip-index .spark,
   .wip-index .live-dot {
     grid-column: 2;

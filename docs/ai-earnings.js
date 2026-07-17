@@ -2,6 +2,7 @@ const earningsEls = {
   status: document.querySelector("#earningsStatus"),
   refresh: document.querySelector("#earningsRefresh"),
   summary: document.querySelector("#earningsSummary"),
+  takeaways: document.querySelector("#earningsTakeaways"),
   ranking: document.querySelector("#earningsRanking"),
   capexRanking: document.querySelector("#capexRanking"),
   fcfRanking: document.querySelector("#fcfRanking"),
@@ -104,6 +105,51 @@ function average(values) {
   const valid = values.filter(Number.isFinite);
   if (!valid.length) return null;
   return valid.reduce((sum, value) => sum + value, 0) / valid.length;
+}
+
+function renderTakeaways(data) {
+  if (!earningsEls.takeaways) return;
+
+  const rows = (data.companies || [])
+    .map((company) => ({ company, latest: latestQuarter(company) }))
+    .filter(({ latest }) => latest);
+  const fcfRows = rows.filter(({ latest }) => Number.isFinite(latest.freeCashFlow));
+  const capexOcfRows = rows.filter(({ latest }) => Number.isFinite(capexBurden(latest)));
+  const growthRows = rows.filter(({ latest }) => Number.isFinite(latest.profitGrowthQoQ));
+  const fcfPositive = fcfRows.filter(({ latest }) => latest.freeCashFlow > 0).length;
+  const avgCapexOcf = average(capexOcfRows.map(({ latest }) => capexBurden(latest)));
+  const topFcf = fcfRows.sort((a, b) => b.latest.freeCashFlow - a.latest.freeCashFlow)[0];
+  const weakestFcf = fcfRows.sort((a, b) => a.latest.freeCashFlow - b.latest.freeCashFlow)[0];
+  const topGrowth = growthRows.sort((a, b) => b.latest.profitGrowthQoQ - a.latest.profitGrowthQoQ)[0];
+  const heavyCapex = capexOcfRows.sort((a, b) => capexBurden(b.latest) - capexBurden(a.latest))[0];
+
+  earningsEls.takeaways.innerHTML = `
+    <article>
+      <span>현금흐름 안전판</span>
+      <strong>${fcfPositive}/${fcfRows.length || rows.length}개 FCF 양수</strong>
+      <p>AI 투자 사이클이 이익 성장만으로 설명되는지, 투자 후 현금이 실제로 남는지 확인합니다.</p>
+    </article>
+    <article>
+      <span>CAPEX 감당력</span>
+      <strong>${pct(avgCapexOcf)}</strong>
+      <p>평균 CAPEX/OCF입니다. 100%를 넘으면 최근 분기 영업현금흐름보다 설비투자 부담이 큽니다.</p>
+    </article>
+    <article>
+      <span>FCF 규모</span>
+      <strong>${topFcf ? topFcf.company.name : "N/A"}</strong>
+      <p>${topFcf ? `가장 큰 FCF는 ${compactMoney(topFcf.latest.freeCashFlow, topFcf.company.currency)}입니다.` : "FCF 비교 데이터가 부족합니다."}</p>
+    </article>
+    <article>
+      <span>성장과 부담</span>
+      <strong>${topGrowth ? topGrowth.company.name : "N/A"}</strong>
+      <p>${topGrowth ? `이익 성장률 상위는 ${pct(topGrowth.latest.profitGrowthQoQ)}입니다.` : "이익 성장률 데이터가 부족합니다."} ${heavyCapex ? `CAPEX/OCF 부담이 가장 큰 회사는 ${heavyCapex.company.name}입니다.` : ""}</p>
+    </article>
+    <article>
+      <span>주의할 지점</span>
+      <strong>${weakestFcf ? weakestFcf.company.name : "N/A"}</strong>
+      <p>${weakestFcf ? `가장 낮은 FCF는 ${compactMoney(weakestFcf.latest.freeCashFlow, weakestFcf.company.currency)}입니다. FCF가 음수라면 투자가 현금흐름을 앞서가는 구간일 수 있습니다.` : "FCF 하위 데이터를 확인할 수 없습니다."}</p>
+    </article>
+  `;
 }
 
 function renderSummary(data) {
@@ -317,6 +363,7 @@ function renderSources(data) {
 
 function render(data) {
   renderSummary(data);
+  renderTakeaways(data);
   renderRankings(data);
   renderCards(data);
   renderTable(data);

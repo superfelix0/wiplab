@@ -29,6 +29,7 @@
       <strong>WIP Labs</strong>
     </a>
     <nav class="service-tabs" aria-label="Main menu">
+      <a href="../" title="HOME">HOME</a>
       <a href="../wip-1/" title="F1 - KOSPI PER">F1</a>
       <a href="../wip-2/" title="F2 - Fear/Greed">F2</a>
       <a href="../wip-3/" aria-current="page" title="F3 - AI Earnings">F3</a>
@@ -81,6 +82,14 @@
       </div>
 
       <div class="earnings-insight-grid" id="earningsSummary"></div>
+
+      <section class="earnings-takeaway-panel" aria-labelledby="earnings-takeaway-title">
+        <div class="panel-head">
+          <h3 id="earnings-takeaway-title">데이터로 보는 시사점</h3>
+          <p>11개 회사의 최근 분기 실적을 이익 성장, CAPEX 부담, FCF 규모로 요약합니다.</p>
+        </div>
+        <div class="earnings-takeaway-grid" id="earningsTakeaways"></div>
+      </section>
 
       <div class="earnings-chart-tabs" role="tablist" aria-label="실적 비교 그래프 선택">
         <button type="button" class="is-active" data-earnings-tab="growth" role="tab" aria-selected="true">이익 성장률</button>
@@ -146,6 +155,6 @@
     <span>© 2026</span>
   </footer>
   <script src="../ticker.js?v=change-pct-20260717"></script>
-  <script src="../ai-earnings.js?v=fcf-ranking-20260718"></script>
+  <script src="../ai-earnings.js?v=takeaways-20260718"></script>
 </body>
 </html>
