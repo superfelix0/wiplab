@@ -7,6 +7,8 @@ const homeNumber = new Intl.NumberFormat("ko-KR", {
   maximumFractionDigits: 2,
 });
 
+const HOME_FORWARD_PER = 6.35;
+
 function safeDate(value) {
   if (!value) return "";
   return String(value).slice(0, 10);
@@ -37,14 +39,23 @@ async function readJson(url) {
 function buildPerCard(data) {
   const kospi = data?.markets?.kospi200;
   if (!kospi) return card("neutral", "F1 · VALUE", "KOSPI PER 데이터 확인 필요", "KRX PER 데이터가 아직 준비되지 않았습니다.", "wip-1/");
-  const gap = kospi.per - kospi.historicalAveragePer;
-  const tone = Math.abs(gap) < 0.5 ? "neutral" : gap > 0 ? "negative" : "positive";
-  const title = gap > 0.5 ? "역사적 평균보다 비싼 편" : gap < -0.5 ? "역사적 평균보다 낮은 편" : "역사적 평균 부근";
+  const currentPer = Number(kospi.per);
+  const historicalPer = Number(kospi.historicalAveragePer);
+  const forwardPer = HOME_FORWARD_PER;
+  const forwardIsLow = Number.isFinite(currentPer)
+    && Number.isFinite(historicalPer)
+    && forwardPer < currentPer
+    && forwardPer < historicalPer;
+  const tone = forwardIsLow ? "positive" : "neutral";
+  const title = forwardIsLow ? "미래 이익 기준 저평가 가능" : "PER 기준 혼합 구간";
+  const detail = forwardIsLow
+    ? `Forward PER ${homeNumber.format(forwardPer)}배가 현행 ${homeNumber.format(currentPer)}배와 평균 ${homeNumber.format(historicalPer)}배보다 낮습니다.`
+    : `현행 PER ${homeNumber.format(currentPer)}배, 평균 ${homeNumber.format(historicalPer)}배, Forward PER ${homeNumber.format(forwardPer)}배를 함께 봅니다.`;
   return card(
     tone,
     "F1 · VALUE",
     title,
-    `최근 ${safeDate(kospi.date)} 기준 PER ${homeNumber.format(kospi.per)}배, 역사적 평균 ${homeNumber.format(kospi.historicalAveragePer)}배`,
+    `${safeDate(kospi.date)} 기준 · ${detail}`,
     "wip-1/"
   );
 }

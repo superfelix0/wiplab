@@ -126,7 +126,7 @@ function renderMarketPerChart(perData) {
   marketPerChart.innerHTML = "";
   marketPerLegend.innerHTML = `
     <span><i style="background:var(--amber)"></i>연도별 평균 PER</span>
-    <span><i style="background:var(--muted)"></i>누적 평균 PER ${formatPer(historicalAveragePer)}</span>
+    <span><i style="background:var(--muted)"></i>평균 PER ${formatPer(historicalAveragePer)}</span>
     <span><i style="background:var(--green)"></i>현재 PER ${formatPer(currentPer)}</span>
     <span><i style="background:var(--red)"></i>Forward PER ${formatPer(forwardPer)}</span>
   `;
@@ -183,7 +183,7 @@ function renderMarketPerChart(perData) {
   });
 
   [
-    { value: historicalAveragePer, label: `누적 평균 ${formatPer(historicalAveragePer)}`, color: "var(--muted)", dash: "2 6" },
+    { value: historicalAveragePer, label: `평균 ${formatPer(historicalAveragePer)}`, color: "var(--muted)", dash: "2 6" },
     { value: currentPer, label: `현재 ${formatPer(currentPer)}`, color: "var(--green)" },
     { value: forwardPer, label: `Forward ${formatPer(forwardPer)}`, color: "var(--red)" },
   ].forEach((line) => {
