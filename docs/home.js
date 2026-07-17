@@ -107,8 +107,8 @@ async function loadHomeRead() {
     homeEls.summary.innerHTML = [
       buildPerCard(per),
       buildSentimentCard(sentiment),
-      buildLiquidityCard(liquidity),
       buildEarningsCard(earnings),
+      buildLiquidityCard(liquidity),
     ].join("");
 
     const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt].filter(Boolean);
