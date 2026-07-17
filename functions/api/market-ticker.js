@@ -44,19 +44,34 @@ async function fetchLatestClose(ticker) {
   const result = data?.chart?.result?.[0];
   const timestamps = result?.timestamp || [];
   const closes = result?.indicators?.quote?.[0]?.close || [];
+  const valid = [];
 
   for (let index = timestamps.length - 1; index >= 0; index -= 1) {
     const close = closes[index];
     if (Number.isFinite(close)) {
-      return {
-        id: ticker.id,
-        label: ticker.label,
-        symbol: ticker.symbol,
-        close,
-        date: toDateKey(timestamps[index]),
-        digits: ticker.digits,
-      };
+      valid.push({ close, date: toDateKey(timestamps[index]) });
+      if (valid.length === 2) break;
     }
+  }
+
+  if (valid.length >= 1) {
+    const latest = valid[0];
+    const previous = valid[1] || null;
+    const change = previous ? latest.close - previous.close : null;
+    const changePct = previous && previous.close !== 0 ? change / previous.close : null;
+
+    return {
+      id: ticker.id,
+      label: ticker.label,
+      symbol: ticker.symbol,
+      close: latest.close,
+      previousClose: previous?.close ?? null,
+      change,
+      changePct,
+      date: latest.date,
+      previousDate: previous?.date ?? null,
+      digits: ticker.digits,
+    };
   }
 
   throw new Error(`${ticker.symbol} daily close is unavailable`);

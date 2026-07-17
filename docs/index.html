@@ -147,6 +147,11 @@
       maximumFractionDigits: 2,
     });
 
+    function formatTickerChangePct(value) {
+      if (!Number.isFinite(value)) return "";
+      return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(2)}%`;
+    }
+
     function showCategory(category) {
       tabButtons.forEach((button) => {
         const isActive = button.dataset.wipTab === category;
@@ -171,7 +176,9 @@
         data.items.forEach((item) => {
           const element = tickerEls[item.id];
           if (!element) return;
-          element.textContent = tickerNumber.format(item.close);
+          const changeText = formatTickerChangePct(item.changePct);
+          const changeClass = item.changePct > 0 ? "positive" : item.changePct < 0 ? "negative" : "neutral";
+          element.innerHTML = `${tickerNumber.format(item.close)}${changeText ? ` <em class="${changeClass}">${changeText}</em>` : ""}`;
           element.closest("span").title = `${item.label} 최근 종가 기준일: ${item.date}`;
         });
       } catch {

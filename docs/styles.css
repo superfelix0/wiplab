@@ -241,8 +241,30 @@ footer {
 }
 
 .ticker-strip b {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
   color: var(--green);
   font-weight: 700;
+}
+
+.ticker-strip em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.ticker-strip em.positive {
+  color: var(--green);
+}
+
+.ticker-strip em.negative {
+  color: var(--red);
+}
+
+.ticker-strip em.neutral {
+  color: var(--muted);
 }
 
 main {
