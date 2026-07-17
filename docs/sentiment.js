@@ -267,12 +267,13 @@ function volatilityCard({ label, value, date, history, source, color = "#6fbf73"
   if (!Number.isFinite(value)) return "";
 
   const dailyExpectedMove = value / Math.sqrt(252);
+  const volatilityDescription = `${label}는 연율화 변동성 지수이므로 대략적인 하루 예상 변동률은 지수값을 1년 거래일 수의 제곱근(√252)으로 나눠 추정합니다. 정규분포식 단순 환산이라 실제 하루 변동폭을 보장하지는 않습니다.`;
   return `
     <article class="featured" data-tone="volatility">
       <span>${label}</span>
       <strong>${fmt.format(value)}</strong>
       ${renderMiniLine(Array.isArray(history) ? history.slice(-66) : [], color, `${label} 최근 3개월 추이`)}
-      <small>${date} 기준 · 최근 3개월 추이. ${label}는 연율화 변동성으로 보고, 1년 총 거래일 약 252일의 제곱근으로 나눠 일일 예상 변동률을 추정합니다. 현재 기준 약 ±${dailyExpectedMove.toFixed(2)}%/일입니다.${source ? ` 출처: ${source}` : ""}</small>
+      <small>${date} 기준 · 최근 3개월 추이. ${volatilityDescription} 현재 기준 약 ±${dailyExpectedMove.toFixed(2)}%/일입니다.${source ? ` 출처: ${source}` : ""}</small>
     </article>
   `;
 }

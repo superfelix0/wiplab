@@ -71,6 +71,28 @@ function capexBurden(latest) {
   return Math.abs(latest.capex) / Math.abs(latest.operatingCashFlow);
 }
 
+function capexProfitCoverage(latest) {
+  if (!Number.isFinite(latest?.capex) || !Number.isFinite(latest?.profit) || latest.profit <= 0) {
+    return null;
+  }
+  return Math.abs(latest.capex) / latest.profit;
+}
+
+function capexCoverageNote(latest) {
+  const capexToOcf = capexBurden(latest);
+  const capexToProfit = capexProfitCoverage(latest);
+  const ocfNote = Number.isFinite(capexToOcf)
+    ? `OCF 대비 ${pct(capexToOcf)}`
+    : "OCF 비교 불가";
+  const profitNote = Number.isFinite(capexToProfit)
+    ? `${latest.profitMetric} 대비 ${pct(capexToProfit)}`
+    : `${latest.profitMetric || "이익"} 대비 비교 불가`;
+  const fcfNote = Number.isFinite(latest?.freeCashFlow)
+    ? `FCF ${latest.freeCashFlow >= 0 ? "양수" : "음수"}`
+    : "FCF 확인 불가";
+  return `${ocfNote} · ${profitNote} · ${fcfNote}`;
+}
+
 function capexOpex(latest) {
   if (!Number.isFinite(latest?.capex) || !Number.isFinite(latest?.operatingExpense) || latest.operatingExpense === 0) {
     return null;
@@ -110,6 +132,7 @@ function renderSummary(data) {
   const rows = companiesWithLatest(data);
   const growthValues = rows.map(({ latest }) => latest.profitGrowthQoQ);
   const capexBurdenValues = rows.map(({ latest }) => capexBurden(latest));
+  const capexProfitValues = rows.map(({ latest }) => capexProfitCoverage(latest));
   const capexIntensityValues = rows.map(({ latest }) => capexIntensity(latest));
   const fcfPositive = rows.filter(({ latest }) => Number.isFinite(latest.freeCashFlow) && latest.freeCashFlow > 0).length;
   const topGrowth = rows
@@ -133,7 +156,12 @@ function renderSummary(data) {
     <article data-tone="neutral">
       <span>평균 CAPEX/OCF</span>
       <strong>${pct(average(capexBurdenValues))}</strong>
-      <small>영업현금흐름 대비 CAPEX 부담입니다. 통화가 다른 기업끼리도 상대 비교가 가능합니다.</small>
+      <small>영업현금흐름 안에서 설비투자가 어느 정도 감당되는지 보는 지표입니다. 100%를 넘으면 해당 분기 OCF보다 CAPEX가 큽니다.</small>
+    </article>
+    <article data-tone="neutral">
+      <span>평균 CAPEX/이익</span>
+      <strong>${pct(average(capexProfitValues))}</strong>
+      <small>영업이익 또는 순이익 대비 설비투자 부담입니다. 이익이 작거나 적자면 비교 가능성이 낮아집니다.</small>
     </article>
     <article data-tone="neutral">
       <span>평균 CAPEX/OPEX</span>
@@ -224,6 +252,7 @@ function renderCards(data) {
   earningsEls.cards.innerHTML = rows.map(({ company, latest }) => {
     const burden = capexBurden(latest);
     const intensity = capexIntensity(latest);
+    const profitCoverage = capexProfitCoverage(latest);
     const margin = fcfMargin(latest);
     return `
       <article data-tone="${toneForGrowth(latest.profitGrowthQoQ)}">
@@ -233,12 +262,14 @@ function renderCards(data) {
           <div><dt>최근 분기</dt><dd>${latest.date}</dd></div>
           <div><dt>${latest.profitMetric}</dt><dd>${compactMoney(latest.profit, company.currency)}</dd></div>
           <div><dt>이익 QoQ</dt><dd>${pct(latest.profitGrowthQoQ)}</dd></div>
+          <div><dt>CAPEX</dt><dd>${compactMoney(latest.capex, company.currency)}</dd></div>
+          <div><dt>CAPEX/이익</dt><dd>${pct(profitCoverage)}</dd></div>
           <div><dt>CAPEX/OCF</dt><dd>${pct(burden)}</dd></div>
           <div><dt>${capexIntensityLabel(latest)}</dt><dd>${pct(intensity)}</dd></div>
           <div><dt>FCF</dt><dd>${compactMoney(latest.freeCashFlow, company.currency)}</dd></div>
           <div><dt>FCF Margin</dt><dd>${pct(margin)}</dd></div>
         </dl>
-        <small>선택한 그룹의 회사별 요약입니다. PER/PBR/컨센서스는 데이터 원천 연결 전까지 N/A입니다.</small>
+        <small>${capexCoverageNote(latest)}</small>
       </article>
     `;
   }).join("");
@@ -253,7 +284,7 @@ function renderTable(data) {
         <tr>
           <td>${company.name}<br><small>${company.symbol}</small></td>
           <td>${company.group}</td>
-          <td colspan="11">분기 실적 데이터 없음 · ${company.message || ""}</td>
+          <td colspan="12">분기 실적 데이터 없음 · ${company.message || ""}</td>
         </tr>
       `;
     }
@@ -262,6 +293,7 @@ function renderTable(data) {
     const width = Math.min(100, Math.abs(growth || 0) * 100);
     const barClass = growth >= 0 ? "positive" : "negative";
     const burden = capexBurden(latest);
+    const profitCoverage = capexProfitCoverage(latest);
     const intensity = capexIntensity(latest);
 
     return `
@@ -277,6 +309,7 @@ function renderTable(data) {
           </div>
         </td>
         <td>${compactMoney(latest.capex, company.currency)}</td>
+        <td>${pct(profitCoverage)}</td>
         <td>${compactMoney(latest.operatingCashFlow, company.currency)}</td>
         <td>${compactMoney(latest.freeCashFlow, company.currency)}</td>
         <td>${pct(burden)}</td>
@@ -297,6 +330,7 @@ function renderTable(data) {
         <th>이익</th>
         <th>이익 QoQ</th>
         <th>CAPEX</th>
+        <th>CAPEX/이익</th>
         <th>OCF</th>
         <th>FCF</th>
         <th>CAPEX/OCF</th>

@@ -19,11 +19,11 @@ const dateTimeFormatter = new Intl.DateTimeFormat("ko-KR", {
 });
 
 const FORWARD_PER_CONSENSUS = {
-  value: 7.6,
-  date: "2026-07",
-  sourceTitle: "MarketWatch: KOSPI P/E after correction",
-  sourceUrl: "https://www.marketwatch.com/story/it-was-the-worlds-hottest-stock-market-now-south-koreas-stock-market-index-has-entered-bear-market-territory-95d70e3d",
-  note: "공개 기사에서 확인한 KOSPI P/E 언급을 Forward PER 컨센서스 비교값으로 임시 사용합니다. 더 안정적인 컨센서스 원천을 확보하면 교체 대상입니다.",
+  value: 6.35,
+  date: "2026-07-09",
+  sourceTitle: "Investing.com / EBN: KOSPI 12개월 선행 PER 6.35배",
+  sourceUrl: "https://kr.investing.com/news/stock-market-news/article-2012684",
+  note: "기사에서 블룸버그 보고서를 인용해 2026년 7월 9일 기준 KOSPI 12개월 선행 PER이 6.35배라고 언급한 값을 Forward PER 참고치로 사용합니다.",
 };
 
 function setStatus(message, state = "") {
@@ -56,6 +56,35 @@ function differenceFromAverage(current, average) {
 function formatPercent(value) {
   if (!Number.isFinite(value)) return "";
   return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%`;
+}
+
+function valuationMemo(currentPer, historicalPer, forwardPer) {
+  const currentVsHistory = Number.isFinite(currentPer) && Number.isFinite(historicalPer)
+    ? currentPer - historicalPer
+    : null;
+  const forwardIsLow = Number.isFinite(forwardPer)
+    && Number.isFinite(currentPer)
+    && Number.isFinite(historicalPer)
+    && forwardPer < currentPer
+    && forwardPer < historicalPer;
+
+  if (forwardIsLow) {
+    return {
+      title: "PER 판단 메모",
+      value: "미래 이익 기준 저평가 가능",
+      badge: "해석",
+      description: `현행 PER은 역사적 평균보다 ${Number.isFinite(currentVsHistory) && currentVsHistory >= 0 ? "높아" : "낮아"} 보일 수 있지만, Forward PER가 현행·역사적 기준보다 모두 낮으면 이익 전망을 반영한 가격은 낮게 평가된 상태로 볼 수 있습니다.`,
+      footnote: "Forward PER는 예상 이익이 바뀌면 함께 달라지는 참고 지표입니다.",
+    };
+  }
+
+  return {
+    title: "PER 판단 메모",
+    value: "혼합 구간",
+    badge: "해석",
+    description: "현행 PER, 역사적 평균, Forward PER의 방향이 엇갈립니다. 단순 고평가·저평가보다 이익 전망의 지속성을 함께 봐야 합니다.",
+    footnote: "Forward PER는 예상 이익이 바뀌면 함께 달라지는 참고 지표입니다.",
+  };
 }
 
 function svgEl(name, attrs = {}) {
@@ -204,6 +233,7 @@ async function fetchMarketPerData() {
 function buildCards(perData) {
   const kospi = perData.markets.kospi200;
   const gap = differenceFromAverage(kospi.per, kospi.historicalAveragePer);
+  const forwardPer = FORWARD_PER_CONSENSUS.value;
 
   return [
     {
@@ -221,12 +251,13 @@ function buildCards(perData) {
       footnote: `${formatDate(kospi.date)} 기준${Number.isFinite(gap) ? ` · 평균 대비 ${formatPercent(gap)}` : ""}`,
     },
     {
-      title: "Forward PER 컨센서스",
-      value: formatPer(FORWARD_PER_CONSENSUS.value),
-      badge: "컨센서스",
+      title: "Forward PER 참고치",
+      value: formatPer(forwardPer),
+      badge: "기사 기준",
       description: "향후 이익 전망을 반영한 비교용 PER입니다. KRX 현행 PER와 성격이 다르므로 방향성 비교로만 봅니다.",
-      footnote: `${FORWARD_PER_CONSENSUS.date} 기준 · 보조 출처`,
+      footnote: `${FORWARD_PER_CONSENSUS.date} 기준 · Investing.com/EBN 기사`,
     },
+    valuationMemo(kospi.per, kospi.historicalAveragePer, forwardPer),
   ];
 }
 

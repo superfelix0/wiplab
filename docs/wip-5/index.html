@@ -55,9 +55,9 @@
     <section class="reading-note" aria-labelledby="reading-note-f5">
       <h2 id="reading-note-f5">이 지표를 왜 보나요?</h2>
       <ul>
-        <li>AI 인프라 투자는 매출 성장의 선행지표일 수 있지만, 동시에 현금흐름 부담이기도 합니다.</li>
-        <li>CAPEX/OCF는 벌어들인 영업현금흐름 대비 투자 부담을, CAPEX/OPEX는 평소 운영비 대비 투자 강도를 보여줍니다.</li>
-        <li>반도체 공급자와 하이퍼스케일러를 함께 보면 AI 사이클의 수혜와 비용이 어느 쪽에 쌓이는지 비교할 수 있습니다.</li>
+        <li>AI 인프라 투자는 성장의 선행지표이지만, 동시에 이익과 현금흐름을 얼마나 소모하는지도 봐야 합니다.</li>
+        <li>CAPEX/이익은 설비투자가 영업이익 또는 순이익 안에서 감당되는지, CAPEX/OCF는 실제 영업현금흐름 안에서 감당되는지를 보여줍니다.</li>
+        <li>FCF가 양수인지는 최종 안전판이고, 그 전에 CAPEX가 이익과 OCF를 얼마나 잠식하는지가 핵심 체크포인트입니다.</li>
       </ul>
     </section>
 
@@ -65,7 +65,7 @@
       <div class="section-title">
         <div>
           <h2 id="earnings-title">한눈에 보는 실적 흐름</h2>
-          <p class="section-copy">최근 분기의 이익 성장률, CAPEX, 영업현금흐름, FCF를 비교합니다. PER/PBR/컨센서스는 신뢰 가능한 공개 원천 확보 전까지 N/A로 둡니다.</p>
+          <p class="section-copy">최근 분기의 이익 성장률, CAPEX 절대액, CAPEX/이익, CAPEX/OCF, FCF를 비교합니다. PER/PBR/컨센서스는 신뢰 가능한 공개 원천 확보 전까지 N/A로 둡니다.</p>
         </div>
         <button class="refresh-button" id="earningsRefresh" type="button">새로고침</button>
       </div>
@@ -86,7 +86,7 @@
 
       <div class="earnings-chart-tabs" role="tablist" aria-label="실적 비교 그래프 선택">
         <button type="button" class="is-active" data-earnings-tab="growth" role="tab" aria-selected="true">이익 성장률</button>
-        <button type="button" data-earnings-tab="cashflow" role="tab" aria-selected="false">CAPEX/OCF</button>
+        <button type="button" data-earnings-tab="cashflow" role="tab" aria-selected="false">CAPEX 감당력</button>
         <button type="button" data-earnings-tab="intensity" role="tab" aria-selected="false">CAPEX/OPEX</button>
       </div>
 
@@ -101,8 +101,8 @@
 
         <section class="earnings-panel" aria-labelledby="earnings-capex-title" data-earnings-panel="cashflow" hidden>
           <div class="panel-head">
-            <h3 id="earnings-capex-title">CAPEX 부담 비교</h3>
-            <p>최근 분기 CAPEX / OCF</p>
+            <h3 id="earnings-capex-title">CAPEX 감당력 비교</h3>
+            <p>최근 분기 CAPEX / OCF. 100%를 넘으면 해당 분기 영업현금흐름보다 설비투자가 큽니다.</p>
           </div>
           <div class="rank-list" id="capexRanking"></div>
         </section>
@@ -149,6 +149,6 @@
     <span>© 2026</span>
   </footer>
   <script src="../ticker.js?v=change-pct-20260717"></script>
-  <script src="../ai-earnings.js?v=all-company-cards-20260718"></script>
+  <script src="../ai-earnings.js?v=capex-coverage-20260718"></script>
 </body>
 </html>
