@@ -76,14 +76,14 @@ function buildCards(perData) {
       title: "KOSPI 역사적 평균 PER",
       value: formatPer(kospi.historicalAveragePer),
       badge: "KRX 평균",
-      description: `수집된 ${kospi.history?.length || "최근"}개 거래일의 KOSPI 200 PER 평균입니다.`,
-      footnote: `수집 시작 ${kospi.history?.[0]?.date || "확인 필요"} · 최근 기준 ${formatDate(kospi.date)}`,
+      description: `2010년 이후 누적된 ${kospi.observationCount || kospi.history?.length || "최근"}개 거래일의 KOSPI PER 평균입니다.`,
+      footnote: `${kospi.historicalAverageStart || kospi.history?.[0]?.date || "확인 필요"} ~ ${kospi.historicalAverageEnd || formatDate(kospi.date)} 기준`,
     },
     {
       title: "현행 PER",
       value: formatPer(kospi.per),
       badge: "KRX 현재",
-      description: "KRX 지수 기본지표에서 가져온 KOSPI 200 현행 PER입니다.",
+      description: "KRX 지수 기본지표에서 가져온 KOSPI 현행 PER입니다.",
       footnote: `${formatDate(kospi.date)} 기준${Number.isFinite(gap) ? ` · 평균 대비 ${formatPercent(gap)}` : ""}`,
     },
     {
@@ -122,7 +122,7 @@ function renderSources(perData) {
     {
       title: "KRX index fundamentals via pykrx",
       url: "https://github.com/sharebook-kr/pykrx",
-      note: `KOSPI 200 현행 PER와 수집 기간 평균 PER를 KRX 기준으로 갱신합니다. 최근 기준일: ${kospi.date}`,
+      note: `KOSPI 현행 PER와 2010년 이후 누적 평균 PER를 KRX 기준으로 갱신합니다. 최근 기준일: ${kospi.date}`,
     },
     {
       title: FORWARD_PER_CONSENSUS.sourceTitle,

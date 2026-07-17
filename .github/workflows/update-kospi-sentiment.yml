@@ -64,7 +64,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/kospi-sentiment.csv docs/data/kospi-sentiment-meta.json docs/data/market-per.json docs/data/us-liquidity.json docs/data/ai-earnings.json
+          git add docs/data/kospi-sentiment.csv docs/data/kospi-sentiment-meta.json docs/data/kospi-per-history.csv docs/data/market-per.json docs/data/us-liquidity.json docs/data/ai-earnings.json
           if git diff --cached --quiet; then
             echo "No data changes to commit."
           else
