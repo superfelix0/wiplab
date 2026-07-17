@@ -436,7 +436,7 @@ async function fetchVixData() {
 }
 
 async function loadData() {
-  sentimentEls.refresh.disabled = true;
+  if (sentimentEls.refresh) sentimentEls.refresh.disabled = true;
   setSentimentStatus("데이터를 확인하는 중입니다.");
 
   try {
@@ -456,7 +456,7 @@ async function loadData() {
     dataMode = "demo";
     setSentimentStatus("실데이터를 준비하는 중입니다. 현재 화면은 예시 데이터로 표시합니다.", "neutral");
   } finally {
-    sentimentEls.refresh.disabled = false;
+    if (sentimentEls.refresh) sentimentEls.refresh.disabled = false;
     render();
   }
 }
@@ -473,5 +473,5 @@ sentimentEls.range?.addEventListener("change", (event) => {
   render();
 });
 
-sentimentEls.refresh.addEventListener("click", loadData);
+sentimentEls.refresh?.addEventListener("click", loadData);
 loadData();

@@ -234,7 +234,7 @@ function renderLiquidity(data) {
 }
 
 async function loadLiquidity() {
-  liquidityEls.refresh.disabled = true;
+  if (liquidityEls.refresh) liquidityEls.refresh.disabled = true;
   setLiquidityStatus("미국 유동성 데이터를 불러오는 중입니다.");
 
   try {
@@ -257,7 +257,7 @@ async function loadLiquidity() {
   } catch (error) {
     setLiquidityStatus(error.message || "미국 유동성 데이터를 불러오지 못했습니다.", "error");
   } finally {
-    liquidityEls.refresh.disabled = false;
+    if (liquidityEls.refresh) liquidityEls.refresh.disabled = false;
   }
 }
 
@@ -266,5 +266,5 @@ liquidityEls.range?.addEventListener("change", (event) => {
   if (liquidityData) renderChart(liquidityData);
 });
 
-liquidityEls.refresh.addEventListener("click", loadLiquidity);
+liquidityEls.refresh?.addEventListener("click", loadLiquidity);
 loadLiquidity();

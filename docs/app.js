@@ -234,8 +234,9 @@ function renderResult({ adr, kospi, fx }, result) {
 }
 
 function setLoading(isLoading) {
+  if (!output.refreshButton) return;
   output.refreshButton.disabled = isLoading;
-  output.refreshButton.textContent = isLoading ? "불러오는 중…" : "새로고침";
+  output.refreshButton.textContent = isLoading ? "???? ??" : "????";
 }
 
 function setStatus(message, state = "neutral") {
@@ -259,6 +260,6 @@ async function refreshQuotes() {
   }
 }
 
-output.refreshButton.addEventListener("click", refreshQuotes);
+output.refreshButton?.addEventListener("click", refreshQuotes);
 
 refreshQuotes();

@@ -4,7 +4,7 @@ const earningsEls = {
   summary: document.querySelector("#earningsSummary"),
   ranking: document.querySelector("#earningsRanking"),
   capexRanking: document.querySelector("#capexRanking"),
-  intensityRanking: document.querySelector("#intensityRanking"),
+  fcfRanking: document.querySelector("#fcfRanking"),
   cards: document.querySelector("#earningsCards"),
   table: document.querySelector("#earningsTable"),
   sources: document.querySelector("#earningsSources"),
@@ -93,28 +93,6 @@ function capexCoverageNote(latest) {
   return `${ocfNote} · ${profitNote} · ${fcfNote}`;
 }
 
-function capexOpex(latest) {
-  if (!Number.isFinite(latest?.capex) || !Number.isFinite(latest?.operatingExpense) || latest.operatingExpense === 0) {
-    return null;
-  }
-  return Math.abs(latest.capex) / Math.abs(latest.operatingExpense);
-}
-
-function capexEbitda(latest) {
-  if (!Number.isFinite(latest?.capex) || !Number.isFinite(latest?.ebitda) || latest.ebitda === 0) {
-    return null;
-  }
-  return Math.abs(latest.capex) / Math.abs(latest.ebitda);
-}
-
-function capexIntensity(latest) {
-  return capexOpex(latest) ?? capexEbitda(latest);
-}
-
-function capexIntensityLabel(latest) {
-  return Number.isFinite(capexOpex(latest)) ? "CAPEX/OPEX" : "CAPEX/EBITDA";
-}
-
 function fcfMargin(latest) {
   if (!Number.isFinite(latest?.freeCashFlow) || !Number.isFinite(latest?.quarterlyTotalRevenue) || latest.quarterlyTotalRevenue === 0) {
     return null;
@@ -133,7 +111,6 @@ function renderSummary(data) {
   const growthValues = rows.map(({ latest }) => latest.profitGrowthQoQ);
   const capexBurdenValues = rows.map(({ latest }) => capexBurden(latest));
   const capexProfitValues = rows.map(({ latest }) => capexProfitCoverage(latest));
-  const capexIntensityValues = rows.map(({ latest }) => capexIntensity(latest));
   const fcfPositive = rows.filter(({ latest }) => Number.isFinite(latest.freeCashFlow) && latest.freeCashFlow > 0).length;
   const topGrowth = rows
     .filter(({ latest }) => Number.isFinite(latest.profitGrowthQoQ))
@@ -162,11 +139,6 @@ function renderSummary(data) {
       <span>평균 CAPEX/이익</span>
       <strong>${pct(average(capexProfitValues))}</strong>
       <small>영업이익 또는 순이익 대비 설비투자 부담입니다. 이익이 작거나 적자면 비교 가능성이 낮아집니다.</small>
-    </article>
-    <article data-tone="neutral">
-      <span>평균 CAPEX/OPEX</span>
-      <strong>${pct(average(capexIntensityValues))}</strong>
-      <small>운영비 대비 설비투자 강도입니다. OPEX가 없으면 EBITDA 기준으로 자동 대체합니다.</small>
     </article>
     <article data-tone="${fcfPositive >= rows.length / 2 ? "positive" : "negative"}">
       <span>FCF 플러스</span>
@@ -223,9 +195,8 @@ function renderRankings(data) {
     lowerIsBetter: true,
     format: (value) => pct(value),
   });
-  renderRankList(earningsEls.intensityRanking, rows, capexIntensity, {
-    lowerIsBetter: true,
-    format: (value, latest) => `${pct(value)} ${capexIntensityLabel(latest)}`,
+  renderRankList(earningsEls.fcfRanking, rows, (latest) => latest.freeCashFlow, {
+    format: (value, latest, company) => compactMoney(value, company.currency),
   });
   syncCompareTabs();
 }
@@ -251,7 +222,6 @@ function renderCards(data) {
 
   earningsEls.cards.innerHTML = rows.map(({ company, latest }) => {
     const burden = capexBurden(latest);
-    const intensity = capexIntensity(latest);
     const profitCoverage = capexProfitCoverage(latest);
     const margin = fcfMargin(latest);
     return `
@@ -265,7 +235,6 @@ function renderCards(data) {
           <div><dt>CAPEX</dt><dd>${compactMoney(latest.capex, company.currency)}</dd></div>
           <div><dt>CAPEX/이익</dt><dd>${pct(profitCoverage)}</dd></div>
           <div><dt>CAPEX/OCF</dt><dd>${pct(burden)}</dd></div>
-          <div><dt>${capexIntensityLabel(latest)}</dt><dd>${pct(intensity)}</dd></div>
           <div><dt>FCF</dt><dd>${compactMoney(latest.freeCashFlow, company.currency)}</dd></div>
           <div><dt>FCF Margin</dt><dd>${pct(margin)}</dd></div>
         </dl>
@@ -284,7 +253,7 @@ function renderTable(data) {
         <tr>
           <td>${company.name}<br><small>${company.symbol}</small></td>
           <td>${company.group}</td>
-          <td colspan="12">분기 실적 데이터 없음 · ${company.message || ""}</td>
+          <td colspan="11">분기 실적 데이터 없음 · ${company.message || ""}</td>
         </tr>
       `;
     }
@@ -294,7 +263,6 @@ function renderTable(data) {
     const barClass = growth >= 0 ? "positive" : "negative";
     const burden = capexBurden(latest);
     const profitCoverage = capexProfitCoverage(latest);
-    const intensity = capexIntensity(latest);
 
     return `
       <tr>
@@ -313,7 +281,6 @@ function renderTable(data) {
         <td>${compactMoney(latest.operatingCashFlow, company.currency)}</td>
         <td>${compactMoney(latest.freeCashFlow, company.currency)}</td>
         <td>${pct(burden)}</td>
-        <td>${pct(intensity)}<br><small>${capexIntensityLabel(latest)}</small></td>
         <td>${pct(fcfMargin(latest))}</td>
       </tr>
     `;
@@ -332,7 +299,6 @@ function renderTable(data) {
         <th>OCF</th>
         <th>FCF</th>
         <th>CAPEX/OCF</th>
-        <th>CAPEX/OPEX</th>
         <th>FCF Margin</th>
       </tr>
     </thead>
@@ -358,7 +324,7 @@ function render(data) {
 }
 
 async function loadEarnings() {
-  earningsEls.refresh.disabled = true;
+  if (earningsEls.refresh) earningsEls.refresh.disabled = true;
   setEarningsStatus("AI 실적 데이터를 불러오는 중입니다.");
 
   try {
@@ -373,7 +339,7 @@ async function loadEarnings() {
   } catch (error) {
     setEarningsStatus(error.message || "AI 실적 데이터를 불러오지 못했습니다.", "error");
   } finally {
-    earningsEls.refresh.disabled = false;
+    if (earningsEls.refresh) earningsEls.refresh.disabled = false;
   }
 }
 
@@ -389,5 +355,5 @@ document.querySelectorAll("[data-earnings-tab]").forEach((button) => {
   });
 });
 
-earningsEls.refresh.addEventListener("click", loadEarnings);
+earningsEls.refresh?.addEventListener("click", loadEarnings);
 loadEarnings();
