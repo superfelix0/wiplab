@@ -124,7 +124,8 @@ function renderMarketPerChart(perData) {
 
   const currentPer = Number(kospi.per);
   const forwardPer = FORWARD_PER_CONSENSUS.value;
-  const values = annual.map((row) => row.per).concat([currentPer, forwardPer]).filter(Number.isFinite);
+  const historicalAveragePer = Number(kospi.historicalAveragePer);
+  const values = annual.map((row) => row.per).concat([currentPer, forwardPer, historicalAveragePer]).filter(Number.isFinite);
   const min = Math.max(0, Math.floor(Math.min(...values) - 2));
   const max = Math.ceil(Math.max(...values) + 2);
   const width = 900;
@@ -138,6 +139,7 @@ function renderMarketPerChart(perData) {
   marketPerChart.innerHTML = "";
   marketPerLegend.innerHTML = `
     <span><i style="background:var(--amber)"></i>연도별 평균 PER</span>
+    <span><i style="background:var(--muted)"></i>누적 평균 PER ${formatPer(historicalAveragePer)}</span>
     <span><i style="background:var(--green)"></i>현재 PER ${formatPer(currentPer)}</span>
     <span><i style="background:var(--red)"></i>Forward PER ${formatPer(forwardPer)}</span>
   `;
@@ -194,6 +196,7 @@ function renderMarketPerChart(perData) {
   });
 
   [
+    { value: historicalAveragePer, label: `누적 평균 ${formatPer(historicalAveragePer)}`, color: "var(--muted)", dash: "2 6" },
     { value: currentPer, label: `현재 ${formatPer(currentPer)}`, color: "var(--green)" },
     { value: forwardPer, label: `Forward ${formatPer(forwardPer)}`, color: "var(--red)" },
   ].forEach((line) => {
@@ -206,7 +209,7 @@ function renderMarketPerChart(perData) {
       y2: yy,
       stroke: line.color,
       "stroke-width": "2",
-      "stroke-dasharray": "6 5",
+      "stroke-dasharray": line.dash || "6 5",
     }));
     const label = svgEl("text", {
       x: width - pad.right + 10,

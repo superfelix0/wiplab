@@ -1069,6 +1069,11 @@ h3 {
   font-weight: 700;
 }
 
+.chart-legend-bottom {
+  justify-content: center;
+  margin-top: 10px;
+}
+
 .chart-legend span {
   display: inline-flex;
   align-items: center;
