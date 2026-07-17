@@ -45,19 +45,6 @@ function formatDateTime(value) {
   return dateTimeFormatter.format(new Date(value));
 }
 
-function differenceFromAverage(current, average) {
-  if (!Number.isFinite(current) || !Number.isFinite(average) || average === 0) {
-    return null;
-  }
-
-  return (current - average) / average;
-}
-
-function formatPercent(value) {
-  if (!Number.isFinite(value)) return "";
-  return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%`;
-}
-
 function valuationMemo(currentPer, historicalPer, forwardPer) {
   const currentVsHistory = Number.isFinite(currentPer) && Number.isFinite(historicalPer)
     ? currentPer - historicalPer
@@ -235,31 +222,9 @@ async function fetchMarketPerData() {
 
 function buildCards(perData) {
   const kospi = perData.markets.kospi200;
-  const gap = differenceFromAverage(kospi.per, kospi.historicalAveragePer);
   const forwardPer = FORWARD_PER_CONSENSUS.value;
 
   return [
-    {
-      title: "KOSPI 역사적 평균 PER",
-      value: formatPer(kospi.historicalAveragePer),
-      badge: "KRX 평균",
-      description: `2010년 이후 누적된 ${kospi.observationCount || kospi.history?.length || "최근"}개 거래일의 KOSPI PER 평균입니다.`,
-      footnote: `${kospi.historicalAverageStart || kospi.history?.[0]?.date || "확인 필요"} ~ ${kospi.historicalAverageEnd || formatDate(kospi.date)} 기준`,
-    },
-    {
-      title: "현행 PER",
-      value: formatPer(kospi.per),
-      badge: "KRX 현재",
-      description: "KRX 지수 기본지표에서 가져온 KOSPI 현행 PER입니다.",
-      footnote: `${formatDate(kospi.date)} 기준${Number.isFinite(gap) ? ` · 평균 대비 ${formatPercent(gap)}` : ""}`,
-    },
-    {
-      title: "Forward PER 참고치",
-      value: formatPer(forwardPer),
-      badge: "기사 기준",
-      description: "향후 이익 전망을 반영한 비교용 PER입니다. KRX 현행 PER와 성격이 다르므로 방향성 비교로만 봅니다.",
-      footnote: `${FORWARD_PER_CONSENSUS.date} 기준 · Investing.com/EBN 기사`,
-    },
     valuationMemo(kospi.per, kospi.historicalAveragePer, forwardPer),
   ];
 }

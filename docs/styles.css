@@ -628,7 +628,8 @@ h3 {
 }
 
 .market-card-grid {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
+  max-width: 100%;
 }
 
 .liquidity-summary {
