@@ -10,6 +10,7 @@ requires KRX login, set KRX_ID and KRX_PW as GitHub Actions secrets.
 from __future__ import annotations
 
 import argparse
+import csv
 import datetime as dt
 import json
 import os
@@ -25,6 +26,7 @@ from pykrx.website.krx.future import core as krx_future_core
 
 
 KST = dt.timezone(dt.timedelta(hours=9))
+VKOSPI_SEED_CSV = Path("docs/data/vkospi-history.csv")
 
 
 def ymd(value: dt.date) -> str:
@@ -267,6 +269,39 @@ def fetch_vkospi_spot_from_futures_table(end: str) -> dict | None:
     return None
 
 
+def fetch_vkospi_history_from_futures_table(end: str, days: int = 100) -> list[dict]:
+    fetcher = get_krx_future_fetcher("dbms/MDC/STAT/standard/MDCSTAT12501")
+    if fetcher is None:
+        print("V-KOSPI history fetcher unavailable.")
+        return []
+
+    rows = []
+    end_date = parse_ymd(end)
+    for offset in range(days, -1, -1):
+        date_str = ymd(end_date - dt.timedelta(days=offset))
+        try:
+            df = fetcher.fetch(date_str, "KRDRVFUVKI")
+        except Exception:
+            continue
+
+        if df.empty or "SPOT_PRC" not in df.columns:
+            continue
+
+        for _, row in df.iterrows():
+            result = volatility_result("KOSPI 200 Volatility Index (VKOSPI)", pd.to_datetime(date_str).strftime("%Y-%m-%d"), row.get("SPOT_PRC"), "KRDRVFUVKI")
+            if result:
+                rows.append({
+                    "date": result["date"],
+                    "value": result["value"],
+                })
+                break
+
+    deduped = {row["date"]: row for row in rows}
+    history = [deduped[key] for key in sorted(deduped)]
+    print(f"V-KOSPI history rows: {len(history)}")
+    return history
+
+
 def fetch_kospi_volatility_from_news() -> dict | None:
     """Fallback when KRX does not expose a usable VKOSPI spot value."""
     url = "https://www.marketwatch.com/story/turbo-charged-sk-hynix-volatility-shows-no-sign-of-abating-as-ai-euphoria-swings-to-fatigue-f5a5b95b"
@@ -370,6 +405,79 @@ def fetch_kospi200_volatility(end: str) -> dict | None:
     return None
 
 
+def normalize_vkospi_history(rows: list[dict]) -> list[dict]:
+    normalized = {}
+    for row in rows or []:
+        try:
+            date = pd.to_datetime(row.get("date")).strftime("%Y-%m-%d")
+            value = normalize_float(row.get("value"))
+        except Exception:
+            continue
+        if value is None or value <= 0:
+            continue
+        normalized[date] = {"date": date, "value": value}
+    return [normalized[key] for key in sorted(normalized)]
+
+
+def load_existing_vkospi_history(meta_out: Path) -> list[dict]:
+    if not meta_out.exists():
+        return []
+    try:
+        meta = json.loads(meta_out.read_text(encoding="utf-8"))
+    except Exception as error:
+        print(f"Existing VKOSPI history skipped: {error}")
+        return []
+    return normalize_vkospi_history((meta.get("kospi200Volatility") or {}).get("history") or [])
+
+
+def parse_seed_vkospi_history(path: Path = VKOSPI_SEED_CSV) -> list[dict]:
+    if not path.exists():
+        return []
+
+    rows = []
+    last_error = None
+    for encoding in ("utf-8-sig", "cp949", "euc-kr"):
+        try:
+            with path.open("r", encoding=encoding, newline="") as handle:
+                reader = csv.DictReader(handle)
+                rows = []
+                for row in reader:
+                    date = row.get("일자") or row.get("date")
+                    value = row.get("종가") or row.get("close")
+                    if date:
+                        date = str(date).strip().strip('"').replace("/", "-")
+                    rows.append({"date": date, "value": value})
+            break
+        except UnicodeDecodeError as error:
+            last_error = error
+            continue
+        except Exception as error:
+            print(f"Seed VKOSPI CSV skipped: {error}")
+            return []
+    else:
+        print(f"Seed VKOSPI CSV skipped: {last_error}")
+        return []
+
+    return normalize_vkospi_history(rows)
+
+
+def merge_vkospi_history(*groups: list[dict], latest: dict | None = None) -> list[dict]:
+    merged = {}
+    for group in groups:
+        for row in normalize_vkospi_history(group):
+            merged[row["date"]] = row
+
+    if latest:
+        latest_row = normalize_vkospi_history([{
+            "date": latest.get("date"),
+            "value": latest.get("value"),
+        }])
+        for row in latest_row:
+            merged[row["date"]] = row
+
+    return [merged[key] for key in sorted(merged)]
+
+
 def collect(start: str, end: str) -> pd.DataFrame:
     print(f"Collecting KOSPI sentiment data: {start} ~ {end}")
     print(f"KRX_ID configured: {bool(os.getenv('KRX_ID'))}")
@@ -419,6 +527,17 @@ def main() -> None:
     df = collect(args.start, args.end)
     df.to_csv(out, index=False, encoding="utf-8")
     kospi200_volatility = fetch_kospi200_volatility(args.end)
+    vkospi_history = fetch_vkospi_history_from_futures_table(args.end)
+    existing_vkospi_history = load_existing_vkospi_history(meta_out)
+    seed_vkospi_history = parse_seed_vkospi_history()
+    merged_vkospi_history = merge_vkospi_history(
+        seed_vkospi_history,
+        existing_vkospi_history,
+        vkospi_history,
+        latest=kospi200_volatility,
+    )
+    if kospi200_volatility and merged_vkospi_history:
+        kospi200_volatility["history"] = merged_vkospi_history
 
     now_kst = dt.datetime.now(KST)
     meta = {

@@ -262,6 +262,30 @@ function card({ label, value, sub, tone = "", wide = false }) {
   `;
 }
 
+function renderMiniLine(rows, color = "#6fbf73") {
+  if (!Array.isArray(rows) || rows.length < 2) return "";
+
+  const values = rows.map((row) => row.value).filter(Number.isFinite);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const width = 220;
+  const height = 56;
+  const pad = 5;
+  const x = (index) => pad + (index / Math.max(1, rows.length - 1)) * (width - pad * 2);
+  const y = (value) => height - pad - ((value - min) / Math.max(1, max - min)) * (height - pad * 2);
+  const path = rows
+    .map((row, index) => `${index === 0 ? "M" : "L"}${x(index).toFixed(1)} ${y(row.value).toFixed(1)}`)
+    .join(" ");
+  const latest = rows.at(-1);
+
+  return `
+    <svg class="mini-line" viewBox="0 0 ${width} ${height}" role="img" aria-label="VKOSPI 최근 3개월 추이">
+      <path d="${path}" fill="none" stroke="${color}" stroke-width="2.2" />
+      <circle cx="${x(rows.length - 1).toFixed(1)}" cy="${y(latest.value).toFixed(1)}" r="3.5" fill="${color}" />
+    </svg>
+  `;
+}
+
 function renderSummary(analysis) {
   const latest = analysis.points.at(-1);
   const previous = analysis.points.at(-2);
@@ -301,13 +325,17 @@ function renderSummary(analysis) {
   ];
 
   if (volatility?.value) {
-    cards.push(card({
-      label: volatility.name || "KOSPI 200 변동성",
-      value: fmt.format(volatility.value),
-      sub: `${volatility.date} 기준 · 값이 높을수록 시장이 예상하는 향후 변동성이 크다는 뜻입니다.`,
-      tone: "volatility",
-      wide: true,
-    }));
+    const vkospiDecimal = volatility.value / 100;
+    const squaredRange = vkospiDecimal ** 2;
+    const history = Array.isArray(volatility.history) ? volatility.history.slice(-66) : [];
+    cards.push(`
+      <article class="featured" data-tone="volatility">
+        <span>${volatility.name || "VKOSPI"}</span>
+        <strong>${fmt.format(volatility.value)}</strong>
+        ${renderMiniLine(history)}
+        <small>${volatility.date} 기준 · 최근 3개월 추이. VKOSPI를 소수로 바꾼 뒤 제곱하면 약 ±${(squaredRange * 100).toFixed(1)}% 범위의 변동성을 예상한다는 의미로 봅니다. 예: 89% → 0.89² = 0.7921.</small>
+      </article>
+    `);
   }
 
   sentimentEls.summary.innerHTML = cards.join("");

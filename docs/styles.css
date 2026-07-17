@@ -658,6 +658,18 @@ h3 {
   letter-spacing: -0.02em;
 }
 
+.mini-line {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: 56px;
+  margin: 10px 0 6px;
+  border: 1px dashed var(--line-dash);
+  background:
+    linear-gradient(180deg, rgba(111, 191, 115, 0.06), transparent),
+    repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(216, 161, 58, 0.08) 29px);
+}
+
 .quote-grid small,
 .result-panel small,
 .market-card-grid small,

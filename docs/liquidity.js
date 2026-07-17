@@ -238,7 +238,13 @@ async function loadLiquidity() {
   setLiquidityStatus("미국 유동성 데이터를 불러오는 중입니다.");
 
   try {
-    const response = await fetch(`/api/liquidity?ts=${Date.now()}`, { cache: "no-store" });
+    let response = await fetch(`/data/us-liquidity.json?ts=${Date.now()}`, { cache: "no-store" });
+    let sourceLabel = "정적 수집 데이터";
+    if (!response.ok) {
+      response = await fetch(`/api/liquidity?ts=${Date.now()}`, { cache: "no-store" });
+      sourceLabel = "실시간 API";
+    }
+
     const data = await response.json().catch(() => null);
 
     if (!response.ok || !data?.ok) {
@@ -247,7 +253,7 @@ async function loadLiquidity() {
 
     liquidityData = data;
     renderLiquidity(data);
-    setLiquidityStatus(`업데이트 완료: ${formatFetchedAt(data.fetchedAt)} · ${data.disclaimer}`, "ok");
+    setLiquidityStatus(`업데이트 완료: ${formatFetchedAt(data.fetchedAt)} · ${sourceLabel} · ${data.disclaimer}`, "ok");
   } catch (error) {
     setLiquidityStatus(error.message || "미국 유동성 데이터를 불러오지 못했습니다.", "error");
   } finally {
