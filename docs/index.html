@@ -39,14 +39,13 @@
       <span>WIP</span>
       <strong>WIP Labs</strong>
     </a>
-    <nav class="service-tabs" aria-label="주요 메뉴">
-      <a href="./" aria-current="page" title="HOME">HOME</a>
-      <a href="wip-1/" title="F1 · SK Hynix ADR">F1</a>
-      <a href="wip-2/" title="F2 · KOSPI PER">F2</a>
-      <a href="wip-3/" title="F3 · Fear/Greed">F3</a>
-      <a href="wip-4/" title="F4 · US Liquidity">F4</a>
-      <a href="wip-5/" title="F5 · AI Earnings">F5</a>
-      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG · 숫자로 읽는 시장">BLOG</a>
+    <nav class="service-tabs" aria-label="Main menu">
+      <a href="wip-1/" title="F1 - KOSPI PER">F1</a>
+      <a href="wip-2/" title="F2 - Fear/Greed">F2</a>
+      <a href="wip-3/" title="F3 - AI Earnings">F3</a>
+      <a href="wip-4/" title="F4 - US Liquidity">F4</a>
+      <a href="wip-5/" title="F5 - SK Hynix ADR">F5</a>
+      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG">BLOG</a>
     </nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
@@ -92,43 +91,43 @@
       <div class="wip-index research-index">
         <a href="wip-1/" data-category="finance">
           <span>F1</span>
-          <strong>SK Hynix ADR 가격 비교</strong>
-          <small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small>
-          <small class="metric">ADR/KRW</small>
-          <small class="module-note">ADR과 본주가 같은 원화 기준에서 얼마나 벌어졌는지 확인합니다.</small>
-          <small class="live-dot">● LIVE</small>
-        </a>
-        <a href="wip-2/" data-category="finance">
-          <span>F2</span>
           <strong>KOSPI PER Monitor</strong>
           <small class="cmd"><b>$</b> ./kospi-per <em>--krx</em></small>
           <small class="metric">KRX/PER</small>
           <small class="module-note">현행 PER와 역사적 평균, Forward PER를 비교해 밸류에이션 온도를 봅니다.</small>
-          <small class="live-dot">● LIVE</small>
+          <small class="live-dot">● 매일 19:00 KST</small>
         </a>
-        <a href="wip-3/" data-category="finance">
-          <span>F3</span>
+        <a href="wip-2/" data-category="finance">
+          <span>F2</span>
           <strong>KOSPI Fear/Greed</strong>
           <small class="cmd"><b>$</b> ./sentiment <em>--kospi</em></small>
           <small class="metric">FLOW/SIGNAL</small>
-          <small class="module-note">개인 수급이 평소 패턴에서 벗어나는 순간을 변곡점 후보로 표시합니다.</small>
-          <small class="live-dot">● DAILY</small>
+          <small class="module-note">개인 수급이 평소 패턴에서 얼마나 벗어났는지 공포·탐욕 시점으로 봅니다.</small>
+          <small class="live-dot">● 매일 19:00 KST</small>
+        </a>
+        <a href="wip-3/" data-category="finance">
+          <span>F3</span>
+          <strong>AI Earnings Monitor</strong>
+          <small class="cmd"><b>$</b> ./ai-earnings <em>--capex</em></small>
+          <small class="metric">CAPEX/OCF</small>
+          <small class="module-note">AI 공급망 기업의 이익 성장률과 CAPEX 감당력을 비교합니다.</small>
+          <small class="live-dot">● 매주 월 08:00 KST</small>
         </a>
         <a href="wip-4/" data-category="finance">
           <span>F4</span>
           <strong>US Liquidity Monitor</strong>
           <small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small>
           <small class="metric">M2/RRP/TGA</small>
-          <small class="module-note">M2, 지급준비금, RRP, TGA로 미국 유동성 환경을 읽습니다.</small>
-          <small class="live-dot">● DAILY</small>
+          <small class="module-note">미국 통화량, 지급준비금, RRP, TGA를 묶어 시장 유동성 방향을 봅니다.</small>
+          <small class="live-dot">● 매일 08:00 KST</small>
         </a>
         <a href="wip-5/" data-category="finance">
           <span>F5</span>
-          <strong>AI Earnings Monitor</strong>
-          <small class="cmd"><b>$</b> ./ai-earnings <em>--capex</em></small>
-          <small class="metric">CAPEX/OPEX</small>
-          <small class="module-note">AI 인프라 투자가 이익과 현금흐름으로 연결되는지 비교합니다.</small>
-          <small class="live-dot">● DAILY</small>
+          <strong>SK Hynix ADR 가격 비교</strong>
+          <small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small>
+          <small class="metric">ADR/KRW</small>
+          <small class="module-note">ADR과 본주가 같은 원화 기준에서 얼마나 벌어졌는지 확인합니다.</small>
+          <small class="live-dot">● 조회 시 갱신</small>
         </a>
       </div>
     </section>
@@ -150,6 +149,6 @@
     <span>© 2026</span>
   </footer>
   <script src="ticker.js?v=change-pct-20260717"></script>
-  <script src="home.js?v=market-read-20260717"></script>
+  <script src="home.js?v=module-order-20260718"></script>
 </body>
 </html>

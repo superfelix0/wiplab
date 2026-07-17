@@ -11,16 +11,17 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="메모리 반도체와 미국 하이퍼스케일러의 분기 이익, CAPEX, 현금흐름을 비교합니다.">
+  <meta name="description" content="SK Hynix ADR 가격과 코스피 본주 가격을 원화 기준으로 비교하는 WIP Labs의 첫 번째 실험입니다.">
   <meta name="theme-color" content="#0e100d">
-  <meta property="og:title" content="AI Earnings Monitor — WIP Labs">
-  <meta property="og:description" content="AI 공급망 주요 기업의 최근 분기 실적과 현금흐름을 비교합니다.">
+  <meta property="og:title" content="WIP 5 — SK Hynix ADR 가격 비교">
+  <meta property="og:description" content="ADR 가격과 코스피 본주 가격을 원화 기준으로 환산해 비교합니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/wip-5/">
+  <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
   <link rel="canonical" href="https://wiplabs.pages.dev/wip-5/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../styles.css">
-  <title>AI Earnings Monitor — WIP Labs</title>
+  <title>WIP 5 — SK Hynix ADR 가격 비교</title>
 </head>
 <body>
   <header class="site-header">
@@ -28,14 +29,13 @@
       <span>WIP</span>
       <strong>WIP Labs</strong>
     </a>
-    <nav class="service-tabs" aria-label="주요 메뉴">
-      <a href="../" title="HOME">HOME</a>
-      <a href="../wip-1/" title="F1 · SK Hynix ADR">F1</a>
-      <a href="../wip-2/" title="F2 · KOSPI PER">F2</a>
-      <a href="../wip-3/" title="F3 · Fear/Greed">F3</a>
-      <a href="../wip-4/" title="F4 · US Liquidity">F4</a>
-      <a href="../wip-5/" aria-current="page" title="F5 · AI Earnings">F5</a>
-      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG · 숫자로 읽는 시장">BLOG</a>
+    <nav class="service-tabs" aria-label="Main menu">
+      <a href="../wip-1/" title="F1 - KOSPI PER">F1</a>
+      <a href="../wip-2/" title="F2 - Fear/Greed">F2</a>
+      <a href="../wip-3/" title="F3 - AI Earnings">F3</a>
+      <a href="../wip-4/" title="F4 - US Liquidity">F4</a>
+      <a href="../wip-5/" aria-current="page" title="F5 - SK Hynix ADR">F5</a>
+      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG">BLOG</a>
     </nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
@@ -47,108 +47,136 @@
 
   <main>
     <section class="hero service-hero">
-      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./ai-earnings <span class="flag">--compare</span></p>
-      <h1>AI Earnings Monitor</h1>
-      <p class="hero-copy">AI 인프라 사이클을 반도체 공급자와 하이퍼스케일러 투자자로 나눠 비교합니다.</p>
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./sk-hynix-adr <span class="flag">--compare</span></p>
+      <h1>SK Hynix ADR 가격 vs 본주 가격</h1>
+      <p class="hero-copy">ADR과 국내 본주 가격을 같은 원화 기준으로 비교합니다.</p>
     </section>
 
-    <section class="reading-note" aria-labelledby="reading-note-f5">
-      <h2 id="reading-note-f5">이 지표를 왜 보나요?</h2>
+    <section class="reading-note" aria-labelledby="reading-note-f1">
+      <h2 id="reading-note-f1">이 지표를 왜 보나요?</h2>
       <ul>
-        <li>AI 인프라 투자는 성장의 선행지표이지만, 동시에 이익과 현금흐름을 얼마나 소모하는지도 봐야 합니다.</li>
-        <li>CAPEX/이익은 설비투자가 영업이익 또는 순이익 안에서 감당되는지, CAPEX/OCF는 실제 영업현금흐름 안에서 감당되는지를 보여줍니다.</li>
-        <li>FCF가 양수인지는 최종 안전판이고, 그 전에 CAPEX가 이익과 OCF를 얼마나 잠식하는지가 핵심 체크포인트입니다.</li>
+        <li>ADR은 미국 시장에서 거래되고, 본주는 한국 시장에서 거래되어 시간·환율·수급 차이가 생깁니다.</li>
+        <li>같은 원화 기준으로 환산하면 해외 투자자가 본주를 어느 정도 프리미엄 또는 디스카운트로 보고 있는지 확인할 수 있습니다.</li>
+        <li>괴리율은 단독 매매 신호가 아니라 시장 간 가격 차이를 점검하는 보조 지표입니다.</li>
       </ul>
     </section>
 
-    <section class="earnings-dashboard" aria-labelledby="earnings-title">
+    <section class="calculator" aria-labelledby="calc-title">
       <div class="section-title">
         <div>
-          <h2 id="earnings-title">한눈에 보는 실적 흐름</h2>
-          <p class="section-copy">최근 분기의 이익 성장률, CAPEX 절대액, CAPEX/이익, CAPEX/OCF, FCF를 비교합니다. PER/PBR/컨센서스는 신뢰 가능한 공개 원천 확보 전까지 N/A로 둡니다.</p>
+          <p class="eyebrow">PRICE CHECK</p>
+          <h2 id="calc-title">ADR 가격 비교</h2>
         </div>
-        <button class="refresh-button" id="earningsRefresh" type="button">새로고침</button>
+        <button id="refreshButton" class="refresh-button" type="button">새로고침</button>
       </div>
 
-      <div class="status" id="earningsStatus" data-state="neutral">AI 실적 데이터를 불러오는 중입니다.</div>
-      <div class="sentiment-controls" aria-label="그룹 필터">
-        <label>
-          보기
-          <select id="earningsGroup" aria-label="그룹 선택">
-            <option value="all">전체</option>
-            <option value="memory">반도체/메모리</option>
-            <option value="hyperscaler">하이퍼스케일러</option>
-          </select>
-        </label>
+      <div id="status" class="status" role="status" aria-live="polite">시세를 불러오는 중입니다.</div>
+
+      <div class="quote-grid">
+        <article>
+          <span id="adrSymbolLabel">SKHY ADR</span>
+          <strong id="adrPrice">-</strong>
+          <small id="adrTime">Nasdaq · USD</small>
+        </article>
+        <article>
+          <span>코스피 000660</span>
+          <strong id="kospiPrice">-</strong>
+          <small id="kospiTime">KSE · KRW</small>
+        </article>
+        <article>
+          <span>USD/KRW</span>
+          <strong id="fxRate">-</strong>
+          <small id="fxTime">환율</small>
+        </article>
+        <article>
+          <span>ADR 비율</span>
+          <strong>0.1주</strong>
+          <small>ADR 1주 = 본주 1/10주</small>
+        </article>
       </div>
 
-      <div class="earnings-insight-grid" id="earningsSummary"></div>
-
-      <div class="earnings-chart-tabs" role="tablist" aria-label="실적 비교 그래프 선택">
-        <button type="button" class="is-active" data-earnings-tab="growth" role="tab" aria-selected="true">이익 성장률</button>
-        <button type="button" data-earnings-tab="cashflow" role="tab" aria-selected="false">CAPEX 감당력</button>
-        <button type="button" data-earnings-tab="intensity" role="tab" aria-selected="false">CAPEX/OPEX</button>
+      <div class="result-panel" aria-live="polite">
+        <article>
+          <span>ADR 환산 본주가</span>
+          <strong id="convertedPrice">-</strong>
+          <small>ADR 가격 × 환율 ÷ 0.1</small>
+        </article>
+        <article>
+          <span>괴리율</span>
+          <strong id="premiumRate">-</strong>
+          <small id="premiumLabel">시세를 불러오면 자동 계산합니다.</small>
+        </article>
+        <article>
+          <span>본주 1주 기준 차이</span>
+          <strong id="priceGap">-</strong>
+          <small>ADR 환산 본주가 - 코스피 가격</small>
+        </article>
       </div>
 
-      <div class="earnings-compare-layout">
-        <section class="earnings-panel" aria-labelledby="earnings-rank-title" data-earnings-panel="growth">
-          <div class="panel-head">
-            <h3 id="earnings-rank-title">이익 성장률 랭킹</h3>
-            <p>최근 분기 QoQ 기준</p>
-          </div>
-          <div class="rank-list" id="earningsRanking"></div>
-        </section>
+      <p class="calc-note">
+        네이버증권 SKHY.O ADR, 네이버증권 코스피 000660, 네이버 환율 USD/KRW를 자동으로 불러와 같은 원화 기준으로 비교합니다.
+        계산 기준은 <b>ADR 환산 본주가 = ADR 가격 × 환율 ÷ 0.1</b>입니다. ADR 1주가 본주 1/10을 대표하므로 본주 1주 기준 가격은 ADR 원화가의 10배로 환산합니다.
+        한국장과 미국장은 정규 거래 시간이 겹치지 않으므로, 각 가격의 기준 시각이 다를 수 있습니다.
+      </p>
 
-        <section class="earnings-panel" aria-labelledby="earnings-capex-title" data-earnings-panel="cashflow" hidden>
-          <div class="panel-head">
-            <h3 id="earnings-capex-title">CAPEX 감당력 비교</h3>
-            <p>최근 분기 CAPEX / OCF. 100%를 넘으면 해당 분기 영업현금흐름보다 설비투자가 큽니다.</p>
-          </div>
-          <div class="rank-list" id="capexRanking"></div>
-        </section>
+    </section>
 
-        <section class="earnings-panel" aria-labelledby="earnings-intensity-title" data-earnings-panel="intensity" hidden>
-          <div class="panel-head">
-            <h3 id="earnings-intensity-title">CAPEX/OPEX 투자강도</h3>
-            <p>최근 분기 CAPEX / OPEX, OPEX가 없으면 EBITDA 기준</p>
-          </div>
-          <div class="rank-list" id="intensityRanking"></div>
-        </section>
+    <section class="guide" aria-labelledby="guide-title">
+      <div>
+        <p class="eyebrow">HOW TO READ</p>
+        <h2 id="guide-title">해석 방법</h2>
       </div>
+      <ol>
+        <li>
+          <b>괴리율이 플러스면</b>
+          ADR 환산 본주가가 코스피 본주 가격보다 높다는 뜻입니다.
+        </li>
+        <li>
+          <b>괴리율이 마이너스면</b>
+          ADR 환산 본주가가 코스피 본주 가격보다 낮다는 뜻입니다.
+        </li>
+        <li>
+          <b>실제 거래 전에는</b>
+          시세 지연, 환전 스프레드, 세금, 거래 수수료, 유동성, 운영 시간 차이를 함께 봐야 합니다.
+        </li>
+        <li>
+          <b>세션 불일치가 표시되면</b>
+          ADR, 본주, 환율의 기준 시각이 다르다는 뜻입니다. 이때의 괴리율은 실시간 차익거래 신호가 아니라 참고용 비교값입니다.
+        </li>
+      </ol>
+    </section>
 
-      <div class="earnings-card-grid" id="earningsCards"></div>
-
-      <div class="chart-panel">
-        <div class="chart-head">
-          <div>
-            <h3>상세 비교표</h3>
-            <p class="chart-note">값의 통화가 서로 다르므로 절대금액보다 방향성과 비율을 중심으로 봅니다.</p>
-          </div>
-        </div>
-        <div class="earnings-table-wrap">
-          <table class="earnings-table" id="earningsTable"></table>
-        </div>
-      </div>
-
-      <div class="source-panel">
-        <h2>데이터 한계</h2>
-        <p>분기 실적과 현금흐름은 Yahoo Finance 공개 fundamentals time-series를 사용합니다. Kioxia처럼 일부 종목은 공개 시계열이 비어 있을 수 있습니다.</p>
-        <p>PER, PBR, 실적 예측치 컨센서스는 일관된 무료 공개 API가 제한되어 1차 버전에서는 N/A로 표시합니다. 추후 유료/공식 데이터 소스를 연결하면 같은 화면에 채울 수 있습니다.</p>
-        <ul id="earningsSources"></ul>
-      </div>
+    <section class="source-panel" aria-labelledby="wip1-source-title">
+      <h2 id="wip1-source-title">출처와 계산 기준</h2>
+      <p>시세 데이터는 서버 함수에서 ADR, 국내 본주, 환율의 네이버증권 JSON 응답을 조회해 표시합니다. 국내 본주는 본장 전후 NXT/시간외 가격이 열려 있으면 해당 가격을 우선 사용합니다. ADR 비율은 이 페이지의 계산 가정으로 고정해두었으며, 실제 예탁 비율이 바뀌면 함께 수정해야 합니다.</p>
+      <ul>
+        <li>
+          <a href="https://stock.naver.com/worldstock/stock/SKHY.O/price" target="_blank" rel="noopener noreferrer">Naver World Stock — SKHY.O</a>
+          <span>SK Hynix ADR 현재 가격과 기준 시각 조회에 사용합니다.</span>
+        </li>
+        <li>
+          <a href="https://m.stock.naver.com/domestic/stock/000660" target="_blank" rel="noopener noreferrer">Naver Stock — 000660</a>
+          <span>SK Hynix 코스피 본주 현재 가격과 기준 시각 조회에 사용합니다. NXT/시간외 가격이 열려 있으면 해당 가격을 우선 사용합니다.</span>
+        </li>
+        <li>
+          <a href="https://stock.naver.com/marketindex/exchange/FX_USDKRW/price" target="_blank" rel="noopener noreferrer">Naver Market Index — USD/KRW</a>
+          <span>ADR 달러 가격을 원화로 환산하기 위한 USD/KRW 환율 조회에 사용합니다.</span>
+        </li>
+      </ul>
     </section>
   </main>
 
   <footer>
     <div>
       <strong>WIP 5</strong>
-      <p>AI 공급망 실적 비교 실험.</p>
+      <p>SK Hynix ADR 가격 비교</p>
     </div>
-    <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 데이터 지연·누락 가능</p>
+    <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 시세 지연 가능</p>
     <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
     <span>© 2026</span>
   </footer>
+
   <script src="../ticker.js?v=change-pct-20260717"></script>
-  <script src="../ai-earnings.js?v=capex-coverage-20260718"></script>
+  <script src="../app.js"></script>
 </body>
 </html>

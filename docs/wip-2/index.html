@@ -11,17 +11,16 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="KOSPI 역사적 평균 PER, KRX 기준 현행 PER, Forward PER 컨센서스를 한 화면에서 비교합니다.">
+  <meta name="description" content="개인 수급 기반 KOSPI 공포·탐욕 심리를 지표 카드로 요약합니다.">
   <meta name="theme-color" content="#0e100d">
-  <meta property="og:title" content="WIP 2 — KOSPI PER Monitor">
-  <meta property="og:description" content="KOSPI 역사적 평균 PER, KRX 기준 현행 PER, Forward PER 컨센서스를 한 화면에서 비교합니다.">
+  <meta property="og:title" content="KOSPI Fear/Greed Sentiment — WIP Labs">
+  <meta property="og:description" content="KOSPI 수익률과 개인 순매수의 평소 관계에서 벗어난 정도를 공포·탐욕 심리로 읽어봅니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/wip-2/">
-  <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
   <link rel="canonical" href="https://wiplabs.pages.dev/wip-2/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../styles.css">
-  <title>WIP 2 — KOSPI PER Monitor</title>
+  <title>KOSPI Fear/Greed Sentiment — WIP Labs</title>
 </head>
 <body>
   <header class="site-header">
@@ -29,14 +28,13 @@
       <span>WIP</span>
       <strong>WIP Labs</strong>
     </a>
-    <nav class="service-tabs" aria-label="주요 메뉴">
-      <a href="../" title="HOME">HOME</a>
-      <a href="../wip-1/" title="F1 · SK Hynix ADR">F1</a>
-      <a href="../wip-2/" aria-current="page" title="F2 · KOSPI PER">F2</a>
-      <a href="../wip-3/" title="F3 · Fear/Greed">F3</a>
-      <a href="../wip-4/" title="F4 · US Liquidity">F4</a>
-      <a href="../wip-5/" title="F5 · AI Earnings">F5</a>
-      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG · 숫자로 읽는 시장">BLOG</a>
+    <nav class="service-tabs" aria-label="Main menu">
+      <a href="../wip-1/" title="F1 - KOSPI PER">F1</a>
+      <a href="../wip-2/" aria-current="page" title="F2 - Fear/Greed">F2</a>
+      <a href="../wip-3/" title="F3 - AI Earnings">F3</a>
+      <a href="../wip-4/" title="F4 - US Liquidity">F4</a>
+      <a href="../wip-5/" title="F5 - SK Hynix ADR">F5</a>
+      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG">BLOG</a>
     </nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
@@ -48,63 +46,80 @@
 
   <main>
     <section class="hero service-hero">
-      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./kospi-per <span class="flag">--krx</span></p>
-      <h1>KOSPI PER Monitor</h1>
-      <p class="hero-copy">KOSPI 역사적 평균 PER, KRX 기준 현행 PER, Forward PER 컨센서스만 간단히 비교합니다.</p>
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./sentiment <span class="flag">--kospi</span></p>
+      <h1>KOSPI Fear/Greed Sentiment</h1>
+      <p class="hero-copy">KOSPI 수익률과 개인 순매수의 평소 관계에서 벗어난 정도를 카드형 지표로 요약합니다.</p>
     </section>
 
-    <section class="reading-note" aria-labelledby="reading-note-f2">
-      <h2 id="reading-note-f2">이 지표를 왜 보나요?</h2>
+    <section class="reading-note" aria-labelledby="reading-note-f3">
+      <h2 id="reading-note-f3">이 지표를 왜 보나요?</h2>
       <ul>
-        <li>PER는 시장이 현재 이익 대비 어느 정도 가격에 거래되는지 보여주는 가장 기본적인 밸류에이션 온도계입니다.</li>
-        <li>역사적 평균과 비교하면 지금의 KOSPI가 평소보다 부담스러운지, 아직 낮은 구간인지 빠르게 볼 수 있습니다.</li>
-        <li>Forward PER는 미래 이익 기대가 반영되므로 현행 PER와 함께 보되, 컨센서스 변동 가능성을 항상 감안해야 합니다.</li>
+        <li>개인 투자자는 보통 하락장에서 저가 매수, 상승장에서 차익 실현을 보이는 경향이 있습니다.</li>
+        <li>그 평소 패턴에서 크게 벗어나는 날은 공포나 탐욕이 과해진 변곡점 후보로 볼 수 있습니다.</li>
+        <li>단독 매매 신호가 아니라 과열·과매도 국면을 확인하는 보조 프레임입니다.</li>
       </ul>
     </section>
 
-    <section class="market-dashboard" aria-labelledby="market-title">
+    <section class="sentiment-dashboard" aria-labelledby="sentiment-title">
       <div class="section-title">
         <div>
-          <h2 id="market-title">KOSPI PER 비교</h2>
-          <p class="section-copy">현행 PER와 역사적 평균은 KRX 데이터를 기준으로 갱신하고, Forward PER는 공개 출처 기반 컨센서스 보조값으로 표시합니다.</p>
+          <h2 id="sentiment-title">공포·탐욕 심리 카드</h2>
+          <p class="section-copy">하락장에 개인 매수가 평소보다 약하면 공포 쪽, 상승장에 개인 매수가 평소보다 강하면 탐욕 쪽으로 해석합니다.</p>
         </div>
-        <button class="refresh-button" id="marketRefresh" type="button">새로고침</button>
+        <button class="refresh-button" id="sentimentRefresh" type="button">새로고침</button>
       </div>
 
-      <div class="status" id="marketStatus">KRX PER 데이터를 불러오는 중입니다.</div>
-      <div class="market-card-grid" id="marketCards" aria-live="polite"></div>
+      <div class="status" id="sentimentStatus" data-state="neutral">데이터를 확인하는 중입니다.</div>
 
-      <div class="chart-panel market-per-chart-panel">
-        <div class="chart-head">
-          <div>
-            <h3>연도별 평균 PER 추이</h3>
-            <p class="chart-note">2010년 이후 KOSPI 연도별 평균 PER와 현재 PER, Forward PER 참고치를 함께 봅니다.</p>
-          </div>
-          <div class="chart-legend" id="marketPerLegend"></div>
-        </div>
-        <div class="market-chart-wrap">
-          <svg id="marketPerChart" viewBox="0 0 900 340" role="img" aria-label="KOSPI 연도별 평균 PER 추이"></svg>
-        </div>
+      <div class="sentiment-controls" aria-label="지표 설정">
+        <label>
+          표시 기간
+          <select id="sentimentRange" aria-label="표시 기간 선택">
+            <option value="all">최대 범위</option>
+            <option value="1y" selected>1년</option>
+            <option value="6m">6개월</option>
+            <option value="3m">3개월</option>
+          </select>
+        </label>
+        <label><input type="radio" name="sentimentFreq" value="W" checked> 주간</label>
+        <label><input type="radio" name="sentimentFreq" value="D"> 일간</label>
       </div>
 
-      <div class="source-panel">
-        <h2>출처와 계산 기준</h2>
-        <p>이 화면은 투자 판단을 대체하지 않는 참고용 실험 화면입니다. 현행 PER와 역사적 평균 PER는 KRX 기준 데이터를 사용하고, Forward PER는 공개 기사에 인용된 12개월 선행 PER 참고치를 표시합니다.</p>
-        <ul id="sourceList"></ul>
+      <div class="sentiment-summary sentiment-card-board" id="sentimentSummary"></div>
+
+      <div class="sentiment-detail sentiment-reading" id="sentimentDetail">
+        <strong>최근 심리 해석을 준비하고 있습니다.</strong>
+        <p>데이터를 불러오면 최근 기준일의 개인 수급이 평소 패턴보다 얼마나 부족하거나 초과했는지 보여줍니다.</p>
       </div>
+    </section>
+
+    <section class="source-panel">
+      <h2>데이터와 방법론</h2>
+      <p>필수 입력은 KOSPI 종가와 개인 순매수 대금입니다. KOSPI 수익률 대비 개인 순매수의 평균적 관계를 계산한 뒤, 최근 수급이 그 관계에서 얼마나 벗어났는지 공포·탐욕 보조 지표로 표시합니다.</p>
+      <ul>
+        <li>
+          <a href="https://blog.naver.com/PostList.naver?blogId=zkdhtm13" target="_blank" rel="noopener noreferrer">이그전 블로그</a>
+          <span>개인 수급 기반 공포·탐욕 구간 아이디어의 참고 출처입니다.</span>
+        </li>
+        <li>
+          <a href="https://github.com/sharebook-kr/pykrx" target="_blank" rel="noopener noreferrer">pykrx</a>
+          <span>KOSPI 지수와 투자자별 순매수 대금 수집에 사용하는 파이썬 라이브러리입니다.</span>
+        </li>
+      </ul>
     </section>
   </main>
 
   <footer>
     <div>
-      <strong>WIP 2</strong>
-      <p>KOSPI PER 비교 실험.</p>
+      <strong>WIP Labs</strong>
+      <p>계속 만들고 고쳐보는 작은 실험실입니다.</p>
     </div>
     <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 시세 지연 가능</p>
     <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
     <span>© 2026</span>
   </footer>
-  <script src="../ticker.js?v=change-pct-20260717" defer></script>
-  <script src="../market.js?v=fper-valuation-20260718" defer></script>
+
+  <script src="../ticker.js?v=change-pct-20260717"></script>
+  <script src="../sentiment.js?v=volatility-note-20260718"></script>
 </body>
 </html>

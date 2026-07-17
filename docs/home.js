@@ -36,16 +36,16 @@ async function readJson(url) {
 
 function buildPerCard(data) {
   const kospi = data?.markets?.kospi200;
-  if (!kospi) return card("neutral", "F2 · VALUE", "KOSPI PER 데이터 확인 필요", "KRX PER 데이터가 아직 준비되지 않았습니다.", "wip-2/");
+  if (!kospi) return card("neutral", "F1 · VALUE", "KOSPI PER 데이터 확인 필요", "KRX PER 데이터가 아직 준비되지 않았습니다.", "wip-1/");
   const gap = kospi.per - kospi.historicalAveragePer;
   const tone = Math.abs(gap) < 0.5 ? "neutral" : gap > 0 ? "negative" : "positive";
   const title = gap > 0.5 ? "역사적 평균보다 비싼 편" : gap < -0.5 ? "역사적 평균보다 낮은 편" : "역사적 평균 부근";
   return card(
     tone,
-    "F2 · VALUE",
+    "F1 · VALUE",
     title,
     `최근 ${safeDate(kospi.date)} 기준 PER ${homeNumber.format(kospi.per)}배, 역사적 평균 ${homeNumber.format(kospi.historicalAveragePer)}배`,
-    "wip-2/"
+    "wip-1/"
   );
 }
 
@@ -56,7 +56,7 @@ function buildSentimentCard(meta) {
   const detail = Number.isFinite(vkospi?.value)
     ? `최근 데이터 ${safeDate(meta.lastDataDate)}, VKOSPI ${homeNumber.format(vkospi.value)}`
     : `최근 데이터 ${safeDate(meta?.lastDataDate)} 기준 개인 수급 심리를 확인합니다.`;
-  return card(tone, "F3 · SENTIMENT", title, detail, "wip-3/");
+  return card(tone, "F2 · SENTIMENT", title, detail, "wip-2/");
 }
 
 function buildLiquidityCard(data) {
@@ -87,7 +87,7 @@ function buildEarningsCard(data) {
   const detail = Number.isFinite(avg)
     ? `최근 분기 평균 CAPEX/OPEX ${pctText(avg)} · ${rows.length}개 기업 커버`
     : "AI 공급망과 하이퍼스케일러 실적을 비교합니다.";
-  return card(tone, "F5 · AI CAPEX", title, detail, "wip-5/");
+  return card(tone, "F3 · AI CAPEX", title, detail, "wip-3/");
 }
 
 async function loadHomeRead() {
@@ -114,7 +114,7 @@ async function loadHomeRead() {
     const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt].filter(Boolean);
     homeEls.updatedAt.textContent = timestamps.length ? `최근 업데이트 ${timestamps.sort().at(-1)}` : "업데이트 정보 없음";
   } catch {
-    homeEls.summary.innerHTML = card("neutral", "MARKET READ", "요약을 불러오지 못했습니다", "각 WIP 페이지에서 개별 지표를 확인할 수 있습니다.", "wip-2/");
+    homeEls.summary.innerHTML = card("neutral", "MARKET READ", "요약을 불러오지 못했습니다", "각 WIP 페이지에서 개별 지표를 확인할 수 있습니다.", "wip-1/");
     homeEls.updatedAt.textContent = "데이터 확인 실패";
   }
 }

@@ -315,8 +315,6 @@ function renderTable(data) {
         <td>${pct(burden)}</td>
         <td>${pct(intensity)}<br><small>${capexIntensityLabel(latest)}</small></td>
         <td>${pct(fcfMargin(latest))}</td>
-        <td>N/A</td>
-        <td>N/A</td>
       </tr>
     `;
   }).join("");
@@ -336,8 +334,6 @@ function renderTable(data) {
         <th>CAPEX/OCF</th>
         <th>CAPEX/OPEX</th>
         <th>FCF Margin</th>
-        <th>PER/PBR</th>
-        <th>컨센서스</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>

@@ -1,4 +1,4 @@
-name: Update KOSPI sentiment data
+name: Update KOSPI market data
 
 on:
   push:
@@ -8,10 +8,8 @@ on:
       - ".github/workflows/update-kospi-sentiment.yml"
       - "scripts/update_kospi_sentiment.py"
       - "scripts/update_market_per.py"
-      - "scripts/update_us_liquidity.py"
-      - "scripts/update_ai_earnings.py"
   schedule:
-    # 19:00 KST every day. GitHub Actions cron uses UTC.
+    # F1 KOSPI PER + F2 sentiment: 19:00 KST every day. GitHub Actions cron uses UTC.
     - cron: "0 10 * * *"
   workflow_dispatch:
 
@@ -47,11 +45,11 @@ jobs:
           print("KRX_PW configured:", bool(os.getenv("KRX_PW")))
           PY
 
-      - name: Collect KOSPI sentiment data
+      - name: Collect KOSPI market data
         run: |
           for attempt in 1 2 3; do
             echo "Collection attempt ${attempt}/3"
-            if python scripts/update_kospi_sentiment.py && python scripts/update_market_per.py && python scripts/update_us_liquidity.py && python scripts/update_ai_earnings.py; then
+            if python scripts/update_kospi_sentiment.py && python scripts/update_market_per.py; then
               exit 0
             fi
             if [ "$attempt" = "3" ]; then
@@ -64,10 +62,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/kospi-sentiment.csv docs/data/kospi-sentiment-meta.json docs/data/kospi-per-history.csv docs/data/market-per.json docs/data/us-liquidity.json docs/data/ai-earnings.json
+          git add docs/data/kospi-sentiment.csv docs/data/kospi-sentiment-meta.json docs/data/kospi-per-history.csv docs/data/market-per.json
           if git diff --cached --quiet; then
             echo "No data changes to commit."
           else
-            git commit -m "Update KOSPI sentiment data"
+            git commit -m "Update KOSPI market data"
             git push
           fi

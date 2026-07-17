@@ -11,16 +11,16 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="개인 수급 기반 KOSPI 공포·탐욕 심리를 지표 카드로 요약합니다.">
+  <meta name="description" content="메모리 반도체와 미국 하이퍼스케일러의 분기 이익, CAPEX, 현금흐름을 비교합니다.">
   <meta name="theme-color" content="#0e100d">
-  <meta property="og:title" content="KOSPI Fear/Greed Sentiment — WIP Labs">
-  <meta property="og:description" content="KOSPI 수익률과 개인 순매수의 평소 관계에서 벗어난 정도를 공포·탐욕 심리로 읽어봅니다.">
+  <meta property="og:title" content="AI Earnings Monitor — WIP Labs">
+  <meta property="og:description" content="AI 공급망 주요 기업의 최근 분기 실적과 현금흐름을 비교합니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/wip-3/">
   <link rel="canonical" href="https://wiplabs.pages.dev/wip-3/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../styles.css">
-  <title>KOSPI Fear/Greed Sentiment — WIP Labs</title>
+  <title>AI Earnings Monitor — WIP Labs</title>
 </head>
 <body>
   <header class="site-header">
@@ -28,14 +28,13 @@
       <span>WIP</span>
       <strong>WIP Labs</strong>
     </a>
-    <nav class="service-tabs" aria-label="주요 메뉴">
-      <a href="../" title="HOME">HOME</a>
-      <a href="../wip-1/" title="F1 · SK Hynix ADR">F1</a>
-      <a href="../wip-2/" title="F2 · KOSPI PER">F2</a>
-      <a href="../wip-3/" aria-current="page" title="F3 · Fear/Greed">F3</a>
-      <a href="../wip-4/" title="F4 · US Liquidity">F4</a>
-      <a href="../wip-5/" title="F5 · AI Earnings">F5</a>
-      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG · 숫자로 읽는 시장">BLOG</a>
+    <nav class="service-tabs" aria-label="Main menu">
+      <a href="../wip-1/" title="F1 - KOSPI PER">F1</a>
+      <a href="../wip-2/" title="F2 - Fear/Greed">F2</a>
+      <a href="../wip-3/" aria-current="page" title="F3 - AI Earnings">F3</a>
+      <a href="../wip-4/" title="F4 - US Liquidity">F4</a>
+      <a href="../wip-5/" title="F5 - SK Hynix ADR">F5</a>
+      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG">BLOG</a>
     </nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
@@ -47,80 +46,107 @@
 
   <main>
     <section class="hero service-hero">
-      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./sentiment <span class="flag">--kospi</span></p>
-      <h1>KOSPI Fear/Greed Sentiment</h1>
-      <p class="hero-copy">KOSPI 수익률과 개인 순매수의 평소 관계에서 벗어난 정도를 카드형 지표로 요약합니다.</p>
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./ai-earnings <span class="flag">--compare</span></p>
+      <h1>AI Earnings Monitor</h1>
+      <p class="hero-copy">AI 인프라 사이클을 반도체 공급자와 하이퍼스케일러 투자자로 나눠 비교합니다.</p>
     </section>
 
-    <section class="reading-note" aria-labelledby="reading-note-f3">
-      <h2 id="reading-note-f3">이 지표를 왜 보나요?</h2>
+    <section class="reading-note" aria-labelledby="reading-note-f5">
+      <h2 id="reading-note-f5">이 지표를 왜 보나요?</h2>
       <ul>
-        <li>개인 투자자는 보통 하락장에서 저가 매수, 상승장에서 차익 실현을 보이는 경향이 있습니다.</li>
-        <li>그 평소 패턴에서 크게 벗어나는 날은 공포나 탐욕이 과해진 변곡점 후보로 볼 수 있습니다.</li>
-        <li>단독 매매 신호가 아니라 과열·과매도 국면을 확인하는 보조 프레임입니다.</li>
+        <li>AI 인프라 투자는 성장의 선행지표이지만, 동시에 이익과 현금흐름을 얼마나 소모하는지도 봐야 합니다.</li>
+        <li>CAPEX/이익은 설비투자가 영업이익 또는 순이익 안에서 감당되는지, CAPEX/OCF는 실제 영업현금흐름 안에서 감당되는지를 보여줍니다.</li>
+        <li>FCF가 양수인지는 최종 안전판이고, 그 전에 CAPEX가 이익과 OCF를 얼마나 잠식하는지가 핵심 체크포인트입니다.</li>
       </ul>
     </section>
 
-    <section class="sentiment-dashboard" aria-labelledby="sentiment-title">
+    <section class="earnings-dashboard" aria-labelledby="earnings-title">
       <div class="section-title">
         <div>
-          <h2 id="sentiment-title">공포·탐욕 심리 카드</h2>
-          <p class="section-copy">하락장에 개인 매수가 평소보다 약하면 공포 쪽, 상승장에 개인 매수가 평소보다 강하면 탐욕 쪽으로 해석합니다.</p>
+          <h2 id="earnings-title">한눈에 보는 실적 흐름</h2>
+          <p class="section-copy">최근 분기의 이익 성장률, CAPEX 절대액, CAPEX/이익, CAPEX/OCF, FCF를 비교합니다.</p>
         </div>
-        <button class="refresh-button" id="sentimentRefresh" type="button">새로고침</button>
+        <button class="refresh-button" id="earningsRefresh" type="button">새로고침</button>
       </div>
 
-      <div class="status" id="sentimentStatus" data-state="neutral">데이터를 확인하는 중입니다.</div>
-
-      <div class="sentiment-controls" aria-label="지표 설정">
+      <div class="status" id="earningsStatus" data-state="neutral">AI 실적 데이터를 불러오는 중입니다.</div>
+      <div class="sentiment-controls" aria-label="그룹 필터">
         <label>
-          표시 기간
-          <select id="sentimentRange" aria-label="표시 기간 선택">
-            <option value="all">최대 범위</option>
-            <option value="1y" selected>1년</option>
-            <option value="6m">6개월</option>
-            <option value="3m">3개월</option>
+          보기
+          <select id="earningsGroup" aria-label="그룹 선택">
+            <option value="all">전체</option>
+            <option value="memory">반도체/메모리</option>
+            <option value="hyperscaler">하이퍼스케일러</option>
           </select>
         </label>
-        <label><input type="radio" name="sentimentFreq" value="W" checked> 주간</label>
-        <label><input type="radio" name="sentimentFreq" value="D"> 일간</label>
       </div>
 
-      <div class="sentiment-summary sentiment-card-board" id="sentimentSummary"></div>
+      <div class="earnings-insight-grid" id="earningsSummary"></div>
 
-      <div class="sentiment-detail sentiment-reading" id="sentimentDetail">
-        <strong>최근 심리 해석을 준비하고 있습니다.</strong>
-        <p>데이터를 불러오면 최근 기준일의 개인 수급이 평소 패턴보다 얼마나 부족하거나 초과했는지 보여줍니다.</p>
+      <div class="earnings-chart-tabs" role="tablist" aria-label="실적 비교 그래프 선택">
+        <button type="button" class="is-active" data-earnings-tab="growth" role="tab" aria-selected="true">이익 성장률</button>
+        <button type="button" data-earnings-tab="cashflow" role="tab" aria-selected="false">CAPEX 감당력</button>
+        <button type="button" data-earnings-tab="intensity" role="tab" aria-selected="false">CAPEX/OPEX</button>
       </div>
-    </section>
 
-    <section class="source-panel">
-      <h2>데이터와 방법론</h2>
-      <p>필수 입력은 KOSPI 종가와 개인 순매수 대금입니다. KOSPI 수익률 대비 개인 순매수의 평균적 관계를 계산한 뒤, 최근 수급이 그 관계에서 얼마나 벗어났는지 공포·탐욕 보조 지표로 표시합니다.</p>
-      <ul>
-        <li>
-          <a href="https://blog.naver.com/PostList.naver?blogId=zkdhtm13" target="_blank" rel="noopener noreferrer">이그전 블로그</a>
-          <span>개인 수급 기반 공포·탐욕 구간 아이디어의 참고 출처입니다.</span>
-        </li>
-        <li>
-          <a href="https://github.com/sharebook-kr/pykrx" target="_blank" rel="noopener noreferrer">pykrx</a>
-          <span>KOSPI 지수와 투자자별 순매수 대금 수집에 사용하는 파이썬 라이브러리입니다.</span>
-        </li>
-      </ul>
+      <div class="earnings-compare-layout">
+        <section class="earnings-panel" aria-labelledby="earnings-rank-title" data-earnings-panel="growth">
+          <div class="panel-head">
+            <h3 id="earnings-rank-title">이익 성장률 랭킹</h3>
+            <p>최근 분기 QoQ 기준</p>
+          </div>
+          <div class="rank-list" id="earningsRanking"></div>
+        </section>
+
+        <section class="earnings-panel" aria-labelledby="earnings-capex-title" data-earnings-panel="cashflow" hidden>
+          <div class="panel-head">
+            <h3 id="earnings-capex-title">CAPEX 감당력 비교</h3>
+            <p>최근 분기 CAPEX / OCF. 100%를 넘으면 해당 분기 영업현금흐름보다 설비투자가 큽니다.</p>
+          </div>
+          <div class="rank-list" id="capexRanking"></div>
+        </section>
+
+        <section class="earnings-panel" aria-labelledby="earnings-intensity-title" data-earnings-panel="intensity" hidden>
+          <div class="panel-head">
+            <h3 id="earnings-intensity-title">CAPEX/OPEX 투자강도</h3>
+            <p>최근 분기 CAPEX / OPEX, OPEX가 없으면 EBITDA 기준</p>
+          </div>
+          <div class="rank-list" id="intensityRanking"></div>
+        </section>
+      </div>
+
+      <div class="earnings-card-grid" id="earningsCards"></div>
+
+      <div class="chart-panel">
+        <div class="chart-head">
+          <div>
+            <h3>상세 비교표</h3>
+            <p class="chart-note">값의 통화가 서로 다르므로 절대금액보다 방향성과 비율을 중심으로 봅니다.</p>
+          </div>
+        </div>
+        <div class="earnings-table-wrap">
+          <table class="earnings-table" id="earningsTable"></table>
+        </div>
+      </div>
+
+      <div class="source-panel">
+        <h2>데이터 한계</h2>
+        <p>분기 실적과 현금흐름은 Yahoo Finance 공개 fundamentals time-series를 사용합니다. Kioxia처럼 일부 종목은 공개 시계열이 비어 있을 수 있습니다.</p>
+        <ul id="earningsSources"></ul>
+      </div>
     </section>
   </main>
 
   <footer>
     <div>
-      <strong>WIP Labs</strong>
-      <p>계속 만들고 고쳐보는 작은 실험실입니다.</p>
+      <strong>WIP 3</strong>
+      <p>AI 공급망 실적 비교 실험.</p>
     </div>
-    <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 시세 지연 가능</p>
+    <p>DISCLAIMER · 교육·참고용 · 투자권유 아님 · 데이터 지연·누락 가능</p>
     <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>𝕏</b><span>CONTACT</span><strong>@bronian</strong></a>
     <span>© 2026</span>
   </footer>
-
   <script src="../ticker.js?v=change-pct-20260717"></script>
-  <script src="../sentiment.js?v=volatility-note-20260718"></script>
+  <script src="../ai-earnings.js?v=capex-focused-20260718"></script>
 </body>
 </html>
