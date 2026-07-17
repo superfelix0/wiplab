@@ -1,6 +1,9 @@
 const earningsEls = {
   status: document.querySelector("#earningsStatus"),
   refresh: document.querySelector("#earningsRefresh"),
+  summary: document.querySelector("#earningsSummary"),
+  ranking: document.querySelector("#earningsRanking"),
+  capexRanking: document.querySelector("#capexRanking"),
   cards: document.querySelector("#earningsCards"),
   table: document.querySelector("#earningsTable"),
   sources: document.querySelector("#earningsSources"),
@@ -44,25 +47,134 @@ function includeCompany(company) {
   return company.group !== "Hyperscaler";
 }
 
+function currentCompanies(data) {
+  return data.companies.filter(includeCompany);
+}
+
+function companiesWithLatest(data) {
+  return currentCompanies(data)
+    .map((company) => ({ company, latest: latestQuarter(company) }))
+    .filter((item) => item.latest);
+}
+
 function toneForGrowth(value) {
   if (!Number.isFinite(value)) return "neutral";
   return value >= 0 ? "positive" : "negative";
 }
 
-function renderCards(data) {
-  const companies = data.companies.filter(includeCompany);
-  earningsEls.cards.innerHTML = companies.map((company) => {
-    const latest = latestQuarter(company);
-    if (!latest) {
-      return `
-        <article data-tone="neutral">
-          <span>${company.symbol}</span>
-          <strong>${company.name}</strong>
-          <small>${company.group} · 분기 데이터 없음. ${company.message || ""}</small>
-        </article>
-      `;
-    }
+function capexBurden(latest) {
+  if (!Number.isFinite(latest?.capex) || !Number.isFinite(latest?.operatingCashFlow) || latest.operatingCashFlow === 0) {
+    return null;
+  }
+  return Math.abs(latest.capex) / Math.abs(latest.operatingCashFlow);
+}
 
+function fcfMargin(latest) {
+  if (!Number.isFinite(latest?.freeCashFlow) || !Number.isFinite(latest?.quarterlyTotalRevenue) || latest.quarterlyTotalRevenue === 0) {
+    return null;
+  }
+  return latest.freeCashFlow / latest.quarterlyTotalRevenue;
+}
+
+function average(values) {
+  const valid = values.filter(Number.isFinite);
+  if (!valid.length) return null;
+  return valid.reduce((sum, value) => sum + value, 0) / valid.length;
+}
+
+function renderSummary(data) {
+  const rows = companiesWithLatest(data);
+  const growthValues = rows.map(({ latest }) => latest.profitGrowthQoQ);
+  const capexBurdenValues = rows.map(({ latest }) => capexBurden(latest));
+  const fcfPositive = rows.filter(({ latest }) => Number.isFinite(latest.freeCashFlow) && latest.freeCashFlow > 0).length;
+  const topGrowth = rows
+    .filter(({ latest }) => Number.isFinite(latest.profitGrowthQoQ))
+    .sort((a, b) => b.latest.profitGrowthQoQ - a.latest.profitGrowthQoQ)[0];
+  const deepestCapex = rows
+    .filter(({ latest }) => Number.isFinite(capexBurden(latest)))
+    .sort((a, b) => capexBurden(b.latest) - capexBurden(a.latest))[0];
+
+  earningsEls.summary.innerHTML = `
+    <article data-tone="neutral">
+      <span>커버리지</span>
+      <strong>${rows.length}/${currentCompanies(data).length}</strong>
+      <small>분기 실적이 있는 기업 수입니다. Kioxia처럼 공개 시계열이 비어 있는 회사는 상세표에 따로 표시합니다.</small>
+    </article>
+    <article data-tone="${toneForGrowth(average(growthValues))}">
+      <span>평균 이익 성장률</span>
+      <strong>${pct(average(growthValues))}</strong>
+      <small>최근 분기 QoQ 평균입니다. 적자/흑자 전환 기업은 변동률이 크게 튈 수 있습니다.</small>
+    </article>
+    <article data-tone="neutral">
+      <span>평균 CAPEX/OCF</span>
+      <strong>${pct(average(capexBurdenValues))}</strong>
+      <small>영업현금흐름 대비 CAPEX 부담입니다. 통화가 다른 기업끼리도 상대 비교가 가능합니다.</small>
+    </article>
+    <article data-tone="${fcfPositive >= rows.length / 2 ? "positive" : "negative"}">
+      <span>FCF 플러스</span>
+      <strong>${fcfPositive}/${rows.length}</strong>
+      <small>최근 분기 잉여현금흐름이 플러스인 기업 수입니다.</small>
+    </article>
+    <article data-tone="positive">
+      <span>성장률 1위</span>
+      <strong>${topGrowth ? topGrowth.company.name : "N/A"}</strong>
+      <small>${topGrowth ? `${pct(topGrowth.latest.profitGrowthQoQ)} · ${topGrowth.latest.date}` : "데이터 없음"}</small>
+    </article>
+    <article data-tone="negative">
+      <span>CAPEX 부담 1위</span>
+      <strong>${deepestCapex ? deepestCapex.company.name : "N/A"}</strong>
+      <small>${deepestCapex ? `CAPEX/OCF ${pct(capexBurden(deepestCapex.latest))}` : "데이터 없음"}</small>
+    </article>
+  `;
+}
+
+function renderRankList(target, rows, metric, options = {}) {
+  const valid = rows.filter(({ latest }) => Number.isFinite(metric(latest)));
+  if (!valid.length) {
+    target.innerHTML = `<p class="empty-note">표시할 데이터가 없습니다.</p>`;
+    return;
+  }
+
+  const sorted = valid.sort((a, b) => metric(b.latest) - metric(a.latest)).slice(0, 8);
+  const max = Math.max(...sorted.map(({ latest }) => Math.abs(metric(latest))), 0.01);
+
+  target.innerHTML = sorted.map(({ company, latest }, index) => {
+    const value = metric(latest);
+    const width = Math.max(4, Math.min(100, (Math.abs(value) / max) * 100));
+    const positive = options.lowerIsBetter ? value <= 0.65 : value >= 0;
+    return `
+      <article class="rank-row">
+        <b>${String(index + 1).padStart(2, "0")}</b>
+        <div>
+          <strong>${company.name}</strong>
+          <small>${company.symbol} · ${company.group}</small>
+          <span class="rank-bar"><i class="${positive ? "positive" : "negative"}" style="width:${width}%"></i></span>
+        </div>
+        <em>${options.format ? options.format(value, latest, company) : pct(value)}</em>
+      </article>
+    `;
+  }).join("");
+}
+
+function renderRankings(data) {
+  const rows = companiesWithLatest(data);
+  renderRankList(earningsEls.ranking, rows, (latest) => latest.profitGrowthQoQ, {
+    format: (value) => pct(value),
+  });
+  renderRankList(earningsEls.capexRanking, rows, capexBurden, {
+    lowerIsBetter: true,
+    format: (value) => pct(value),
+  });
+}
+
+function renderCards(data) {
+  const rows = companiesWithLatest(data)
+    .sort((a, b) => (b.latest.profitGrowthQoQ ?? -Infinity) - (a.latest.profitGrowthQoQ ?? -Infinity))
+    .slice(0, 4);
+
+  earningsEls.cards.innerHTML = rows.map(({ company, latest }) => {
+    const burden = capexBurden(latest);
+    const margin = fcfMargin(latest);
     return `
       <article data-tone="${toneForGrowth(latest.profitGrowthQoQ)}">
         <span>${company.symbol} · ${company.group}</span>
@@ -71,32 +183,34 @@ function renderCards(data) {
           <div><dt>최근 분기</dt><dd>${latest.date}</dd></div>
           <div><dt>${latest.profitMetric}</dt><dd>${compactMoney(latest.profit, company.currency)}</dd></div>
           <div><dt>이익 QoQ</dt><dd>${pct(latest.profitGrowthQoQ)}</dd></div>
-          <div><dt>CAPEX</dt><dd>${compactMoney(latest.capex, company.currency)}</dd></div>
-          <div><dt>OCF</dt><dd>${compactMoney(latest.operatingCashFlow, company.currency)}</dd></div>
+          <div><dt>CAPEX/OCF</dt><dd>${pct(burden)}</dd></div>
           <div><dt>FCF</dt><dd>${compactMoney(latest.freeCashFlow, company.currency)}</dd></div>
+          <div><dt>FCF Margin</dt><dd>${pct(margin)}</dd></div>
         </dl>
-        <small>PER/PBR/컨센서스: N/A · 공개 데이터 소스 연결 전</small>
+        <small>상위 성장 기업 요약입니다. PER/PBR/컨센서스는 데이터 원천 연결 전까지 N/A입니다.</small>
       </article>
     `;
   }).join("");
 }
 
 function renderTable(data) {
-  const companies = data.companies.filter(includeCompany);
+  const companies = currentCompanies(data);
   const rows = companies.map((company) => {
     const latest = latestQuarter(company);
     if (!latest) {
       return `
         <tr>
-          <td>${company.name}</td>
+          <td>${company.name}<br><small>${company.symbol}</small></td>
           <td>${company.group}</td>
-          <td colspan="8">분기 실적 데이터 없음</td>
+          <td colspan="10">분기 실적 데이터 없음 · ${company.message || ""}</td>
         </tr>
       `;
     }
 
-    const width = Math.min(100, Math.abs(latest.profitGrowthQoQ || 0) * 100);
-    const barClass = latest.profitGrowthQoQ >= 0 ? "positive" : "negative";
+    const growth = latest.profitGrowthQoQ;
+    const width = Math.min(100, Math.abs(growth || 0) * 100);
+    const barClass = growth >= 0 ? "positive" : "negative";
+    const burden = capexBurden(latest);
 
     return `
       <tr>
@@ -107,12 +221,14 @@ function renderTable(data) {
         <td>
           <div class="bar-cell">
             <span class="${barClass}" style="width:${width}%"></span>
-            <b>${pct(latest.profitGrowthQoQ)}</b>
+            <b>${pct(growth)}</b>
           </div>
         </td>
         <td>${compactMoney(latest.capex, company.currency)}</td>
         <td>${compactMoney(latest.operatingCashFlow, company.currency)}</td>
         <td>${compactMoney(latest.freeCashFlow, company.currency)}</td>
+        <td>${pct(burden)}</td>
+        <td>${pct(fcfMargin(latest))}</td>
         <td>N/A</td>
         <td>N/A</td>
       </tr>
@@ -126,10 +242,12 @@ function renderTable(data) {
         <th>그룹</th>
         <th>분기</th>
         <th>이익</th>
-        <th>이익 증감률</th>
+        <th>이익 QoQ</th>
         <th>CAPEX</th>
         <th>OCF</th>
         <th>FCF</th>
+        <th>CAPEX/OCF</th>
+        <th>FCF Margin</th>
         <th>PER/PBR</th>
         <th>컨센서스</th>
       </tr>
@@ -148,6 +266,8 @@ function renderSources(data) {
 }
 
 function render(data) {
+  renderSummary(data);
+  renderRankings(data);
   renderCards(data);
   renderTable(data);
   renderSources(data);

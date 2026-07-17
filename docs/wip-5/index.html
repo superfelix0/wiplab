@@ -52,16 +52,16 @@
 
   <main>
     <section class="hero service-hero">
-      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./ai-earnings <span class="flag">--supply-chain</span></p>
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./ai-earnings <span class="flag">--compare</span></p>
       <h1>AI Earnings Monitor</h1>
-      <p class="hero-copy">메모리 반도체 업체와 미국 하이퍼스케일러의 최근 분기 이익, CAPEX, 현금흐름을 비교합니다.</p>
+      <p class="hero-copy">AI 인프라 사이클을 반도체 공급자와 하이퍼스케일러 투자자로 나눠 비교합니다.</p>
     </section>
 
     <section class="earnings-dashboard" aria-labelledby="earnings-title">
       <div class="section-title">
         <div>
-          <h2 id="earnings-title">실적·현금흐름 비교</h2>
-          <p class="section-copy">순이익이 있으면 순이익, 없으면 영업이익을 기준으로 증감률을 계산합니다. PER/PBR/컨센서스는 공개 데이터 확보 전까지 N/A로 표시합니다.</p>
+          <h2 id="earnings-title">한눈에 보는 실적 흐름</h2>
+          <p class="section-copy">최근 분기의 이익 성장률, CAPEX, 영업현금흐름, FCF를 비교합니다. PER/PBR/컨센서스는 신뢰 가능한 공개 원천 확보 전까지 N/A로 둡니다.</p>
         </div>
         <button class="refresh-button" id="earningsRefresh" type="button">새로고침</button>
       </div>
@@ -69,13 +69,33 @@
       <div class="status" id="earningsStatus" data-state="neutral">AI 실적 데이터를 불러오는 중입니다.</div>
       <div class="sentiment-controls" aria-label="그룹 필터">
         <label>
-          그룹
+          보기
           <select id="earningsGroup" aria-label="그룹 선택">
             <option value="all">전체</option>
-            <option value="memory">메모리/반도체</option>
+            <option value="memory">반도체/메모리</option>
             <option value="hyperscaler">하이퍼스케일러</option>
           </select>
         </label>
+      </div>
+
+      <div class="earnings-insight-grid" id="earningsSummary"></div>
+
+      <div class="earnings-compare-layout">
+        <section class="earnings-panel" aria-labelledby="earnings-rank-title">
+          <div class="panel-head">
+            <h3 id="earnings-rank-title">이익 성장률 랭킹</h3>
+            <p>최근 분기 QoQ 기준</p>
+          </div>
+          <div class="rank-list" id="earningsRanking"></div>
+        </section>
+
+        <section class="earnings-panel" aria-labelledby="earnings-capex-title">
+          <div class="panel-head">
+            <h3 id="earnings-capex-title">CAPEX 부담 비교</h3>
+            <p>최근 분기 CAPEX / OCF</p>
+          </div>
+          <div class="rank-list" id="capexRanking"></div>
+        </section>
       </div>
 
       <div class="earnings-card-grid" id="earningsCards"></div>
@@ -83,8 +103,8 @@
       <div class="chart-panel">
         <div class="chart-head">
           <div>
-            <h3>최근 분기 이익 증감률</h3>
-            <p class="chart-note">각 회사의 최근 분기 이익 증감률(QoQ)을 막대로 비교합니다. 적자 전환·흑자 전환 구간은 변동률 해석에 주의가 필요합니다.</p>
+            <h3>상세 비교표</h3>
+            <p class="chart-note">값의 통화가 서로 다르므로 절대금액보다 방향성과 비율을 중심으로 봅니다.</p>
           </div>
         </div>
         <div class="earnings-table-wrap">
@@ -111,6 +131,6 @@
     <span>© 2026</span>
   </footer>
   <script src="../ticker.js?v=change-pct-20260717"></script>
-  <script src="../ai-earnings.js?v=20260717"></script>
+  <script src="../ai-earnings.js?v=compare-board-20260717"></script>
 </body>
 </html>

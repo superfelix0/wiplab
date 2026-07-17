@@ -567,6 +567,35 @@ h3 {
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 
+.earnings-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.earnings-compare-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.earnings-panel,
+.earnings-insight-grid article {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.earnings-panel {
+  padding: 14px;
+}
+
+.earnings-insight-grid article {
+  min-height: 104px;
+  padding: 13px;
+}
+
 .sentiment-summary {
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
@@ -615,17 +644,20 @@ h3 {
 
 .liquidity-summary article[data-tone="positive"],
 .liquidity-card-grid article[data-tone="positive"],
+.earnings-insight-grid article[data-tone="positive"],
 .earnings-card-grid article[data-tone="positive"] {
   border-color: rgba(111, 191, 115, 0.45);
 }
 
 .liquidity-summary article[data-tone="negative"],
 .liquidity-card-grid article[data-tone="negative"],
+.earnings-insight-grid article[data-tone="negative"],
 .earnings-card-grid article[data-tone="negative"] {
   border-color: rgba(194, 82, 66, 0.45);
 }
 
-.liquidity-summary article[data-tone="neutral"] {
+.liquidity-summary article[data-tone="neutral"],
+.earnings-insight-grid article[data-tone="neutral"] {
   border-color: rgba(216, 161, 58, 0.45);
 }
 
@@ -659,6 +691,7 @@ h3 {
 .market-card-grid h3,
 .liquidity-summary span,
 .liquidity-card-grid span,
+.earnings-insight-grid span,
 .earnings-card-grid span,
 .sentiment-summary span,
 .market-card-grid dt {
@@ -675,6 +708,7 @@ h3 {
 .market-card-grid strong,
 .liquidity-summary strong,
 .liquidity-card-grid strong,
+.earnings-insight-grid strong,
 .earnings-card-grid strong,
 .sentiment-summary strong {
   display: block;
@@ -709,6 +743,7 @@ h3 {
 .liquidity-summary small,
 .liquidity-card-grid small,
 .liquidity-card-grid p,
+.earnings-insight-grid small,
 .earnings-card-grid small,
 .earnings-card-grid dd,
 .sentiment-summary small,
@@ -729,6 +764,91 @@ h3 {
 .market-card-grid dd {
   margin: 2px 0 0;
   color: var(--title);
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.panel-head h3 {
+  font-size: 14px;
+}
+
+.panel-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.rank-list {
+  display: grid;
+  gap: 8px;
+}
+
+.rank-row {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 8px;
+}
+
+.rank-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.rank-row > b {
+  color: var(--amber);
+  font-size: 12px;
+}
+
+.rank-row strong {
+  display: block;
+  color: var(--title);
+  font-size: 12px;
+}
+
+.rank-row small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.rank-row em {
+  color: var(--title);
+  font-style: normal;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.rank-bar {
+  display: block;
+  height: 5px;
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.rank-bar i {
+  display: block;
+  height: 100%;
+}
+
+.rank-bar i.positive {
+  background: var(--green);
+}
+
+.rank-bar i.negative {
+  background: var(--red);
+}
+
+.empty-note {
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .earnings-table-wrap {
@@ -1180,6 +1300,8 @@ footer p {
   .market-card-grid,
   .liquidity-summary,
   .liquidity-card-grid,
+  .earnings-insight-grid,
+  .earnings-compare-layout,
   .earnings-card-grid,
   .sentiment-summary {
     grid-template-columns: 1fr;
