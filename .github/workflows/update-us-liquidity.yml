@@ -18,10 +18,14 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    env:
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -34,7 +38,12 @@ jobs:
           python -m pip install requests
 
       - name: Collect US liquidity data
-        run: python scripts/update_us_liquidity.py
+        run: |
+          python - <<'PY'
+          import os
+          print("FRED_API_KEY configured:", bool(os.getenv("FRED_API_KEY")))
+          PY
+          python scripts/update_us_liquidity.py
 
       - name: Commit updated data
         run: |
@@ -45,5 +54,13 @@ jobs:
             echo "No data changes to commit."
           else
             git commit -m "Update US liquidity data"
-            git push
+            for attempt in 1 2 3; do
+              git pull --rebase origin main
+              if git push; then
+                exit 0
+              fi
+              echo "Push attempt ${attempt}/3 failed. Retrying after remote sync."
+              sleep $((attempt * 10))
+            done
+            exit 1
           fi

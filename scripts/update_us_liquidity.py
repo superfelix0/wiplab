@@ -3,9 +3,11 @@ from __future__ import annotations
 import csv
 import json
 import math
+import os
 import socket
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -66,25 +68,35 @@ def fred_csv_url(series_id: str) -> str:
     return f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
 
 
-def fetch_observations(series: dict) -> list[dict]:
-    last_error: Exception | None = None
-    for attempt in range(1, 4):
-        req = urllib.request.Request(
-            fred_csv_url(series["fredId"]),
-            headers={"User-Agent": "wiplabs-us-liquidity-action/1.0"},
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=20) as response:
-                text = response.read().decode("utf-8")
-            break
-        except (TimeoutError, socket.timeout, urllib.error.URLError) as error:
-            last_error = error
-            if attempt == 3:
-                raise RuntimeError(f"FRED fetch failed for {series['fredId']} after {attempt} attempts: {error}") from error
-            wait_seconds = attempt * 5
-            print(f"FRED fetch retry {attempt}/3 for {series['fredId']} after error: {error}. Waiting {wait_seconds}s.", flush=True)
-            time.sleep(wait_seconds)
+def fred_api_url(series_id: str, api_key: str) -> str:
+    params = urllib.parse.urlencode(
+        {
+            "series_id": series_id,
+            "api_key": api_key,
+            "file_type": "json",
+            "sort_order": "asc",
+            "limit": 100000,
+        }
+    )
+    return f"https://api.stlouisfed.org/fred/series/observations?{params}"
 
+
+def parse_fred_api_json(text: str, series: dict) -> list[dict]:
+    payload = json.loads(text)
+    rows = []
+    for row in payload.get("observations", []):
+        date = row.get("date")
+        raw = row.get("value")
+        try:
+            value = float(raw) * series["scale"]
+        except (TypeError, ValueError):
+            continue
+        if date and math.isfinite(value):
+            rows.append({"date": date, "value": value})
+    return rows
+
+
+def parse_fred_csv(text: str, series: dict) -> list[dict]:
     rows = []
     for row in csv.DictReader(text.splitlines()):
         date = row.get("observation_date") or row.get("DATE")
@@ -96,6 +108,47 @@ def fetch_observations(series: dict) -> list[dict]:
         if date and math.isfinite(value):
             rows.append({"date": date, "value": value})
     return rows
+
+
+def fetch_observations(series: dict) -> list[dict]:
+    last_error: Exception | None = None
+    api_key = os.getenv("FRED_API_KEY", "").strip()
+    sources = []
+    if api_key:
+        sources.append(("FRED API", fred_api_url(series["fredId"], api_key), parse_fred_api_json))
+    sources.append(("FRED CSV", fred_csv_url(series["fredId"]), parse_fred_csv))
+
+    for source_name, url, parser in sources:
+        try:
+            return fetch_observations_from_url(series, source_name, url, parser)
+        except RuntimeError as error:
+            last_error = error
+            if source_name == "FRED API":
+                print(f"FRED API fetch failed for {series['fredId']}; falling back to public CSV. Error: {error}", flush=True)
+
+    raise RuntimeError(f"FRED fetch failed for {series['fredId']}: {last_error}")
+
+
+def fetch_observations_from_url(series: dict, source_name: str, url: str, parser) -> list[dict]:
+    last_error: Exception | None = None
+    for attempt in range(1, 4):
+        req = urllib.request.Request(
+            url,
+            headers={"User-Agent": "wiplabs-us-liquidity-action/1.0"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=45) as response:
+                text = response.read().decode("utf-8")
+            break
+        except (TimeoutError, socket.timeout, urllib.error.HTTPError, urllib.error.URLError) as error:
+            last_error = error
+            if attempt == 3:
+                raise RuntimeError(f"{source_name} failed after {attempt} attempts: {error}") from error
+            wait_seconds = attempt * 5
+            print(f"{source_name} fetch retry {attempt}/3 for {series['fredId']} after error: {error}. Waiting {wait_seconds}s.", flush=True)
+            time.sleep(wait_seconds)
+
+    return parser(text, series)
 
 
 def load_existing_series() -> dict[str, dict]:
