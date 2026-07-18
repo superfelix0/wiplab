@@ -41,9 +41,146 @@ async function readJson(url) {
   return response.json();
 }
 
+async function readText(url) {
+  const response = await fetch(`${url}?ts=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) throw new Error(`${url} load failed`);
+  return response.text();
+}
+
 function setComment(key, text) {
   const target = homeEls.comments[key];
   if (target) target.textContent = text;
+}
+
+function homeToNumber(value) {
+  if (typeof value === "number") return value;
+  if (value === null || value === undefined) return NaN;
+  return Number(String(value).replaceAll(",", "").trim());
+}
+
+function parseSentimentCsv(text) {
+  const lines = text.trim().split(/\r?\n/).filter(Boolean);
+  if (lines.length < 2) return [];
+
+  const headers = lines[0].split(",").map((header) => header.trim().toLowerCase());
+  const dateIndex = headers.indexOf("date");
+  const closeIndex = headers.indexOf("close");
+  const flowIndex = headers.indexOf("indiv_krw");
+  if (dateIndex < 0 || closeIndex < 0 || flowIndex < 0) return [];
+
+  return lines.slice(1).map((line) => {
+    const cells = line.split(",");
+    return {
+      date: cells[dateIndex]?.trim(),
+      close: homeToNumber(cells[closeIndex]),
+      indivKrw: homeToNumber(cells[flowIndex]),
+    };
+  }).filter((row) => row.date && Number.isFinite(row.close) && Number.isFinite(row.indivKrw));
+}
+
+function homeRegression(points) {
+  const n = points.length;
+  if (n < 3) return null;
+
+  const meanX = points.reduce((sum, p) => sum + p.ret, 0) / n;
+  const meanY = points.reduce((sum, p) => sum + p.indivT, 0) / n;
+  const ssX = points.reduce((sum, p) => sum + (p.ret - meanX) ** 2, 0);
+  const cov = points.reduce((sum, p) => sum + (p.ret - meanX) * (p.indivT - meanY), 0);
+  const slope = ssX === 0 ? 0 : cov / ssX;
+  const intercept = meanY - slope * meanX;
+  const residuals = points.map((p) => p.indivT - (intercept + slope * p.ret));
+  const sse = residuals.reduce((sum, value) => sum + value ** 2, 0);
+  const sd = Math.sqrt(sse / Math.max(1, n - 2)) || 1;
+  return { slope, intercept, sd };
+}
+
+function homeWeekKey(dateText) {
+  const date = new Date(`${dateText}T00:00:00+09:00`);
+  const day = date.getDay() || 7;
+  date.setDate(date.getDate() + (5 - day));
+  return date.toISOString().slice(0, 10);
+}
+
+function homeWeeklySeries(rows) {
+  const sorted = rows.slice().sort((a, b) => a.date.localeCompare(b.date));
+  const weeks = new Map();
+
+  for (const row of sorted) {
+    const key = homeWeekKey(row.date);
+    if (!weeks.has(key)) {
+      weeks.set(key, { key, date: row.date, firstClose: row.close, close: row.close, indivKrw: 0 });
+    }
+    const week = weeks.get(key);
+    week.date = row.date;
+    week.close = row.close;
+    week.indivKrw += row.indivKrw;
+  }
+
+  const grouped = Array.from(weeks.values()).sort((a, b) => a.key.localeCompare(b.key));
+  return grouped.slice(1).map((week, index) => {
+    const previous = grouped[index];
+    return {
+      date: week.date,
+      close: week.close,
+      indivT: week.indivKrw / 1e12,
+      ret: ((week.close / previous.close) - 1) * 100,
+    };
+  });
+}
+
+function latestHomeSentiment(rows) {
+  const points = homeWeeklySeries(rows);
+  const model = homeRegression(points);
+  if (!model || !points.length) return null;
+
+  const thr = 1.45;
+  const band = 0.8;
+  return points.map((point) => {
+    const expected = model.intercept + model.slope * point.ret;
+    const residual = point.indivT - expected;
+    const z = residual / model.sd;
+    const type = point.ret <= band && z <= -thr ? "fear" : point.ret >= -band && z >= thr ? "greed" : "normal";
+    return { ...point, expected, residual, z, type };
+  }).at(-1);
+}
+
+function homeSentimentLabel(point) {
+  if (!point) {
+    return {
+      label: "상태 확인 필요",
+      detail: "개인 수급 데이터를 충분히 불러오지 못했습니다.",
+    };
+  }
+
+  const residual = Math.abs(point.residual).toFixed(2);
+  if (point.type === "fear") {
+    return {
+      label: "공포 신호",
+      detail: `개인 순매수가 평소 예상보다 ${residual}조원 부족했습니다.`,
+    };
+  }
+  if (point.type === "greed") {
+    return {
+      label: "탐욕 신호",
+      detail: `개인 순매수가 평소 예상보다 ${residual}조원 많았습니다.`,
+    };
+  }
+  if (Math.abs(point.z) < 0.25) {
+    return {
+      label: "괜찮은 상태",
+      detail: "개인 수급이 평소 범위에서 크게 벗어나지 않았습니다.",
+    };
+  }
+  if (point.z < 0) {
+    return {
+      label: "공포 근접",
+      detail: `정식 공포 신호는 아니지만 개인 순매수가 예상보다 ${residual}조원 부족했습니다.`,
+    };
+  }
+  return {
+    label: "탐욕 근접",
+    detail: `정식 탐욕 신호는 아니지만 개인 순매수가 예상보다 ${residual}조원 많았습니다.`,
+  };
 }
 
 function updatePerComment(data) {
@@ -67,13 +204,13 @@ function updatePerComment(data) {
   setComment("f1", `${safeDate(kospi.date)} 기준 · ${comment}`);
 }
 
-function updateSentimentComment(meta) {
+function updateSentimentComment(meta, rows = []) {
+  const latest = latestHomeSentiment(rows);
+  const view = homeSentimentLabel(latest);
   const vkospi = meta?.kospi200Volatility;
-  if (Number.isFinite(vkospi?.value)) {
-    setComment("f2", `최근 데이터 ${safeDate(meta.lastDataDate)}, VKOSPI ${homeNumber.format(vkospi.value)}. 수급 심리와 변동성 위치를 함께 확인합니다.`);
-    return;
-  }
-  setComment("f2", `최근 데이터 ${safeDate(meta?.lastDataDate)} 기준 개인 수급 심리를 확인합니다.`);
+  const date = safeDate(latest?.date || meta?.lastDataDate);
+  const vkospiText = Number.isFinite(vkospi?.value) ? ` VKOSPI ${homeNumber.format(vkospi.value)}.` : "";
+  setComment("f2", `${date} 기준 · ${view.label}. ${view.detail}${vkospiText}`);
 }
 
 function capexOcf(latest) {
@@ -115,20 +252,22 @@ function updateLiquidityComment(data) {
 
 async function loadHomeRead() {
   try {
-    const [perResult, sentimentResult, liquidityResult, earningsResult] = await Promise.allSettled([
+    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult] = await Promise.allSettled([
       readJson("data/market-per.json"),
       readJson("data/kospi-sentiment-meta.json"),
+      readText("data/kospi-sentiment.csv"),
       readJson("data/us-liquidity.json"),
       readJson("data/ai-earnings.json"),
     ]);
 
     const per = perResult.status === "fulfilled" ? perResult.value : null;
     const sentiment = sentimentResult.status === "fulfilled" ? sentimentResult.value : null;
+    const sentimentRows = sentimentRowsResult.status === "fulfilled" ? parseSentimentCsv(sentimentRowsResult.value) : [];
     const liquidity = liquidityResult.status === "fulfilled" ? liquidityResult.value : null;
     const earnings = earningsResult.status === "fulfilled" ? earningsResult.value : null;
 
     updatePerComment(per);
-    updateSentimentComment(sentiment);
+    updateSentimentComment(sentiment, sentimentRows);
     updateEarningsComment(earnings);
     updateLiquidityComment(liquidity);
 
