@@ -1,7 +1,7 @@
 {
   "ok": true,
-  "fetchedAt": 1784333318162,
-  "generatedAt": "2026-07-18T09:08:38+09:00",
+  "fetchedAt": 1784333672443,
+  "generatedAt": "2026-07-18T09:14:32+09:00",
   "lookbackDays": 90,
   "summary": {
     "label": "유동성 우호",
@@ -37,6 +37,7 @@
         "value": 22429.3
       },
       "stale": false,
+      "fetchSource": "FRED API",
       "fetchError": "",
       "change": 623.0,
       "pctChange": 0.027776167780537066,
@@ -2147,6 +2148,7 @@
         "value": 3129.588
       },
       "stale": false,
+      "fetchSource": "FRED API",
       "fetchError": "",
       "change": 13.13299999999981,
       "pctChange": 0.004196399014822338,
@@ -4257,6 +4259,7 @@
         "value": 0.137
       },
       "stale": false,
+      "fetchSource": "FRED API",
       "fetchError": "",
       "change": -0.037000000000000005,
       "pctChange": -0.27007299270072993,
@@ -6367,6 +6370,7 @@
         "value": 751.354
       },
       "stale": false,
+      "fetchSource": "FRED API",
       "fetchError": "",
       "change": 4.863999999999919,
       "pctChange": 0.006473646243980759,
