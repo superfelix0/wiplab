@@ -110,7 +110,7 @@ def parse_fred_csv(text: str, series: dict) -> list[dict]:
     return rows
 
 
-def fetch_observations(series: dict) -> list[dict]:
+def fetch_observations(series: dict) -> tuple[list[dict], str]:
     last_error: Exception | None = None
     api_key = os.getenv("FRED_API_KEY", "").strip()
     sources = []
@@ -129,7 +129,7 @@ def fetch_observations(series: dict) -> list[dict]:
     raise RuntimeError(f"FRED fetch failed for {series['fredId']}: {last_error}")
 
 
-def fetch_observations_from_url(series: dict, source_name: str, url: str, parser) -> list[dict]:
+def fetch_observations_from_url(series: dict, source_name: str, url: str, parser) -> tuple[list[dict], str]:
     last_error: Exception | None = None
     for attempt in range(1, 4):
         req = urllib.request.Request(
@@ -148,7 +148,9 @@ def fetch_observations_from_url(series: dict, source_name: str, url: str, parser
             print(f"{source_name} fetch retry {attempt}/3 for {series['fredId']} after error: {error}. Waiting {wait_seconds}s.", flush=True)
             time.sleep(wait_seconds)
 
-    return parser(text, series)
+    rows = parser(text, series)
+    print(f"{source_name} fetched {len(rows)} observations for {series['fredId']}.", flush=True)
+    return rows, source_name
 
 
 def load_existing_series() -> dict[str, dict]:
@@ -185,7 +187,7 @@ def build_signal(series: dict, latest: dict, previous: dict) -> dict:
 def build_series(series: dict, existing: dict[str, dict] | None = None) -> dict:
     existing = existing or {}
     try:
-        observations = fetch_observations(series)
+        observations, fetch_source = fetch_observations(series)
     except RuntimeError as error:
         cached = existing.get(series["id"])
         if not cached:
@@ -195,6 +197,7 @@ def build_series(series: dict, existing: dict[str, dict] | None = None) -> dict:
             **cached,
             **series,
             "stale": True,
+            "fetchSource": "cached",
             "fetchError": str(error),
         }
 
@@ -206,6 +209,7 @@ def build_series(series: dict, existing: dict[str, dict] | None = None) -> dict:
                 **cached,
                 **series,
                 "stale": True,
+                "fetchSource": "cached",
                 "fetchError": "FRED returned no observations",
             }
         raise RuntimeError(f"FRED returned no observations for {series['fredId']}")
@@ -220,6 +224,7 @@ def build_series(series: dict, existing: dict[str, dict] | None = None) -> dict:
         "latest": latest,
         "lookback": lookback,
         "stale": False,
+        "fetchSource": fetch_source,
         "fetchError": "",
         "change": change,
         "pctChange": pct_change,
