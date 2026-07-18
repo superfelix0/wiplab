@@ -1,7 +1,7 @@
 {
   "ok": true,
-  "fetchedAt": 1784247027236,
-  "generatedAt": "2026-07-17T09:10:27+09:00",
+  "fetchedAt": 1784333318162,
+  "generatedAt": "2026-07-18T09:08:38+09:00",
   "lookbackDays": 90,
   "summary": {
     "label": "유동성 우호",
@@ -12,9 +12,9 @@
     "marketLiquidity": {
       "label": "실질 유동성 보조값",
       "formula": "지급준비금 - RRP - TGA",
-      "latest": 2386.378,
+      "latest": 2386.4030000000002,
       "lookback": 2378.0969999999998,
-      "change": 8.281000000000404
+      "change": 8.306000000000495
     }
   },
   "series": [
@@ -4249,8 +4249,8 @@
       "sourceUrl": "https://fred.stlouisfed.org/series/RRPONTSYD",
       "note": "단기 자금이 연준 역레포에 머무는 규모입니다. 줄어들면 시장으로 풀릴 수 있는 돈이 늘어나는 방향입니다.",
       "latest": {
-        "date": "2026-07-16",
-        "value": 0.125
+        "date": "2026-07-17",
+        "value": 0.1
       },
       "lookback": {
         "date": "2026-04-17",
@@ -4258,18 +4258,14 @@
       },
       "stale": false,
       "fetchError": "",
-      "change": -0.01200000000000001,
-      "pctChange": -0.08759124087591248,
+      "change": -0.037000000000000005,
+      "pctChange": -0.27007299270072993,
       "signal": {
         "favorable": true,
         "direction": "감소",
         "tone": "positive"
       },
       "observations": [
-        {
-          "date": "2024-06-13",
-          "value": 429.864
-        },
         {
           "date": "2024-06-14",
           "value": 386.885
@@ -6345,6 +6341,10 @@
         {
           "date": "2026-07-16",
           "value": 0.125
+        },
+        {
+          "date": "2026-07-17",
+          "value": 0.1
         }
       ]
     },
