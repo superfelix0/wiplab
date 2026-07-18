@@ -218,26 +218,39 @@ function capexOcf(latest) {
   return Math.abs(latest.capex) / Math.abs(latest.operatingCashFlow);
 }
 
+function capexNi(latest) {
+  if (!Number.isFinite(latest?.capex) || !Number.isFinite(latest?.profit) || latest.profit <= 0) return null;
+  return Math.abs(latest.capex) / latest.profit;
+}
+
+function averageFinite(values) {
+  const valid = values.filter(Number.isFinite);
+  if (!valid.length) return null;
+  return valid.reduce((sum, value) => sum + value, 0) / valid.length;
+}
+
+function capexBurdenLabel(capexToOcf, capexToNi) {
+  if (!Number.isFinite(capexToOcf) && !Number.isFinite(capexToNi)) return "확인 필요";
+  if ((capexToOcf ?? 0) <= 0.7 && (capexToNi ?? 0) <= 0.9) return "여유";
+  if ((capexToOcf ?? 0) <= 1.0 && (capexToNi ?? 0) <= 1.2) return "관리 가능";
+  return "부담 확대";
+}
+
 function updateEarningsComment(data) {
   const rows = (data?.companies || [])
+    .filter((company) => company.group === "Hyperscaler")
     .map((company) => ({ company, latest: company.quarters?.at(-1) }))
     .filter(({ latest }) => latest);
 
   if (!rows.length) {
-    setComment("f3", "AI 공급망과 하이퍼스케일러 실적 데이터를 확인합니다.");
+    setComment("f3", "하이퍼스케일러 CAPEX 부담을 확인합니다.");
     return;
   }
 
-  const fcfPositive = rows.filter(({ latest }) => Number.isFinite(latest.freeCashFlow) && latest.freeCashFlow > 0).length;
-  const capexRatios = rows.map(({ latest }) => capexOcf(latest)).filter(Number.isFinite);
-  const avgCapexOcf = capexRatios.length ? capexRatios.reduce((sum, value) => sum + value, 0) / capexRatios.length : null;
-  const topFcf = rows
-    .filter(({ latest }) => Number.isFinite(latest.freeCashFlow))
-    .sort((a, b) => b.latest.freeCashFlow - a.latest.freeCashFlow)[0];
-
-  const fcfText = topFcf ? `FCF 최대 ${topFcf.company.name} ${compactMoney(topFcf.latest.freeCashFlow, topFcf.company.currency)}` : "FCF 비교값 확인 필요";
-  const capexText = Number.isFinite(avgCapexOcf) ? `평균 CAPEX/OCF ${pctText(avgCapexOcf)}` : "CAPEX/OCF 확인 필요";
-  setComment("f3", `${rows.length}개 회사 중 FCF 양수 ${fcfPositive}개. ${capexText}, ${fcfText}.`);
+  const avgCapexOcf = averageFinite(rows.map(({ latest }) => capexOcf(latest)));
+  const avgCapexNi = averageFinite(rows.map(({ latest }) => capexNi(latest)));
+  const label = capexBurdenLabel(avgCapexOcf, avgCapexNi);
+  setComment("f3", `하이퍼스케일러 CAPEX 부담: ${label}. 평균 CAPEX/OCF ${pctText(avgCapexOcf)}, CAPEX/순이익 ${pctText(avgCapexNi)}.`);
 }
 
 function updateLiquidityComment(data) {

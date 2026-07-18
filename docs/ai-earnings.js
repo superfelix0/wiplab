@@ -107,47 +107,63 @@ function average(values) {
   return valid.reduce((sum, value) => sum + value, 0) / valid.length;
 }
 
+function burdenLabel(capexToOcf, capexToProfit) {
+  if (!Number.isFinite(capexToOcf) && !Number.isFinite(capexToProfit)) return "확인 필요";
+  if ((capexToOcf ?? 0) <= 0.7 && (capexToProfit ?? 0) <= 0.9) return "여유";
+  if ((capexToOcf ?? 0) <= 1.0 && (capexToProfit ?? 0) <= 1.2) return "관리 가능";
+  return "부담 확대";
+}
+
+function countByBurden(rows) {
+  return rows.reduce((acc, { latest }) => {
+    const label = burdenLabel(capexBurden(latest), capexProfitCoverage(latest));
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, {});
+}
+
 function renderTakeaways(data) {
   if (!earningsEls.takeaways) return;
 
   const rows = (data.companies || [])
+    .filter((company) => company.group === "Hyperscaler")
     .map((company) => ({ company, latest: latestQuarter(company) }))
     .filter(({ latest }) => latest);
-  const fcfRows = rows.filter(({ latest }) => Number.isFinite(latest.freeCashFlow));
   const capexOcfRows = rows.filter(({ latest }) => Number.isFinite(capexBurden(latest)));
-  const growthRows = rows.filter(({ latest }) => Number.isFinite(latest.profitGrowthQoQ));
-  const fcfPositive = fcfRows.filter(({ latest }) => latest.freeCashFlow > 0).length;
+  const capexProfitRows = rows.filter(({ latest }) => Number.isFinite(capexProfitCoverage(latest)));
   const avgCapexOcf = average(capexOcfRows.map(({ latest }) => capexBurden(latest)));
-  const topFcf = fcfRows.sort((a, b) => b.latest.freeCashFlow - a.latest.freeCashFlow)[0];
-  const weakestFcf = fcfRows.sort((a, b) => a.latest.freeCashFlow - b.latest.freeCashFlow)[0];
-  const topGrowth = growthRows.sort((a, b) => b.latest.profitGrowthQoQ - a.latest.profitGrowthQoQ)[0];
-  const heavyCapex = capexOcfRows.sort((a, b) => capexBurden(b.latest) - capexBurden(a.latest))[0];
+  const avgCapexProfit = average(capexProfitRows.map(({ latest }) => capexProfitCoverage(latest)));
+  const overallLabel = burdenLabel(avgCapexOcf, avgCapexProfit);
+  const counts = countByBurden(rows);
+  const heavyOcf = capexOcfRows.sort((a, b) => capexBurden(b.latest) - capexBurden(a.latest))[0];
+  const heavyProfit = capexProfitRows.sort((a, b) => capexProfitCoverage(b.latest) - capexProfitCoverage(a.latest))[0];
+  const manageable = (counts["여유"] || 0) + (counts["관리 가능"] || 0);
 
   earningsEls.takeaways.innerHTML = `
     <article>
-      <span>현금흐름 안전판</span>
-      <strong>${fcfPositive}/${fcfRows.length || rows.length}개 FCF 양수</strong>
-      <p>AI 투자 사이클이 이익 성장만으로 설명되는지, 투자 후 현금이 실제로 남는지 확인합니다.</p>
+      <span>종합 판단</span>
+      <strong>${overallLabel}</strong>
+      <p>하이퍼스케일러 ${rows.length}개사의 평균 CAPEX 부담을 OCF와 순이익 기준으로 함께 봅니다.</p>
     </article>
     <article>
-      <span>CAPEX 감당력</span>
+      <span>CAPEX/OCF</span>
       <strong>${pct(avgCapexOcf)}</strong>
-      <p>평균 CAPEX/OCF입니다. 100%를 넘으면 최근 분기 영업현금흐름보다 설비투자 부담이 큽니다.</p>
+      <p>영업현금흐름 안에서 AI 인프라 투자를 얼마나 감당하는지 봅니다. 100%를 넘으면 OCF보다 CAPEX가 큽니다.</p>
     </article>
     <article>
-      <span>FCF 규모</span>
-      <strong>${topFcf ? topFcf.company.name : "N/A"}</strong>
-      <p>${topFcf ? `가장 큰 FCF는 ${compactMoney(topFcf.latest.freeCashFlow, topFcf.company.currency)}입니다.` : "FCF 비교 데이터가 부족합니다."}</p>
+      <span>CAPEX/순이익</span>
+      <strong>${pct(avgCapexProfit)}</strong>
+      <p>분기 순이익 대비 설비투자 부담입니다. 100%를 넘으면 이익보다 투자 지출이 더 큰 구간입니다.</p>
     </article>
     <article>
-      <span>성장과 부담</span>
-      <strong>${topGrowth ? topGrowth.company.name : "N/A"}</strong>
-      <p>${topGrowth ? `이익 성장률 상위는 ${pct(topGrowth.latest.profitGrowthQoQ)}입니다.` : "이익 성장률 데이터가 부족합니다."} ${heavyCapex ? `CAPEX/OCF 부담이 가장 큰 회사는 ${heavyCapex.company.name}입니다.` : ""}</p>
+      <span>회사별 분포</span>
+      <strong>${manageable}/${rows.length}개 관리 가능</strong>
+      <p>여유·관리 가능으로 분류된 회사 수입니다. 평균이 높아도 회사별 체력 차이가 크면 해석을 나눠야 합니다.</p>
     </article>
     <article>
       <span>주의할 지점</span>
-      <strong>${weakestFcf ? weakestFcf.company.name : "N/A"}</strong>
-      <p>${weakestFcf ? `가장 낮은 FCF는 ${compactMoney(weakestFcf.latest.freeCashFlow, weakestFcf.company.currency)}입니다. FCF가 음수라면 투자가 현금흐름을 앞서가는 구간일 수 있습니다.` : "FCF 하위 데이터를 확인할 수 없습니다."}</p>
+      <strong>${heavyProfit ? heavyProfit.company.name : heavyOcf ? heavyOcf.company.name : "N/A"}</strong>
+      <p>${heavyOcf ? `CAPEX/OCF 부담 상위는 ${heavyOcf.company.name}(${pct(capexBurden(heavyOcf.latest))})입니다.` : ""} ${heavyProfit ? `CAPEX/순이익 부담 상위는 ${heavyProfit.company.name}(${pct(capexProfitCoverage(heavyProfit.latest))})입니다.` : ""}</p>
     </article>
   `;
 }
