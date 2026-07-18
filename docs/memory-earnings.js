@@ -85,7 +85,7 @@ function enrichedCompany(company) {
 }
 
 function chartRows(companies) {
-  return companies.map(enrichedCompany).filter((company) => company.quarters.some((q) => Number.isFinite(q.opMarginChange)));
+  return companies.map(enrichedCompany).filter((company) => company.quarters.some((q) => Number.isFinite(q.opGrowth)));
 }
 
 function renderMemorySummary(companies) {
@@ -94,17 +94,17 @@ function renderMemorySummary(companies) {
   const latestRows = rows
     .map((company) => ({ company, latest: company.quarters.at(-1) }))
     .filter(({ latest }) => latest);
-  const withMarginChange = latestRows.filter(({ latest }) => Number.isFinite(latest.opMarginChange));
-  const avgMarginChange = withMarginChange.length
-    ? withMarginChange.reduce((sum, item) => sum + item.latest.opMarginChange, 0) / withMarginChange.length
+  const withGrowth = latestRows.filter(({ latest }) => Number.isFinite(latest.opGrowth));
+  const avgGrowth = withGrowth.length
+    ? withGrowth.reduce((sum, item) => sum + item.latest.opGrowth, 0) / withGrowth.length
     : null;
-  const topImprover = [...withMarginChange].sort((a, b) => b.latest.opMarginChange - a.latest.opMarginChange)[0];
+  const topGrowth = [...withGrowth].sort((a, b) => b.latest.opGrowth - a.latest.opGrowth)[0];
   const withMargin = latestRows.filter(({ latest }) => Number.isFinite(latest.opMargin));
   const topMargin = [...withMargin].sort((a, b) => b.latest.opMargin - a.latest.opMargin)[0];
   memoryEls.summary.innerHTML = `
     <article data-tone="neutral"><span>${mt("비교 회사", "Companies")}</span><strong>${rows.length}</strong><small>${mt("키옥시아를 제외한 공개 분기 데이터 보유 기업입니다.", "Companies with public quarterly data, excluding Kioxia.")}</small></article>
-    <article data-tone="${avgMarginChange >= 0 ? "positive" : "negative"}"><span>${mt("평균 마진 변화", "Avg margin change")}</span><strong>${mPp(avgMarginChange)}</strong><small>${mt("최근 결산 분기 영업이익률의 전분기 대비 변화폭입니다.", "Latest-quarter operating-margin change versus the prior quarter.")}</small></article>
-    <article data-tone="positive"><span>${mt("마진 개선 1위", "Top margin improver")}</span><strong>${topImprover ? escapeHtml(topImprover.company.name) : "N/A"}</strong><small>${topImprover ? `${mPp(topImprover.latest.opMarginChange)} · ${topImprover.latest.date}` : mt("데이터 없음", "No data")}</small></article>
+    <article data-tone="${avgGrowth >= 0 ? "positive" : "negative"}"><span>${mt("평균 이익 증가율", "Avg profit growth")}</span><strong>${mPct(avgGrowth)}</strong><small>${mt("최근 결산 분기 영업이익의 전분기 대비 증가율입니다.", "Latest-quarter operating-profit growth versus the prior quarter.")}</small></article>
+    <article data-tone="positive"><span>${mt("이익 증가율 1위", "Top profit growth")}</span><strong>${topGrowth ? escapeHtml(topGrowth.company.name) : "N/A"}</strong><small>${topGrowth ? `${mPct(topGrowth.latest.opGrowth)} · ${topGrowth.latest.date}` : mt("데이터 없음", "No data")}</small></article>
     <article data-tone="neutral"><span>${mt("현재 마진 1위", "Top current margin")}</span><strong>${topMargin ? escapeHtml(topMargin.company.name) : "N/A"}</strong><small>${topMargin ? `${mPct(topMargin.latest.opMargin)} · ${topMargin.latest.date}` : mt("데이터 없음", "No data")}</small></article>
   `;
 }
@@ -121,11 +121,12 @@ function renderMemoryChart(companies) {
   const quarterColors = ["#94a3b8", "#60a5fa", "#f59e0b", "#16a34a"];
   const series = rows.map((company) => ({
     company,
-    quarters: company.quarters.filter((q) => Number.isFinite(q.opMarginChange)).slice(-4),
+    quarters: company.quarters.filter((q) => Number.isFinite(q.opGrowth)).slice(-4),
   }));
-  const values = series.flatMap(({ quarters }) => quarters.map((q) => q.opMarginChange)).filter(Number.isFinite);
-  const min = Math.min(-0.08, ...values);
-  const max = Math.max(0.08, ...values);
+  const values = series.flatMap(({ quarters }) => quarters.map((q) => q.opGrowth)).filter(Number.isFinite);
+  const tickStep = 0.05;
+  const min = Math.min(-0.05, Math.floor(Math.min(...values) / tickStep) * tickStep);
+  const max = Math.max(0.05, Math.ceil(Math.max(...values) / tickStep) * tickStep);
   const padX = 58;
   const padTop = 34;
   const padBottom = 62;
@@ -139,11 +140,19 @@ function renderMemoryChart(companies) {
   const barGap = 5;
   const barW = Math.max(7, Math.min(18, (groupW - 36) / labels.length - barGap));
 
-  const gridValues = [min, 0, max];
-  const grid = gridValues.map((value) => `
-    <line x1="${padX}" x2="${width - padX}" y1="${y(value)}" y2="${y(value)}" stroke="rgba(120,120,120,.25)" stroke-dasharray="${value === 0 ? "0" : "4 4"}"/>
-    <text x="10" y="${y(value) + 4}" fill="currentColor" opacity=".62">${mPp(value)}</text>
-  `).join("");
+  const ticks = [];
+  for (let value = min; value <= max + tickStep / 2; value += tickStep) {
+    ticks.push(Number(value.toFixed(4)));
+  }
+  const grid = ticks.map((value, index) => {
+    const isZero = Math.abs(value) < 0.0001;
+    const isLabel = index % 5 === 0 || isZero || index === ticks.length - 1;
+    return `
+      <line x1="${padX}" x2="${width - padX}" y1="${y(value)}" y2="${y(value)}" stroke="rgba(120,120,120,${isZero ? ".35" : ".12"})" stroke-dasharray="${isZero ? "0" : "3 6"}"/>
+      <line x1="${padX - 5}" x2="${padX}" y1="${y(value)}" y2="${y(value)}" stroke="rgba(80,80,80,.45)"/>
+      ${isLabel ? `<text x="8" y="${y(value) + 4}" fill="currentColor" opacity=".62">${mPct(value)}</text>` : ""}
+    `;
+  }).join("");
   const xLabels = series.map(({ company }, cIndex) => {
     const cx = padX + groupW * cIndex + groupW / 2;
     const displayName = company.name === "Samsung Electronics" ? "Samsung" : company.name === "SK Hynix" ? "SK Hynix" : company.name;
@@ -152,12 +161,12 @@ function renderMemoryChart(companies) {
   const bars = series.map(({ company, quarters }, cIndex) => {
     return labels.map((_, qIndex) => {
       const q = quarters[qIndex];
-      if (!q || !Number.isFinite(q.opMarginChange)) return "";
+      if (!q || !Number.isFinite(q.opGrowth)) return "";
       const groupX = padX + groupW * cIndex + (groupW - labels.length * barW - (labels.length - 1) * barGap) / 2;
       const x = groupX + qIndex * (barW + barGap);
-      const barY = Math.min(y(q.opMarginChange), zeroY);
-      const barH = Math.max(2, Math.abs(zeroY - y(q.opMarginChange)));
-      return `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="${quarterColors[qIndex]}" opacity="0.9"><title>${escapeHtml(company.name)} ${q.date}: ${mPp(q.opMarginChange)}</title></rect>`;
+      const barY = Math.min(y(q.opGrowth), zeroY);
+      const barH = Math.max(2, Math.abs(zeroY - y(q.opGrowth)));
+      return `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="${quarterColors[qIndex]}" opacity="0.9"><title>${escapeHtml(company.name)} ${q.date}: ${mPct(q.opGrowth)}</title></rect>`;
     }).join("");
   }).join("");
 

@@ -11,7 +11,7 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="주요 메모리 반도체 업체의 최근 분기 영업이익률 변화, 매출 성장률, 영업이익률을 비교합니다.">
+  <meta name="description" content="주요 메모리 반도체 업체의 최근 4개 분기 영업이익 증가율, 매출 성장률, 영업이익률을 비교합니다.">
   <meta name="theme-color" content="#f5f1e8">
   <meta property="og:title" content="F4 - Memory Operating Profit Monitor">
   <meta property="og:description" content="TSMC, SanDisk, Micron, Samsung Electronics, SK Hynix의 분기 실적 흐름을 비교합니다.">
@@ -51,14 +51,14 @@
     <section class="hero service-hero">
       <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./memory-op <span class="flag">--trend</span></p>
       <h1>Memory Operating Profit Monitor</h1>
-      <p class="hero-copy">메모리 반도체 업체들의 분기별 영업이익률 변화와 실적 흐름을 비교합니다.</p>
+      <p class="hero-copy">메모리 반도체 업체들의 분기별 영업이익 증가율과 실적 흐름을 비교합니다.</p>
     </section>
 
     <section class="reading-note">
       <h2>무엇을 보나?</h2>
       <ul>
-        <li>영업이익률 변화폭은 전분기 대비 마진이 얼마나 개선되거나 악화됐는지를 보여줍니다.</li>
-        <li>별도 탭에서는 최근 결산 분기를 포함한 4개 분기의 영업이익 증가율을 회사별로 나열합니다.</li>
+        <li>영업이익 증가율은 이번 분기 영업이익이 직전 분기보다 얼마나 늘거나 줄었는지를 보여줍니다.</li>
+        <li>기본 그래프는 회사별 묶음 안에 최근 결산 분기 포함 4개 분기를 얇은 막대로 나열합니다.</li>
         <li>키옥시아는 비교 가능한 공개 분기 데이터 범위가 부족해 이 페이지에서는 제외합니다.</li>
       </ul>
     </section>
@@ -74,20 +74,20 @@
       <div class="earnings-insight-grid memory-summary-grid" id="memorySummary"></div>
 
       <div class="earnings-chart-tabs" role="tablist" aria-label="메모리 지표 보기">
-        <button class="is-active" type="button" data-memory-tab="margin-bars" aria-selected="true">영업이익률 변화</button>
+        <button class="is-active" type="button" data-memory-tab="margin-bars" aria-selected="true">영업이익 증가율 그래프</button>
         <button type="button" data-memory-tab="op-growth-timeline" aria-selected="false">영업이익 증가율 4분기</button>
       </div>
 
       <div class="chart-panel" data-memory-panel="margin-bars">
         <div class="chart-head">
           <div>
-            <h3>영업이익률 변화 막대그래프</h3>
-            <p class="chart-note">각 회사의 분기별 영업이익률이 전분기보다 얼마나 변했는지 %p 단위로 비교합니다.</p>
+            <h3>영업이익 증가율 막대그래프</h3>
+            <p class="chart-note">각 회사의 최근 4개 분기 영업이익 증가율입니다. 예를 들어 2026년 1분기는 2025년 4분기 대비 증가율로 계산합니다.</p>
           </div>
           <div class="chart-legend" id="memoryLegend"></div>
         </div>
         <div class="chart-wrap">
-          <svg id="memoryOpChart" viewBox="0 0 900 360" role="img" aria-label="메모리 반도체 업체 영업이익률 변화 막대그래프"></svg>
+          <svg id="memoryOpChart" viewBox="0 0 900 360" role="img" aria-label="메모리 반도체 업체 영업이익 증가율 막대그래프"></svg>
         </div>
       </div>
 

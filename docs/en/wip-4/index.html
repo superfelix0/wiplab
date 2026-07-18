@@ -11,7 +11,7 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="Compare quarterly operating-margin changes, revenue growth, and operating margins for major memory semiconductor companies.">
+  <meta name="description" content="Compare quarterly operating-profit growth, revenue growth, and operating margins for major memory semiconductor companies.">
   <meta name="theme-color" content="#f5f1e8">
   <meta property="og:title" content="F4 - Memory Operating Profit Monitor">
   <meta property="og:description" content="Compares quarterly performance trends for TSMC, SanDisk, Micron, Samsung Electronics, and SK Hynix.">
@@ -51,14 +51,14 @@
     <section class="hero service-hero">
       <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./memory-op <span class="flag">--trend</span></p>
       <h1>Memory Operating Profit Monitor</h1>
-      <p class="hero-copy">Compare quarterly operating-margin changes and earnings flow for major memory semiconductor companies.</p>
+      <p class="hero-copy">Compare quarterly operating-profit growth and earnings flow for major memory semiconductor companies.</p>
     </section>
 
     <section class="reading-note">
       <h2>What to read</h2>
       <ul>
-        <li>Operating-margin change shows how much each company’s margin improved or deteriorated versus the prior quarter.</li>
-        <li>A separate tab lists four quarters of operating-profit growth, including the latest reported quarter.</li>
+        <li>Operating-profit growth shows how much this quarter’s operating profit rose or fell versus the prior quarter.</li>
+        <li>The main chart groups companies first, then lists the latest four quarters as thin bars within each company.</li>
         <li>Kioxia is excluded from this page because comparable public quarterly data coverage is limited.</li>
       </ul>
     </section>
@@ -74,20 +74,20 @@
       <div class="earnings-insight-grid memory-summary-grid" id="memorySummary"></div>
 
       <div class="earnings-chart-tabs" role="tablist" aria-label="Memory metric view">
-        <button class="is-active" type="button" data-memory-tab="margin-bars" aria-selected="true">Operating-margin change</button>
+        <button class="is-active" type="button" data-memory-tab="margin-bars" aria-selected="true">Operating-profit growth chart</button>
         <button type="button" data-memory-tab="op-growth-timeline" aria-selected="false">Operating-profit growth, 4Q</button>
       </div>
 
       <div class="chart-panel" data-memory-panel="margin-bars">
         <div class="chart-head">
           <div>
-            <h3>Operating-margin change bars</h3>
-            <p class="chart-note">Compares the quarter-over-quarter change in operating margin by company, shown in percentage points.</p>
+            <h3>Operating-profit growth bars</h3>
+            <p class="chart-note">Shows the latest four quarters of quarter-over-quarter operating-profit growth by company. For example, 2026 Q1 is calculated versus 2025 Q4.</p>
           </div>
           <div class="chart-legend" id="memoryLegend"></div>
         </div>
         <div class="chart-wrap">
-          <svg id="memoryOpChart" viewBox="0 0 900 360" role="img" aria-label="Memory semiconductor operating-margin change bar chart"></svg>
+          <svg id="memoryOpChart" viewBox="0 0 900 360" role="img" aria-label="Memory semiconductor operating-profit growth bar chart"></svg>
         </div>
       </div>
 
