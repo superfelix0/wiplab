@@ -118,6 +118,7 @@ function renderMemoryChart(companies) {
     return;
   }
   const labels = MEMORY_IS_EN ? ["Q-3", "Q-2", "Q-1", "Latest"] : ["3분기 전", "2분기 전", "직전 분기", "최근 분기"];
+  const quarterColors = ["#94a3b8", "#60a5fa", "#f59e0b", "#16a34a"];
   const series = rows.map((company) => ({
     company,
     quarters: company.quarters.filter((q) => Number.isFinite(q.opMarginChange)).slice(-4),
@@ -127,42 +128,42 @@ function renderMemoryChart(companies) {
   const max = Math.max(0.08, ...values);
   const padX = 58;
   const padTop = 34;
-  const padBottom = 46;
+  const padBottom = 62;
   const width = 900;
   const height = 360;
   const plotW = width - padX * 2;
   const plotH = height - padTop - padBottom;
   const y = (value) => padTop + (max - value) / (max - min || 1) * plotH;
   const zeroY = y(0);
-  const groupW = plotW / labels.length;
-  const barGap = 4;
-  const barW = Math.max(8, (groupW - 28) / rows.length - barGap);
+  const groupW = plotW / Math.max(1, series.length);
+  const barGap = 5;
+  const barW = Math.max(7, Math.min(18, (groupW - 36) / labels.length - barGap));
 
   const gridValues = [min, 0, max];
   const grid = gridValues.map((value) => `
     <line x1="${padX}" x2="${width - padX}" y1="${y(value)}" y2="${y(value)}" stroke="rgba(120,120,120,.25)" stroke-dasharray="${value === 0 ? "0" : "4 4"}"/>
     <text x="10" y="${y(value) + 4}" fill="currentColor" opacity=".62">${mPp(value)}</text>
   `).join("");
-  const xLabels = labels.map((label, qIndex) => {
-    const cx = padX + groupW * qIndex + groupW / 2;
-    return `<text x="${cx}" y="${height - 14}" text-anchor="middle" fill="currentColor" opacity=".68">${label}</text>`;
+  const xLabels = series.map(({ company }, cIndex) => {
+    const cx = padX + groupW * cIndex + groupW / 2;
+    const displayName = company.name === "Samsung Electronics" ? "Samsung" : company.name === "SK Hynix" ? "SK Hynix" : company.name;
+    return `<text x="${cx}" y="${height - 20}" text-anchor="middle" fill="currentColor" opacity=".72">${escapeHtml(displayName)}</text>`;
   }).join("");
   const bars = series.map(({ company, quarters }, cIndex) => {
-    const color = memoryColors[cIndex % memoryColors.length];
     return labels.map((_, qIndex) => {
       const q = quarters[qIndex];
       if (!q || !Number.isFinite(q.opMarginChange)) return "";
-      const groupX = padX + groupW * qIndex + 14;
-      const x = groupX + cIndex * (barW + barGap);
+      const groupX = padX + groupW * cIndex + (groupW - labels.length * barW - (labels.length - 1) * barGap) / 2;
+      const x = groupX + qIndex * (barW + barGap);
       const barY = Math.min(y(q.opMarginChange), zeroY);
       const barH = Math.max(2, Math.abs(zeroY - y(q.opMarginChange)));
-      return `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="${color}" opacity="0.86"><title>${escapeHtml(company.name)} ${q.date}: ${mPp(q.opMarginChange)}</title></rect>`;
+      return `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="${quarterColors[qIndex]}" opacity="0.9"><title>${escapeHtml(company.name)} ${q.date}: ${mPp(q.opMarginChange)}</title></rect>`;
     }).join("");
   }).join("");
 
   memoryEls.chart.innerHTML = `${grid}<line x1="${padX}" x2="${width - padX}" y1="${zeroY}" y2="${zeroY}" stroke="rgba(0,0,0,.35)"/>${xLabels}${bars}`;
   if (memoryEls.legend) {
-    memoryEls.legend.innerHTML = rows.map((company, index) => `<span><i style="background:${memoryColors[index % memoryColors.length]}"></i>${escapeHtml(company.name)}</span>`).join("");
+    memoryEls.legend.innerHTML = labels.map((label, index) => `<span><i style="background:${quarterColors[index]}"></i>${label}</span>`).join("");
   }
 }
 
