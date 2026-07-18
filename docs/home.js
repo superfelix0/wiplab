@@ -9,10 +9,8 @@ const homeEls = {
   },
 };
 
-const homeNumber = new Intl.NumberFormat("ko-KR", {
-  maximumFractionDigits: 2,
-});
-
+const IS_EN = document.documentElement.lang?.toLowerCase().startsWith("en");
+const homeNumber = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", { maximumFractionDigits: 2 });
 const HOME_FORWARD_PER = 6.35;
 
 function safeDate(value) {
@@ -23,16 +21,6 @@ function safeDate(value) {
 function pctText(value) {
   if (!Number.isFinite(value)) return "N/A";
   return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%`;
-}
-
-function compactMoney(value, currency = "") {
-  if (!Number.isFinite(value)) return "N/A";
-  const abs = Math.abs(value);
-  const sign = value < 0 ? "-" : "";
-  if (abs >= 1e12) return `${sign}${homeNumber.format(abs / 1e12)}T ${currency}`;
-  if (abs >= 1e9) return `${sign}${homeNumber.format(abs / 1e9)}B ${currency}`;
-  if (abs >= 1e6) return `${sign}${homeNumber.format(abs / 1e6)}M ${currency}`;
-  return `${sign}${homeNumber.format(abs)} ${currency}`.trim();
 }
 
 async function readJson(url) {
@@ -52,7 +40,7 @@ function setComment(key, text) {
   if (target) target.textContent = text;
 }
 
-function homeToNumber(value) {
+function toNumber(value) {
   if (typeof value === "number") return value;
   if (value === null || value === undefined) return NaN;
   return Number(String(value).replaceAll(",", "").trim());
@@ -72,13 +60,13 @@ function parseSentimentCsv(text) {
     const cells = line.split(",");
     return {
       date: cells[dateIndex]?.trim(),
-      close: homeToNumber(cells[closeIndex]),
-      indivKrw: homeToNumber(cells[flowIndex]),
+      close: toNumber(cells[closeIndex]),
+      indivKrw: toNumber(cells[flowIndex]),
     };
   }).filter((row) => row.date && Number.isFinite(row.close) && Number.isFinite(row.indivKrw));
 }
 
-function homeRegression(points) {
+function regression(points) {
   const n = points.length;
   if (n < 3) return null;
 
@@ -94,21 +82,21 @@ function homeRegression(points) {
   return { slope, intercept, sd };
 }
 
-function homeWeekKey(dateText) {
+function weekKey(dateText) {
   const date = new Date(`${dateText}T00:00:00+09:00`);
   const day = date.getDay() || 7;
   date.setDate(date.getDate() + (5 - day));
   return date.toISOString().slice(0, 10);
 }
 
-function homeWeeklySeries(rows) {
+function weeklySeries(rows) {
   const sorted = rows.slice().sort((a, b) => a.date.localeCompare(b.date));
   const weeks = new Map();
 
   for (const row of sorted) {
-    const key = homeWeekKey(row.date);
+    const key = weekKey(row.date);
     if (!weeks.has(key)) {
-      weeks.set(key, { key, date: row.date, firstClose: row.close, close: row.close, indivKrw: 0 });
+      weeks.set(key, { key, date: row.date, close: row.close, indivKrw: 0 });
     }
     const week = weeks.get(key);
     week.date = row.date;
@@ -128,89 +116,83 @@ function homeWeeklySeries(rows) {
   });
 }
 
-function latestHomeSentiment(rows) {
-  const points = homeWeeklySeries(rows);
-  const model = homeRegression(points);
+function latestSentiment(rows) {
+  const points = weeklySeries(rows);
+  const model = regression(points);
   if (!model || !points.length) return null;
 
-  const thr = 1.45;
+  const threshold = 1.45;
   const band = 0.8;
   return points.map((point) => {
     const expected = model.intercept + model.slope * point.ret;
     const residual = point.indivT - expected;
     const z = residual / model.sd;
-    const type = point.ret <= band && z <= -thr ? "fear" : point.ret >= -band && z >= thr ? "greed" : "normal";
+    const type = point.ret <= band && z <= -threshold ? "fear" : point.ret >= -band && z >= threshold ? "greed" : "normal";
     return { ...point, expected, residual, z, type };
   }).at(-1);
 }
 
-function homeSentimentLabel(point) {
+function sentimentView(point) {
   if (!point) {
-    return {
-      label: "상태 확인 필요",
-      detail: "개인 수급 데이터를 충분히 불러오지 못했습니다.",
-    };
+    return IS_EN
+      ? { label: "Status unavailable", detail: "Retail-flow data is not sufficient yet." }
+      : { label: "상태 확인 필요", detail: "개인 수급 데이터를 충분히 불러오지 못했습니다." };
   }
 
   const residual = Math.abs(point.residual).toFixed(2);
   if (point.type === "fear") {
-    return {
-      label: "공포 신호",
-      detail: `개인 순매수가 평소 예상보다 ${residual}조원 부족했습니다.`,
-    };
+    return IS_EN
+      ? { label: "Fear signal", detail: `Retail net-buying was ${residual}T KRW below its usual estimate.` }
+      : { label: "공포 신호", detail: `개인 순매수가 평소 예상보다 ${residual}조원 부족했습니다.` };
   }
   if (point.type === "greed") {
-    return {
-      label: "탐욕 신호",
-      detail: `개인 순매수가 평소 예상보다 ${residual}조원 많았습니다.`,
-    };
+    return IS_EN
+      ? { label: "Greed signal", detail: `Retail net-buying was ${residual}T KRW above its usual estimate.` }
+      : { label: "탐욕 신호", detail: `개인 순매수가 평소 예상보다 ${residual}조원 많았습니다.` };
   }
   if (Math.abs(point.z) < 0.25) {
-    return {
-      label: "괜찮은 상태",
-      detail: "개인 수급이 평소 범위에서 크게 벗어나지 않았습니다.",
-    };
+    return IS_EN
+      ? { label: "Normal range", detail: "Retail flow is not far from its usual pattern." }
+      : { label: "괜찮은 상태", detail: "개인 수급이 평소 범위에서 크게 벗어나지 않았습니다." };
   }
   if (point.z < 0) {
-    return {
-      label: "공포 근접",
-      detail: `정식 공포 신호는 아니지만 개인 순매수가 예상보다 ${residual}조원 부족했습니다.`,
-    };
+    return IS_EN
+      ? { label: "Near fear", detail: `Not a formal fear signal, but retail net-buying was ${residual}T KRW below estimate.` }
+      : { label: "공포 근접", detail: `정식 공포 신호는 아니지만 개인 순매수가 예상보다 ${residual}조원 부족했습니다.` };
   }
-  return {
-    label: "탐욕 근접",
-    detail: `정식 탐욕 신호는 아니지만 개인 순매수가 예상보다 ${residual}조원 많았습니다.`,
-  };
+  return IS_EN
+    ? { label: "Near greed", detail: `Not a formal greed signal, but retail net-buying was ${residual}T KRW above estimate.` }
+    : { label: "탐욕 근접", detail: `정식 탐욕 신호는 아니지만 개인 순매수가 예상보다 ${residual}조원 많았습니다.` };
 }
 
 function updatePerComment(data) {
   const kospi = data?.markets?.kospi200;
   if (!kospi) {
-    setComment("f1", "KRX PER 데이터가 아직 준비되지 않았습니다.");
+    setComment("f1", IS_EN ? "KRX PER data is not ready yet." : "KRX PER 데이터가 아직 준비되지 않았습니다.");
     return;
   }
 
   const currentPer = Number(kospi.per);
   const historicalPer = Number(kospi.historicalAveragePer);
   const forwardPer = HOME_FORWARD_PER;
-  const forwardIsLow = Number.isFinite(currentPer)
-    && Number.isFinite(historicalPer)
-    && forwardPer < currentPer
-    && forwardPer < historicalPer;
-
-  const comment = forwardIsLow
-    ? `Forward PER는 낮지만, 이익 전망 신뢰도와 평균 PER 대비 수준을 함께 봐야 합니다.`
-    : `현행 ${homeNumber.format(currentPer)}배, 평균 ${homeNumber.format(historicalPer)}배, Forward ${homeNumber.format(forwardPer)}배를 함께 봅니다.`;
-  setComment("f1", `${safeDate(kospi.date)} 기준 · ${comment}`);
+  const forwardIsLow = Number.isFinite(currentPer) && Number.isFinite(historicalPer) && forwardPer < currentPer && forwardPer < historicalPer;
+  const comment = IS_EN
+    ? forwardIsLow
+      ? "Forward PER looks low, but earnings confidence and the historical average still matter."
+      : `Current ${homeNumber.format(currentPer)}x, average ${homeNumber.format(historicalPer)}x, forward ${homeNumber.format(forwardPer)}x.`
+    : forwardIsLow
+      ? "Forward PER는 낮지만, 이익 전망 신뢰도와 평균 PER 대비 수준을 함께 봐야 합니다."
+      : `현행 ${homeNumber.format(currentPer)}배, 평균 ${homeNumber.format(historicalPer)}배, Forward ${homeNumber.format(forwardPer)}배를 함께 봅니다.`;
+  setComment("f1", `${safeDate(kospi.date)} · ${comment}`);
 }
 
 function updateSentimentComment(meta, rows = []) {
-  const latest = latestHomeSentiment(rows);
-  const view = homeSentimentLabel(latest);
+  const latest = latestSentiment(rows);
+  const view = sentimentView(latest);
   const vkospi = meta?.kospi200Volatility;
   const date = safeDate(latest?.date || meta?.lastDataDate);
   const vkospiText = Number.isFinite(vkospi?.value) ? ` VKOSPI ${homeNumber.format(vkospi.value)}.` : "";
-  setComment("f2", `${date} 기준 · ${view.label}. ${view.detail}${vkospiText}`);
+  setComment("f2", `${date} · ${view.label}. ${view.detail}${vkospiText}`);
 }
 
 function capexOcf(latest) {
@@ -230,10 +212,10 @@ function averageFinite(values) {
 }
 
 function capexBurdenLabel(capexToOcf, capexToNi) {
-  if (!Number.isFinite(capexToOcf) && !Number.isFinite(capexToNi)) return "확인 필요";
-  if ((capexToOcf ?? 0) <= 0.7 && (capexToNi ?? 0) <= 0.9) return "여유";
-  if ((capexToOcf ?? 0) <= 1.0 && (capexToNi ?? 0) <= 1.2) return "관리 가능";
-  return "부담 확대";
+  if (!Number.isFinite(capexToOcf) && !Number.isFinite(capexToNi)) return IS_EN ? "Needs data" : "확인 필요";
+  if ((capexToOcf ?? 0) <= 0.7 && (capexToNi ?? 0) <= 0.9) return IS_EN ? "Comfortable" : "여유";
+  if ((capexToOcf ?? 0) <= 1.0 && (capexToNi ?? 0) <= 1.2) return IS_EN ? "Manageable" : "관리 가능";
+  return IS_EN ? "Burden rising" : "부담 확대";
 }
 
 function updateEarningsComment(data) {
@@ -243,44 +225,53 @@ function updateEarningsComment(data) {
     .filter(({ latest }) => latest);
 
   if (!rows.length) {
-    setComment("f3", "하이퍼스케일러 CAPEX 부담을 확인합니다.");
+    setComment("f3", IS_EN ? "Checking hyperscaler CAPEX burden." : "하이퍼스케일러 CAPEX 부담을 확인합니다.");
     return;
   }
 
   const avgCapexOcf = averageFinite(rows.map(({ latest }) => capexOcf(latest)));
   const avgCapexNi = averageFinite(rows.map(({ latest }) => capexNi(latest)));
   const label = capexBurdenLabel(avgCapexOcf, avgCapexNi);
-  setComment("f3", `하이퍼스케일러 CAPEX 부담: ${label}. 평균 CAPEX/OCF ${pctText(avgCapexOcf)}, CAPEX/순이익 ${pctText(avgCapexNi)}.`);
+  setComment(
+    "f3",
+    IS_EN
+      ? `Hyperscaler CAPEX burden: ${label}. Avg CAPEX/OCF ${pctText(avgCapexOcf)}, CAPEX/net income ${pctText(avgCapexNi)}.`
+      : `하이퍼스케일러 CAPEX 부담: ${label}. 평균 CAPEX/OCF ${pctText(avgCapexOcf)}, CAPEX/순이익 ${pctText(avgCapexNi)}.`
+  );
 }
 
 function updateLiquidityComment(data) {
   const summary = data?.summary;
   const change = summary?.marketLiquidity?.change;
   if (Number.isFinite(change)) {
-    setComment("f4", `최근 3개월 실질 유동성 변화 ${change >= 0 ? "+" : ""}${homeNumber.format(change)}B USD. ${summary.label || "중립"} 구간입니다.`);
+    setComment(
+      "f4",
+      IS_EN
+        ? `Real liquidity changed ${change >= 0 ? "+" : ""}${homeNumber.format(change)}B USD over 3 months.`
+        : `최근 3개월 실질 유동성 변화 ${change >= 0 ? "+" : ""}${homeNumber.format(change)}B USD. ${summary.label || "중립"} 구간입니다.`
+    );
     return;
   }
-  setComment("f4", "M2, 지급준비금, RRP, TGA 흐름을 종합해 미국 유동성 방향을 봅니다.");
+  setComment("f4", IS_EN ? "Combines M2, reserves, RRP, and TGA to read U.S. liquidity direction." : "M2, 지급준비금, RRP, TGA 흐름을 종합해 미국 유동성 방향을 봅니다.");
 }
 
 function updateAdrComment(data) {
   const premium = Number(data?.result?.premium);
   if (!Number.isFinite(premium)) {
-    setComment("f5", "괴리율 확인 중");
+    setComment("f5", IS_EN ? "Checking spread" : "괴리율 확인 중");
     return;
   }
-
-  setComment("f5", `괴리율 ${pctText(premium)}`);
+  setComment("f5", IS_EN ? `Spread ${pctText(premium)}` : `괴리율 ${pctText(premium)}`);
 }
 
 async function loadHomeRead() {
   try {
     const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult, adrResult] = await Promise.allSettled([
-      readJson("data/market-per.json"),
-      readJson("data/kospi-sentiment-meta.json"),
-      readText("data/kospi-sentiment.csv"),
-      readJson("data/us-liquidity.json"),
-      readJson("data/ai-earnings.json"),
+      readJson("/data/market-per.json"),
+      readJson("/data/kospi-sentiment-meta.json"),
+      readText("/data/kospi-sentiment.csv"),
+      readJson("/data/us-liquidity.json"),
+      readJson("/data/ai-earnings.json"),
       readJson("/api/quotes"),
     ]);
 
@@ -299,11 +290,13 @@ async function loadHomeRead() {
 
     const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt].filter(Boolean);
     if (homeEls.updatedAt) {
-      homeEls.updatedAt.textContent = timestamps.length ? `최근 업데이트 ${timestamps.sort().at(-1)}` : "업데이트 정보 없음";
+      homeEls.updatedAt.textContent = timestamps.length
+        ? `${IS_EN ? "Last update" : "최근 업데이트"} ${timestamps.sort().at(-1)}`
+        : IS_EN ? "No update information" : "업데이트 정보 없음";
     }
   } catch {
-    setComment("f1", "데이터 요약을 불러오지 못했습니다. 각 페이지에서 개별 지표를 확인할 수 있습니다.");
-    if (homeEls.updatedAt) homeEls.updatedAt.textContent = "데이터 확인 실패";
+    setComment("f1", IS_EN ? "Could not load the summary. Please open each module page." : "데이터 요약을 불러오지 못했습니다. 각 페이지에서 개별 지표를 확인할 수 있습니다.");
+    if (homeEls.updatedAt) homeEls.updatedAt.textContent = IS_EN ? "Data check failed" : "데이터 확인 실패";
   }
 }
 

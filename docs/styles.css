@@ -2,22 +2,22 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
 :root {
-  --bg: #0e100d;
-  --panel: #111410;
-  --panel-2: #151913;
-  --panel-3: #1d2216;
-  --line: #2a2e24;
-  --line-soft: #1c211a;
-  --line-dash: #3d4435;
-  --text: #d7dcc9;
-  --title: #eef1e6;
-  --muted: #8a927a;
-  --faint: #6f7a63;
-  --ghost: #4d5442;
-  --amber: #d8a13a;
-  --amber-dim: #1a1508;
-  --green: #6fbf73;
-  --red: #d1603f;
+  --bg: #f5f1e8;
+  --panel: #fffaf0;
+  --panel-2: #f0eadf;
+  --panel-3: #e4ecdf;
+  --line: #c8d1c4;
+  --line-soft: #ded8cc;
+  --line-dash: #b9c5b5;
+  --text: #4d594f;
+  --title: #1d2a21;
+  --muted: #6d786e;
+  --faint: #7e8a7c;
+  --ghost: #a8ad9f;
+  --amber: #a97015;
+  --amber-dim: #f1e2bf;
+  --green: #23784a;
+  --red: #b64a34;
   --radius: 0;
   --mono: "JetBrains Mono", "Pretendard", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
@@ -44,7 +44,7 @@
 
 html {
   background: var(--bg);
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -52,9 +52,10 @@ body {
   min-height: 100vh;
   padding: 28px 20px 60px;
   background:
-    radial-gradient(circle at 12% 0%, rgba(216, 161, 58, 0.06), transparent 28%),
-    radial-gradient(circle at 90% 10%, rgba(111, 191, 115, 0.05), transparent 32%),
+    linear-gradient(rgba(200, 209, 196, 0.32) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 209, 196, 0.22) 1px, transparent 1px),
     var(--bg);
+  background-size: 54px 54px, 96px 96px, auto;
   color: var(--text);
   font-family: var(--mono);
   font-size: 13px;
@@ -92,7 +93,7 @@ footer {
   padding: 18px 22px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  background: rgba(17, 20, 16, 0.94);
+  background: rgba(255, 250, 240, 0.94);
 }
 
 .brand {
@@ -123,7 +124,7 @@ footer {
 }
 
 .brand strong::before {
-  content: "계속 만드는 실험실";
+  content: "Research in progress";
 }
 
 .brand strong {
@@ -157,7 +158,7 @@ footer {
 .service-tabs a {
   flex: 0 0 auto;
   border: 1px solid var(--line-dash);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--muted);
   padding: 7px 9px;
   font-size: 11px;
@@ -175,6 +176,17 @@ footer {
 
 .service-tabs a[aria-current="page"] {
   color: var(--amber);
+}
+
+.service-tabs .lang-switch {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.service-tabs .lang-switch[aria-current="true"] {
+  background: var(--green);
+  border-color: var(--green);
+  color: #ffffff;
 }
 
 .ticker-strip {
@@ -230,7 +242,7 @@ footer {
 }
 
 main {
-  background: rgba(14, 16, 13, 0.9);
+  background: rgba(255, 250, 240, 0.88);
 }
 
 section {
@@ -241,8 +253,8 @@ section {
 .hero {
   padding: 28px 22px 30px;
   background:
-    linear-gradient(90deg, rgba(216, 161, 58, 0.05), transparent 48%),
-    repeating-linear-gradient(45deg, #111410, #111410 9px, #151913 9px, #151913 18px);
+    linear-gradient(90deg, rgba(228, 236, 223, 0.85), transparent 56%),
+    repeating-linear-gradient(45deg, #fffaf0, #fffaf0 9px, #f6efe4 9px, #f6efe4 18px);
 }
 
 .eyebrow {
@@ -727,7 +739,7 @@ h3 {
 
 .sentiment-card-board article[data-tone="fear"],
 .sentiment-card-board article[data-tone="fear-soft"] {
-  border-color: rgba(216, 161, 58, 0.45);
+  border-color: rgba(169, 112, 21, 0.45);
 }
 
 .sentiment-card-board article[data-tone="greed"],
@@ -755,7 +767,7 @@ h3 {
 
 .liquidity-summary article[data-tone="neutral"],
 .earnings-insight-grid article[data-tone="neutral"] {
-  border-color: rgba(216, 161, 58, 0.45);
+  border-color: rgba(169, 112, 21, 0.45);
 }
 
 .quote-grid article::after,
@@ -1113,7 +1125,7 @@ h3 {
   min-height: 260px;
   border: 1px dashed var(--line-dash);
   background:
-    repeating-linear-gradient(45deg, #111410, #111410 9px, #151913 9px, #151913 18px);
+    repeating-linear-gradient(45deg, #fffaf0, #fffaf0 9px, #f0eadf 9px, #f0eadf 18px);
   overflow: hidden;
 }
 
@@ -1125,7 +1137,7 @@ h3 {
   position: absolute;
   top: 10px;
   left: 12px;
-  color: rgba(216, 161, 58, 0.45);
+  color: rgba(169, 112, 21, 0.45);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.16em;

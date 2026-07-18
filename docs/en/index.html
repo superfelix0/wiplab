@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-GD6K8FB589");
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="A compact research dashboard for KOSPI valuation, retail-flow sentiment, U.S. liquidity, AI CAPEX pressure, and SK Hynix ADR spread.">
+  <meta name="theme-color" content="#f5f1e8">
+  <meta property="og:title" content="WIP Labs - Lightweight Market Research Terminal">
+  <meta property="og:description" content="A compact research dashboard for KOSPI valuation, retail-flow sentiment, U.S. liquidity, AI CAPEX pressure, and SK Hynix ADR spread.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wiplabs.pages.dev/en/">
+  <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
+  <link rel="canonical" href="https://wiplabs.pages.dev/en/">
+  <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/">
+  <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../styles.css?v=light-en-20260718">
+  <title>WIP Labs - Lightweight Market Research Terminal</title>
+</head>
+<body data-lang="en">
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Go to English home">
+      <span>WIP</span>
+      <strong>WIP Labs</strong>
+    </a>
+    <nav class="service-tabs" aria-label="Main menu">
+      <a href="./" aria-current="page" title="HOME">HOME</a>
+      <a href="./wip-1/" title="F1">F1</a>
+      <a href="./wip-2/" title="F2">F2</a>
+      <a href="./wip-3/" title="F3">F3</a>
+      <a href="./wip-4/" title="F4">F4</a>
+      <a href="./wip-5/" title="F5">F5</a>
+      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG">BLOG</a>
+      <a class="lang-switch" href="../" title="Korean">KO</a>
+      <a class="lang-switch" href="./" aria-current="true" title="English">EN</a>
+    </nav>
+  </header>
+  <div class="ticker-strip" aria-label="Market ticker">
+    <span>KOSPI <b id="tickerKospi">-</b></span>
+    <span>NASDAQ <b id="tickerNasdaq">-</b></span>
+    <span>S&amp;P500 <b id="tickerSp500">-</b></span>
+    <span>USD/KRW <b id="tickerUsdKrw">-</b></span>
+  </div>
+
+  <main>
+    <section class="hero home-hero research-hero">
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./today <span class="flag">--market-read</span></p>
+      <h1>A lightweight market research terminal</h1>
+      <p class="hero-copy">A compact dashboard for KOSPI valuation, retail-flow sentiment, U.S. liquidity, AI CAPEX pressure, and SK Hynix ADR spread.</p>
+    </section>
+
+    <section class="wip-list" aria-labelledby="wip-list-title">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">RESEARCH MODULES</p>
+          <h2 id="wip-list-title">Market modules</h2>
+          <p class="section-copy">Each page is designed to answer one practical question before showing the detailed numbers.</p>
+        </div>
+        <small id="homeUpdatedAt">Loading data</small>
+      </div>
+      <div class="wip-index research-index">
+        <a href="wip-1/" data-category="finance"><span>F1</span><strong>KOSPI PER Monitor</strong><small class="cmd"><b>$</b> ./kospi-per <em>--krx</em></small><small class="metric">KRX/PER</small><small class="module-note">Compares current PER, historical average PER, and a forward PER reference.</small><small class="module-comment" id="commentF1">Loading PER comment.</small><small class="live-dot">* DAILY</small></a>
+        <a href="wip-2/" data-category="finance"><span>F2</span><strong>KOSPI Fear/Greed</strong><small class="cmd"><b>$</b> ./sentiment <em>--kospi</em></small><small class="metric">FLOW/SIGNAL</small><small class="module-note">Reads retail investor flow against its usual pattern to spot fear or greed pressure.</small><small class="module-comment" id="commentF2">Loading sentiment comment.</small><small class="live-dot">* DAILY</small></a>
+        <a href="wip-3/" data-category="finance"><span>F3</span><strong>AI Earnings Monitor</strong><small class="cmd"><b>$</b> ./ai-earnings <em>--capex</em></small><small class="metric">CAPEX/OCF</small><small class="module-note">Checks whether hyperscaler AI CAPEX is still covered by cash flow and net income.</small><small class="module-comment" id="commentF3">Loading AI earnings comment.</small><small class="live-dot">* QUARTERLY</small></a>
+        <a href="wip-4/" data-category="finance"><span>F4</span><strong>US Liquidity Monitor</strong><small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small><small class="metric">M2/RRP/TGA</small><small class="module-note">Combines M2, reserve balances, reverse repo, and TGA to read U.S. liquidity direction.</small><small class="module-comment" id="commentF4">Loading liquidity comment.</small><small class="live-dot">* AD HOC</small></a>
+        <a href="wip-5/" data-category="finance"><span>F5</span><strong>SK Hynix ADR Spread</strong><small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small><small class="metric">ADR/KRW</small><small class="module-note">Compares the ADR-implied common-share price with the KOSPI-listed share price.</small><small class="module-comment" id="commentF5">Checking spread</small><small class="live-dot">* DAILY</small></a>
+      </div>
+    </section>
+
+    <section class="source-panel home-method">
+      <h2>How WIP Labs reads the market</h2>
+      <p>This site does not replace investment judgment. It organizes scattered market data into a simple daily research checklist.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>WIP Labs</strong>
+      <p>A small market research terminal in progress.</p>
+    </div>
+    <p>DISCLAIMER - Educational reference only - Not investment advice - Data may be delayed or incomplete</p>
+    <a class="x-chip" href="https://x.com/bronian" target="_blank" rel="noopener noreferrer"><b>X</b><span>CONTACT</span><strong>@bronian</strong></a>
+    <span>(c) 2026</span>
+  </footer>
+  <script src="../ticker.js?v=change-pct-20260717"></script>
+  <script src="../home.js?v=en-home-20260718"></script>
+</body>
+</html>
