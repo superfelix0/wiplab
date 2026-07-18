@@ -124,9 +124,8 @@ function renderMemoryChart(companies) {
     quarters: company.quarters.filter((q) => Number.isFinite(q.opGrowth)).slice(-4),
   }));
   const values = series.flatMap(({ quarters }) => quarters.map((q) => q.opGrowth)).filter(Number.isFinite);
-  const tickStep = 0.05;
-  const min = Math.min(-0.05, Math.floor(Math.min(...values) / tickStep) * tickStep);
-  const max = Math.max(0.05, Math.ceil(Math.max(...values) / tickStep) * tickStep);
+  const min = Math.min(0, ...values);
+  const max = Math.max(0, ...values);
   const padX = 58;
   const padTop = 34;
   const padBottom = 62;
@@ -140,17 +139,17 @@ function renderMemoryChart(companies) {
   const barGap = 5;
   const barW = Math.max(7, Math.min(18, (groupW - 36) / labels.length - barGap));
 
-  const ticks = [];
-  for (let value = min; value <= max + tickStep / 2; value += tickStep) {
-    ticks.push(Number(value.toFixed(4)));
-  }
-  const grid = ticks.map((value, index) => {
+  const mid = min + (max - min) / 2;
+  const ticks = [min, 0, mid, max]
+    .map((value) => Number(value.toFixed(6)))
+    .filter((value, index, arr) => arr.findIndex((item) => Math.abs(item - value) < 0.000001) === index)
+    .sort((a, b) => a - b);
+  const grid = ticks.map((value) => {
     const isZero = Math.abs(value) < 0.0001;
-    const isLabel = index % 5 === 0 || isZero || index === ticks.length - 1;
     return `
       <line x1="${padX}" x2="${width - padX}" y1="${y(value)}" y2="${y(value)}" stroke="rgba(120,120,120,${isZero ? ".35" : ".12"})" stroke-dasharray="${isZero ? "0" : "3 6"}"/>
       <line x1="${padX - 5}" x2="${padX}" y1="${y(value)}" y2="${y(value)}" stroke="rgba(80,80,80,.45)"/>
-      ${isLabel ? `<text x="8" y="${y(value) + 4}" fill="currentColor" opacity=".62">${mPct(value)}</text>` : ""}
+      <text x="8" y="${y(value) + 4}" fill="currentColor" opacity=".62">${mPct(value)}</text>
     `;
   }).join("");
   const xLabels = series.map(({ company }, cIndex) => {
