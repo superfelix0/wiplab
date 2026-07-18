@@ -8,7 +8,7 @@ on:
       - ".github/workflows/update-us-liquidity.yml"
       - "scripts/update_us_liquidity.py"
   schedule:
-    # F4 US liquidity: 08:00 KST every day. GitHub Actions cron uses UTC.
+    # F5 US liquidity: 08:00 KST every day. GitHub Actions cron uses UTC.
     - cron: "0 23 * * *"
   workflow_dispatch:
 

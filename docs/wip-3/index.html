@@ -11,152 +11,67 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="메모리 반도체와 미국 하이퍼스케일러의 분기 이익, CAPEX, 현금흐름을 비교합니다.">
+  <meta name="description" content="하이퍼스케일러의 AI CAPEX가 영업현금흐름과 순이익 안에서 감당되는지 비교합니다.">
   <meta name="theme-color" content="#f5f1e8">
-  <meta property="og:title" content="AI Earnings Monitor — WIP Labs">
-  <meta property="og:description" content="AI 공급망 주요 기업의 최근 분기 실적과 현금흐름을 비교합니다.">
+  <meta property="og:title" content="F3 — Hyperscaler AI CAPEX Monitor">
+  <meta property="og:description" content="Microsoft, Amazon, Alphabet, Meta, Oracle의 AI CAPEX 부담을 OCF와 순이익 대비로 확인합니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/wip-3/">
+  <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
   <link rel="canonical" href="https://wiplabs.pages.dev/wip-3/">
   <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/wip-3/">
   <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/wip-3/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../styles.css?v=light-en-20260718">
-  <title>AI Earnings Monitor — WIP Labs</title>
+  <link rel="stylesheet" href="../styles.css?v=finance-lab-20260718">
+  <title>F3 — Hyperscaler AI CAPEX Monitor</title>
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="../" aria-label="홈으로 이동">
-      <span>WIP</span>
-      <strong>WIP Labs</strong>
-    </a>
-    <nav class="service-tabs" aria-label="Main menu">
-      <a href="../" title="HOME">HOME</a>
-      <a href="../wip-1/" title="F1 - KOSPI PER">F1</a>
-      <a href="../wip-2/" title="F2 - Fear/Greed">F2</a>
-      <a href="../wip-3/" aria-current="page" title="F3 - AI Earnings">F3</a>
-      <a href="../wip-4/" title="F4 - US Liquidity">F4</a>
-      <a href="../wip-5/" title="F5 - SK Hynix ADR">F5</a>
-      <a class="lang-switch" href="../wip-3/" aria-current="true" title="한국어">KO</a>
-      <a class="lang-switch" href="../en/wip-3/" title="English">EN</a>
-      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG">BLOG</a>
-    </nav>
+    <a class="brand" href="../" aria-label="홈으로 이동"><span>WIP</span><strong>WIP Labs</strong></a>
+    <nav class="service-tabs" aria-label="Main menu"><a href="../">HOME</a><a href="../wip-1/">F1</a><a href="../wip-2/">F2</a><a href="../wip-3/" aria-current="page">F3</a><a href="../wip-4/">F4</a><a href="../wip-5/">F5</a><a href="../wip-6/">F6</a><a class="lang-switch" href="../wip-3/" aria-current="true">KO</a><a class="lang-switch" href="../en/wip-3/">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
-    <span>KOSPI <b id="tickerKospi">—</b></span>
-    <span>NASDAQ <b id="tickerNasdaq">—</b></span>
-    <span>S&amp;P500 <b id="tickerSp500">—</b></span>
-    <span>USD/KRW <b id="tickerUsdKrw">—</b></span>
+    <span>KOSPI <b id="tickerKospi">--</b></span><span>NASDAQ <b id="tickerNasdaq">--</b></span><span>S&amp;P500 <b id="tickerSp500">--</b></span><span>USD/KRW <b id="tickerUsdKrw">--</b></span>
   </div>
-
   <main>
     <section class="hero service-hero">
-      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./ai-earnings <span class="flag">--compare</span></p>
-      <h1>AI Earnings Monitor</h1>
-      <p class="hero-copy">AI 인프라 사이클을 반도체 공급자와 하이퍼스케일러 투자자로 나눠 비교합니다.</p>
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./hyperscaler-capex <span class="flag">--coverage</span></p>
+      <h1>Hyperscaler AI CAPEX Monitor</h1>
+      <p class="hero-copy">하이퍼스케일러의 AI 인프라 투자가 영업현금흐름과 순이익 안에서 어느 정도 감당되는지 봅니다.</p>
     </section>
-
-    <section class="reading-note" aria-labelledby="reading-note-f5">
-      <h2 id="reading-note-f5">이 지표를 왜 보나요?</h2>
+    <section class="reading-note">
+      <h2>무엇을 보나?</h2>
       <ul>
-        <li>AI 인프라 투자는 성장의 선행지표이지만, 동시에 이익과 현금흐름을 얼마나 소모하는지도 봐야 합니다.</li>
-        <li>CAPEX/이익은 설비투자가 영업이익 또는 순이익 안에서 감당되는지, CAPEX/OCF는 실제 영업현금흐름 안에서 감당되는지를 보여줍니다.</li>
-        <li>FCF가 양수인지는 최종 안전판이고, 그 전에 CAPEX가 이익과 OCF를 얼마나 잠식하는지가 핵심 체크포인트입니다.</li>
+        <li>AI CAPEX는 성장 신호이지만, 동시에 현금흐름을 소모하는 투자 부담입니다.</li>
+        <li>CAPEX/OCF는 영업현금흐름 안에서 투자가 감당되는지 보여줍니다.</li>
+        <li>CAPEX/순이익은 회계상 이익 대비 투자 강도를 보여줍니다.</li>
       </ul>
     </section>
-
-    <section class="earnings-dashboard" aria-labelledby="earnings-title">
-      <div class="section-title">
-        <div>
-          <h2 id="earnings-title">한눈에 보는 실적 흐름</h2>
-          <p class="section-copy">최근 분기의 이익 성장률, CAPEX 절대액, CAPEX/이익, CAPEX/OCF, FCF를 비교합니다.</p>
-        </div>
-      </div>
-
-      <div class="status" id="earningsStatus" data-state="neutral">AI 실적 데이터를 불러오는 중입니다.</div>
-      <div class="sentiment-controls" aria-label="그룹 필터">
-        <label>
-          보기
-          <select id="earningsGroup" aria-label="그룹 선택">
-            <option value="all">전체</option>
-            <option value="memory">반도체/메모리</option>
-            <option value="hyperscaler">하이퍼스케일러</option>
-          </select>
-        </label>
-      </div>
-
+    <section class="earnings-dashboard">
+      <div class="section-title"><div><h2>하이퍼스케일러 CAPEX 부담</h2><p class="section-copy">Microsoft, Amazon, Alphabet, Meta, Oracle만 비교합니다.</p></div></div>
+      <div class="status" id="earningsStatus">AI 실적 데이터를 불러오는 중입니다.</div>
       <div class="earnings-insight-grid" id="earningsSummary"></div>
-
-      <section class="earnings-takeaway-panel" aria-labelledby="earnings-takeaway-title">
-        <div class="panel-head">
-          <h3 id="earnings-takeaway-title">데이터로 보는 시사점</h3>
-          <p>하이퍼스케일러의 AI CAPEX가 영업현금흐름과 순이익 안에서 감당되는지 요약합니다.</p>
-        </div>
+      <section class="earnings-takeaway-panel">
+        <div class="panel-head"><h3>시사점</h3><p>CAPEX가 OCF와 순이익 안에서 관리 가능한지 요약합니다.</p></div>
         <div class="earnings-takeaway-grid" id="earningsTakeaways"></div>
       </section>
-
-      <div class="earnings-chart-tabs" role="tablist" aria-label="실적 비교 그래프 선택">
-        <button type="button" class="is-active" data-earnings-tab="growth" role="tab" aria-selected="true">이익 성장률</button>
-        <button type="button" data-earnings-tab="cashflow" role="tab" aria-selected="false">CAPEX 감당력</button>
-        <button type="button" data-earnings-tab="fcf" role="tab" aria-selected="false">FCF 규모</button>
+      <div class="earnings-chart-tabs" role="tablist">
+        <button type="button" class="is-active" data-earnings-tab="cashflow">CAPEX/OCF</button>
+        <button type="button" data-earnings-tab="profit">CAPEX/순이익</button>
+        <button type="button" data-earnings-tab="fcf">FCF 규모</button>
       </div>
-
       <div class="earnings-compare-layout">
-        <section class="earnings-panel" aria-labelledby="earnings-rank-title" data-earnings-panel="growth">
-          <div class="panel-head">
-            <h3 id="earnings-rank-title">이익 성장률 랭킹</h3>
-            <p>최근 분기 QoQ 기준</p>
-          </div>
-          <div class="rank-list" id="earningsRanking"></div>
-        </section>
-
-        <section class="earnings-panel" aria-labelledby="earnings-capex-title" data-earnings-panel="cashflow" hidden>
-          <div class="panel-head">
-            <h3 id="earnings-capex-title">CAPEX 감당력 비교</h3>
-            <p>최근 분기 CAPEX / OCF. 100%를 넘으면 해당 분기 영업현금흐름보다 설비투자가 큽니다.</p>
-          </div>
-          <div class="rank-list" id="capexRanking"></div>
-        </section>
-
-        <section class="earnings-panel" aria-labelledby="earnings-fcf-title" data-earnings-panel="fcf" hidden>
-          <div class="panel-head">
-            <h3 id="earnings-fcf-title">FCF 규모 비교</h3>
-            <p>최근 분기 잉여현금흐름 금액 기준. 양수 FCF는 투자 후에도 남은 현금흐름입니다.</p>
-          </div>
-          <div class="rank-list" id="fcfRanking"></div>
-        </section>
+        <section class="earnings-panel" data-earnings-panel="cashflow"><div class="panel-head"><h3>CAPEX/OCF 비교</h3><p>낮을수록 현금흐름 여유가 큽니다.</p></div><div class="rank-list" id="capexRanking"></div></section>
+        <section class="earnings-panel" data-earnings-panel="profit" hidden><div class="panel-head"><h3>CAPEX/순이익 비교</h3><p>낮을수록 이익 대비 투자 부담이 작습니다.</p></div><div class="rank-list" id="profitRanking"></div></section>
+        <section class="earnings-panel" data-earnings-panel="fcf" hidden><div class="panel-head"><h3>FCF 규모 비교</h3><p>투자 후 남는 잉여현금흐름입니다.</p></div><div class="rank-list" id="fcfRanking"></div></section>
       </div>
-
       <div class="earnings-card-grid" id="earningsCards"></div>
-
-      <div class="chart-panel">
-        <div class="chart-head">
-          <div>
-            <h3>상세 비교표</h3>
-            <p class="chart-note">값의 통화가 서로 다르므로 절대금액보다 방향성과 비율을 중심으로 봅니다.</p>
-          </div>
-        </div>
-        <div class="earnings-table-wrap">
-          <table class="earnings-table" id="earningsTable"></table>
-        </div>
-      </div>
-
-      <div class="source-panel">
-        <h2>데이터 한계</h2>
-        <p>분기 실적과 현금흐름은 Yahoo Finance 공개 fundamentals time-series를 사용합니다. Kioxia처럼 일부 종목은 공개 시계열이 비어 있을 수 있습니다.</p>
-        <ul id="earningsSources"></ul>
-      </div>
+      <div class="chart-panel"><div class="chart-head"><div><h3>상세 비교표</h3><p class="chart-note">최근 분기 기준입니다. 회사별 회계 기준과 통화가 다를 수 있어 비율 중심으로 봅니다.</p></div></div><div class="earnings-table-wrap"><table class="earnings-table" id="earningsTable"></table></div></div>
+      <div class="source-panel"><h2>데이터 출처</h2><p>분기 손익계산서와 현금흐름표 항목은 Yahoo Finance 공개 fundamentals time-series를 사용합니다.</p><ul id="earningsSources"></ul></div>
     </section>
   </main>
-
-  <footer>
-    <div>
-      <strong>WIP 3</strong>
-      <p>AI 공급망 실적 비교 실험.</p>
-    </div>
-    <span>© 2026</span>
-  </footer>
+  <footer><div><strong>F3</strong><p>하이퍼스케일러 AI CAPEX 부담 실험.</p></div><span>© 2026</span></footer>
   <script src="../ticker.js?v=i18n-20260718"></script>
-  <script src="../ai-earnings.js?v=i18n-20260718"></script>
+  <script src="../ai-earnings.js?v=hyperscaler-only-20260718"></script>
 </body>
 </html>

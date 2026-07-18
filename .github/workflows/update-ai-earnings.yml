@@ -8,7 +8,7 @@ on:
       - ".github/workflows/update-ai-earnings.yml"
       - "scripts/update_ai_earnings.py"
   schedule:
-    # F3 AI earnings: Monday 08:00 KST. GitHub Actions cron uses UTC.
+    # F3 hyperscaler CAPEX and F4 memory earnings: Monday 08:00 KST. GitHub Actions cron uses UTC.
     - cron: "0 23 * * 0"
   workflow_dispatch:
 

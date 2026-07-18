@@ -11,10 +11,10 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="Track U.S. liquidity through M2, reserves, RRP, and TGA.">
+  <meta name="description" content="Compare operating-profit growth, revenue growth, and operating margins for major memory semiconductor companies over at least four quarters.">
   <meta name="theme-color" content="#f5f1e8">
-  <meta property="og:title" content="WIP 4 - US Liquidity Monitor">
-  <meta property="og:description" content="Track U.S. liquidity through M2, reserves, RRP, and TGA.">
+  <meta property="og:title" content="F4 - Memory Operating Profit Monitor">
+  <meta property="og:description" content="Compares operating-profit trends for TSMC, Kioxia, SanDisk, Micron, Samsung Electronics, and SK Hynix.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/en/wip-4/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
@@ -22,48 +22,26 @@
   <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/wip-4/">
   <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/wip-4/">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../../styles.css?v=light-en-20260718">
-  <title>WIP 4 - US Liquidity Monitor</title>
+  <link rel="stylesheet" href="../../styles.css?v=memory-op-20260718">
+  <title>F4 - Memory Operating Profit Monitor</title>
 </head>
-<body data-lang="en">
-  <header class="site-header">
-    <a class="brand" href="../" aria-label="Go to English home">
-      <span>WIP</span>
-      <strong>WIP Labs</strong>
-    </a>
-    <nav class="service-tabs" aria-label="Main menu">
-      <a href="../" title="HOME">HOME</a>
-      <a href="../wip-1/" title="F1">F1</a>
-      <a href="../wip-2/" title="F2">F2</a>
-      <a href="../wip-3/" title="F3">F3</a>
-      <a href="../wip-4/" aria-current="page" title="F4">F4</a>
-      <a href="../wip-5/" title="F5">F5</a>
-      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG">BLOG</a>
-      <a class="lang-switch" href="../../wip-4/" title="Korean">KO</a>
-      <a class="lang-switch" href="./" aria-current="true" title="English">EN</a>
-    </nav>
-  </header>
-  <div class="ticker-strip" aria-label="Market ticker">
-    <span>KOSPI <b id="tickerKospi">-</b></span>
-    <span>NASDAQ <b id="tickerNasdaq">-</b></span>
-    <span>S&amp;P500 <b id="tickerSp500">-</b></span>
-    <span>USD/KRW <b id="tickerUsdKrw">-</b></span>
-  </div>
-
+<body>
+  <header class="site-header"><a class="brand" href="../"><span>WIP</span><strong>WIP Labs</strong></a><nav class="service-tabs" aria-label="Main menu"><a href="../">HOME</a><a href="../wip-1/">F1</a><a href="../wip-2/">F2</a><a href="../wip-3/">F3</a><a href="../wip-4/" aria-current="page">F4</a><a href="../wip-5/">F5</a><a href="../wip-6/">F6</a><a class="lang-switch" href="../../wip-4/">KO</a><a class="lang-switch" href="./" aria-current="true">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav></header>
+  <div class="ticker-strip" aria-label="Market ticker"><span>KOSPI <b id="tickerKospi">-</b></span><span>NASDAQ <b id="tickerNasdaq">-</b></span><span>S&amp;P500 <b id="tickerSp500">-</b></span><span>USD/KRW <b id="tickerUsdKrw">-</b></span></div>
   <main>
-    <section class="hero service-hero"><p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./us-liquidity <span class="flag">--fred</span></p><h1>US Liquidity Monitor</h1><p class="hero-copy">A compact view of U.S. macro liquidity using FRED data.</p></section><section class="reading-note"><h2>What to read</h2><ul><li>M2 tracks broad money supply.</li><li>Reserve balances, RRP, and TGA help estimate money available to markets.</li><li>This page summarizes direction, not a trading signal.</li></ul></section><section class="liquidity-dashboard"><div class="section-title"><div><h2>Liquidity dashboard</h2><p class="section-copy">M2, reserves, reverse repo, and TGA are combined into a simple liquidity read.</p></div></div><div class="status" id="liquidityStatus">Loading U.S. liquidity data.</div><div class="liquidity-summary" id="liquiditySummary"></div><div class="liquidity-grid" id="liquidityCards"></div><div class="chart-panel"><div class="chart-head"><h3>Liquidity trend</h3></div><div class="liquidity-chart-wrap"><svg id="liquidityChart" viewBox="0 0 900 340"></svg></div></div><div class="source-panel"><h2>Sources</h2><ul id="liquiditySources"></ul></div></section>
+    <section class="hero service-hero"><p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./memory-op <span class="flag">--trend</span></p><h1>Memory Operating Profit Monitor</h1><p class="hero-copy">First read the operating-profit growth trend, then compare revenue, growth, operating profit, and margins in a table.</p></section>
+    <section class="reading-note"><h2>What to read</h2><ul><li>Memory cycles often show up sharply in operating-profit growth.</li><li>The chart compares at least four recent quarters of QoQ operating-profit growth by company.</li><li>The table adds revenue, revenue growth, operating profit, operating margin, and QoQ operating-profit growth.</li></ul></section>
+    <section class="earnings-dashboard">
+      <div class="section-title"><div><h2>Memory operating-profit flow</h2><p class="section-copy">Shows companies with available public quarterly data among TSMC, Kioxia, SanDisk, Micron, Samsung Electronics, and SK Hynix.</p></div></div>
+      <div class="status" id="memoryStatus">Loading memory earnings data.</div>
+      <div class="earnings-insight-grid" id="memorySummary"></div>
+      <div class="chart-panel"><div class="chart-head"><div><h3>Operating-profit growth trend</h3><p class="chart-note">Quarter-over-quarter. Loss-to-profit or profit-to-loss transitions can produce large percentages.</p></div><div class="chart-legend" id="memoryLegend"></div></div><div class="chart-wrap"><svg id="memoryOpChart" viewBox="0 0 900 360" role="img" aria-label="Memory semiconductor operating-profit growth trend"></svg></div></div>
+      <div class="chart-panel"><div class="chart-head"><div><h3>Revenue and operating-profit comparison</h3><p class="chart-note">Latest quarter. Revenue growth and operating-profit growth are quarter-over-quarter.</p></div></div><div class="earnings-table-wrap"><table class="earnings-table" id="memoryTable"></table></div></div>
+      <div class="source-panel"><h2>Data source</h2><p>Quarterly income-statement items use Yahoo Finance public fundamentals time-series. Coverage and accounting basis can vary by company.</p><ul id="memorySources"></ul></div>
+    </section>
   </main>
-
-  <footer>
-    <div>
-      <strong>WIP Labs</strong>
-      <p>A small market research terminal in progress.</p>
-    </div>
-    <span>(c) 2026</span>
-  </footer>
+  <footer><div><strong>F4</strong><p>Memory operating-profit trend experiment.</p></div><span>© 2026</span></footer>
   <script src="../../ticker.js?v=i18n-20260718"></script>
-  <script src="../../liquidity.js?v=i18n-20260718"></script>
+  <script src="../../memory-earnings.js?v=memory-op-20260718"></script>
 </body>
 </html>
-
-

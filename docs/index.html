@@ -11,10 +11,10 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="WIP Labs는 KOSPI PER, 수급 심리, 미국 유동성, AI 실적, ADR 괴리율 같은 재무지표를 작게 실험하고 확장하는 시장 데이터 실험실입니다.">
+  <meta name="description" content="WIP Labs는 KOSPI PER, 수급 심리, 하이퍼스케일러 CAPEX, 메모리 영업이익, 미국 유동성, ADR 괴리율 같은 재무지표를 작게 실험하고 확장하는 시장 데이터 실험실입니다.">
   <meta name="theme-color" content="#f5f1e8">
   <meta property="og:title" content="WIP Labs — 재무지표 실험실">
-  <meta property="og:description" content="KOSPI PER, 수급 심리, 미국 유동성, AI 실적, ADR 괴리율을 가볍게 확인하는 재무지표 실험실입니다.">
+  <meta property="og:description" content="KOSPI PER, 수급 심리, 하이퍼스케일러 CAPEX, 메모리 영업이익, 미국 유동성, ADR 괴리율을 가볍게 확인하는 재무지표 실험실입니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
@@ -41,17 +41,7 @@
       <span>WIP</span>
       <strong>WIP Labs</strong>
     </a>
-    <nav class="service-tabs" aria-label="Main menu">
-      <a href="./" aria-current="page" title="HOME">HOME</a>
-      <a href="wip-1/" title="F1 - KOSPI PER">F1</a>
-      <a href="wip-2/" title="F2 - Fear/Greed">F2</a>
-      <a href="wip-3/" title="F3 - AI Earnings">F3</a>
-      <a href="wip-4/" title="F4 - US Liquidity">F4</a>
-      <a href="wip-5/" title="F5 - SK Hynix ADR">F5</a>
-      <a class="lang-switch" href="./" aria-current="true" title="한국어">KO</a>
-      <a class="lang-switch" href="en/" title="English">EN</a>
-      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG">BLOG</a>
-    </nav>
+    <nav class="service-tabs" aria-label="Main menu"><a href="./" aria-current="page">HOME</a><a href="wip-1/">F1</a><a href="wip-2/">F2</a><a href="wip-3/">F3</a><a href="wip-4/">F4</a><a href="wip-5/">F5</a><a href="wip-6/">F6</a><a class="lang-switch" href="./" aria-current="true">KO</a><a class="lang-switch" href="en/">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
     <span>KOSPI <b id="tickerKospi">--</b></span>
@@ -64,7 +54,7 @@
     <section class="hero home-hero research-hero">
       <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./metrics <span class="flag">--experiment</span></p>
       <h1>재무지표를 하나씩 만들어보는 실험실</h1>
-      <p class="hero-copy">PER, 수급, 유동성, 실적, 괴리율처럼 시장을 볼 때 자주 확인하는 숫자들을 작은 도구로 만들고 있습니다.</p>
+      <p class="hero-copy">PER, 수급, CAPEX, 영업이익, 유동성, 괴리율처럼 시장을 볼 때 자주 확인하는 숫자들을 작은 도구로 만들고 있습니다.</p>
     </section>
 
     <section class="wip-list" aria-labelledby="wip-list-title">
@@ -79,9 +69,10 @@
       <div class="wip-index research-index">
         <a href="wip-1/" data-category="finance"><span>F1</span><strong>KOSPI PER Monitor</strong><small class="cmd"><b>$</b> ./kospi-per <em>--krx</em></small><small class="metric">KRX/PER</small><small class="module-note">현행 PER, 역사적 평균 PER, Forward PER 참고치를 비교합니다.</small><small class="module-comment" id="commentF1">Loading PER comment.</small><small class="live-dot">* DAILY</small></a>
         <a href="wip-2/" data-category="finance"><span>F2</span><strong>KOSPI Fear/Greed</strong><small class="cmd"><b>$</b> ./sentiment <em>--kospi</em></small><small class="metric">FLOW/SIGNAL</small><small class="module-note">개인 수급이 평소 패턴에서 얼마나 벗어났는지 확인합니다.</small><small class="module-comment" id="commentF2">Loading sentiment comment.</small><small class="live-dot">* DAILY</small></a>
-        <a href="wip-3/" data-category="finance"><span>F3</span><strong>AI Earnings Monitor</strong><small class="cmd"><b>$</b> ./ai-earnings <em>--capex</em></small><small class="metric">CAPEX/OCF</small><small class="module-note">하이퍼스케일러의 AI 투자 부담을 현금흐름과 이익 대비로 봅니다.</small><small class="module-comment" id="commentF3">Loading AI earnings comment.</small><small class="live-dot">* QUARTERLY</small></a>
-        <a href="wip-4/" data-category="finance"><span>F4</span><strong>US Liquidity Monitor</strong><small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small><small class="metric">M2/RRP/TGA</small><small class="module-note">M2, 지급준비금, RRP, TGA로 미국 유동성 방향을 봅니다.</small><small class="module-comment" id="commentF4">Loading liquidity comment.</small><small class="live-dot">* AD HOC</small></a>
-        <a href="wip-5/" data-category="finance"><span>F5</span><strong>SK Hynix ADR 가격 비교</strong><small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small><small class="metric">ADR/KRW</small><small class="module-note">ADR 환산 가격과 국내 본주 가격의 차이를 확인합니다.</small><small class="module-comment" id="commentF5">Checking spread</small><small class="live-dot">* DAILY</small></a>
+        <a href="wip-3/" data-category="finance"><span>F3</span><strong>Hyperscaler AI CAPEX</strong><small class="cmd"><b>$</b> ./hyperscaler-capex <em>--coverage</em></small><small class="metric">CAPEX/OCF</small><small class="module-note">하이퍼스케일러의 AI 투자 부담을 현금흐름과 이익 대비로 봅니다.</small><small class="module-comment" id="commentF3">Loading CAPEX comment.</small><small class="live-dot">* QUARTERLY</small></a>
+        <a href="wip-4/" data-category="finance"><span>F4</span><strong>Memory Operating Profit</strong><small class="cmd"><b>$</b> ./memory-op <em>--trend</em></small><small class="metric">OP/QOQ</small><small class="module-note">메모리 반도체 업체의 영업이익 증가율과 매출·마진을 비교합니다.</small><small class="module-comment" id="commentF4">Loading memory comment.</small><small class="live-dot">* QUARTERLY</small></a>
+        <a href="wip-5/" data-category="finance"><span>F5</span><strong>US Liquidity Monitor</strong><small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small><small class="metric">M2/RRP/TGA</small><small class="module-note">M2, 지급준비금, RRP, TGA로 미국 유동성 방향을 봅니다.</small><small class="module-comment" id="commentF5">Loading liquidity comment.</small><small class="live-dot">* AD HOC</small></a>
+        <a href="wip-6/" data-category="finance"><span>F6</span><strong>SK Hynix ADR 가격 비교</strong><small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small><small class="metric">ADR/KRW</small><small class="module-note">ADR 환산 가격과 국내 본주 가격의 차이를 확인합니다.</small><small class="module-comment" id="commentF6">Checking spread</small><small class="live-dot">* DAILY</small></a>
       </div>
     </section>
   </main>

@@ -11,10 +11,10 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="WIP Labs is a small financial-metric lab for KOSPI PER, retail-flow sentiment, U.S. liquidity, AI earnings, and ADR spread experiments.">
+  <meta name="description" content="WIP Labs is a small financial-metric lab for KOSPI PER, retail-flow sentiment, hyperscaler CAPEX, memory operating profit, U.S. liquidity, and ADR spread experiments.">
   <meta name="theme-color" content="#f5f1e8">
   <meta property="og:title" content="WIP Labs - Financial Metric Lab">
-  <meta property="og:description" content="Small experiments for reading KOSPI PER, retail-flow sentiment, U.S. liquidity, AI earnings, and ADR spreads.">
+  <meta property="og:description" content="Small experiments for reading KOSPI PER, retail-flow sentiment, hyperscaler CAPEX, memory operating profit, U.S. liquidity, and ADR spreads.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/en/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
@@ -31,17 +31,7 @@
       <span>WIP</span>
       <strong>WIP Labs</strong>
     </a>
-    <nav class="service-tabs" aria-label="Main menu">
-      <a href="./" aria-current="page" title="HOME">HOME</a>
-      <a href="./wip-1/" title="F1">F1</a>
-      <a href="./wip-2/" title="F2">F2</a>
-      <a href="./wip-3/" title="F3">F3</a>
-      <a href="./wip-4/" title="F4">F4</a>
-      <a href="./wip-5/" title="F5">F5</a>
-      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer" title="BLOG">BLOG</a>
-      <a class="lang-switch" href="../" title="Korean">KO</a>
-      <a class="lang-switch" href="./" aria-current="true" title="English">EN</a>
-    </nav>
+    <nav class="service-tabs" aria-label="Main menu"><a href="./" aria-current="page">HOME</a><a href="./wip-1/">F1</a><a href="./wip-2/">F2</a><a href="./wip-3/">F3</a><a href="./wip-4/">F4</a><a href="./wip-5/">F5</a><a href="./wip-6/">F6</a><a class="lang-switch" href="../">KO</a><a class="lang-switch" href="./" aria-current="true">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav>
   </header>
   <div class="ticker-strip" aria-label="Market ticker">
     <span>KOSPI <b id="tickerKospi">-</b></span>
@@ -54,7 +44,7 @@
     <section class="hero home-hero research-hero">
       <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./metrics <span class="flag">--experiment</span></p>
       <h1>A lab for small financial-metric experiments</h1>
-      <p class="hero-copy">WIP Labs builds small tools for the numbers investors often check: PER, flows, liquidity, earnings, and price spreads.</p>
+      <p class="hero-copy">WIP Labs builds small tools for the numbers investors often check: PER, flows, CAPEX, operating profit, liquidity, and price spreads.</p>
     </section>
 
     <section class="wip-list" aria-labelledby="wip-list-title">
@@ -69,9 +59,10 @@
       <div class="wip-index research-index">
         <a href="wip-1/" data-category="finance"><span>F1</span><strong>KOSPI PER Monitor</strong><small class="cmd"><b>$</b> ./kospi-per <em>--krx</em></small><small class="metric">KRX/PER</small><small class="module-note">Compares current PER, historical average PER, and a forward PER reference.</small><small class="module-comment" id="commentF1">Loading PER comment.</small><small class="live-dot">* DAILY</small></a>
         <a href="wip-2/" data-category="finance"><span>F2</span><strong>KOSPI Fear/Greed</strong><small class="cmd"><b>$</b> ./sentiment <em>--kospi</em></small><small class="metric">FLOW/SIGNAL</small><small class="module-note">Checks how far retail flow moves away from its usual pattern.</small><small class="module-comment" id="commentF2">Loading sentiment comment.</small><small class="live-dot">* DAILY</small></a>
-        <a href="wip-3/" data-category="finance"><span>F3</span><strong>AI Earnings Monitor</strong><small class="cmd"><b>$</b> ./ai-earnings <em>--capex</em></small><small class="metric">CAPEX/OCF</small><small class="module-note">Reads hyperscaler AI CAPEX pressure against cash flow and net income.</small><small class="module-comment" id="commentF3">Loading AI earnings comment.</small><small class="live-dot">* QUARTERLY</small></a>
-        <a href="wip-4/" data-category="finance"><span>F4</span><strong>US Liquidity Monitor</strong><small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small><small class="metric">M2/RRP/TGA</small><small class="module-note">Combines M2, reserves, RRP, and TGA to read U.S. liquidity direction.</small><small class="module-comment" id="commentF4">Loading liquidity comment.</small><small class="live-dot">* AD HOC</small></a>
-        <a href="wip-5/" data-category="finance"><span>F5</span><strong>SK Hynix ADR Spread</strong><small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small><small class="metric">ADR/KRW</small><small class="module-note">Compares the ADR-implied common-share price with the KOSPI-listed share price.</small><small class="module-comment" id="commentF5">Checking spread</small><small class="live-dot">* DAILY</small></a>
+        <a href="wip-3/" data-category="finance"><span>F3</span><strong>Hyperscaler AI CAPEX</strong><small class="cmd"><b>$</b> ./hyperscaler-capex <em>--coverage</em></small><small class="metric">CAPEX/OCF</small><small class="module-note">Reads hyperscaler AI CAPEX pressure against cash flow and net income.</small><small class="module-comment" id="commentF3">Loading CAPEX comment.</small><small class="live-dot">* QUARTERLY</small></a>
+        <a href="wip-4/" data-category="finance"><span>F4</span><strong>Memory Operating Profit</strong><small class="cmd"><b>$</b> ./memory-op <em>--trend</em></small><small class="metric">OP/QOQ</small><small class="module-note">Compares memory-company operating-profit growth, revenue growth, and margins.</small><small class="module-comment" id="commentF4">Loading memory comment.</small><small class="live-dot">* QUARTERLY</small></a>
+        <a href="wip-5/" data-category="finance"><span>F5</span><strong>US Liquidity Monitor</strong><small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small><small class="metric">M2/RRP/TGA</small><small class="module-note">Combines M2, reserves, RRP, and TGA to read U.S. liquidity direction.</small><small class="module-comment" id="commentF5">Loading liquidity comment.</small><small class="live-dot">* AD HOC</small></a>
+        <a href="wip-6/" data-category="finance"><span>F6</span><strong>SK Hynix ADR Spread</strong><small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small><small class="metric">ADR/KRW</small><small class="module-note">Compares the ADR-implied common-share price with the KOSPI-listed share price.</small><small class="module-comment" id="commentF6">Checking spread</small><small class="live-dot">* DAILY</small></a>
       </div>
     </section>
   </main>
