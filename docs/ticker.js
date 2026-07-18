@@ -8,7 +8,8 @@
 
   if (!Object.values(tickerEls).some(Boolean)) return;
 
-  const tickerNumber = new Intl.NumberFormat("ko-KR", {
+  const isEn = document.documentElement.lang?.toLowerCase().startsWith("en");
+  const tickerNumber = new Intl.NumberFormat(isEn ? "en-US" : "ko-KR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -31,7 +32,10 @@
         const changeText = formatChangePct(item.changePct);
         const changeClass = item.changePct > 0 ? "positive" : item.changePct < 0 ? "negative" : "neutral";
         element.innerHTML = `${tickerNumber.format(item.close)}${changeText ? ` <em class="${changeClass}">${changeText}</em>` : ""}`;
-        element.closest("span").title = `${item.label} 최근 종가 기준일: ${item.date}${item.previousDate ? ` · 직전 기준일: ${item.previousDate}` : ""}`;
+        const title = isEn
+          ? `${item.label} latest close: ${item.date}${item.previousDate ? ` · previous date: ${item.previousDate}` : ""}`
+          : `${item.label} 최근 종가 기준: ${item.date}${item.previousDate ? ` · 직전 기준일: ${item.previousDate}` : ""}`;
+        element.closest("span").title = title;
       });
     } catch {
       // Keep placeholders if the ticker endpoint is temporarily unavailable.

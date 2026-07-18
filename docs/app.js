@@ -16,6 +16,8 @@ const output = {
   chartEmpty: document.querySelector("#chartEmpty"),
 };
 
+const IS_EN = document.documentElement.lang?.toLowerCase().startsWith("en");
+
 const usd = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -23,47 +25,46 @@ const usd = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
-const won = new Intl.NumberFormat("ko-KR", {
+const won = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", {
   style: "currency",
   currency: "KRW",
   maximumFractionDigits: 0,
 });
 
-const number = new Intl.NumberFormat("ko-KR", {
-  maximumFractionDigits: 2,
-});
-
-const percent = new Intl.NumberFormat("ko-KR", {
+const number = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", { maximumFractionDigits: 2 });
+const percent = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", {
   style: "percent",
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
 
-const dateTime = new Intl.DateTimeFormat("ko-KR", {
+const dateTime = new Intl.DateTimeFormat(IS_EN ? "en-US" : "ko-KR", {
   dateStyle: "short",
   timeStyle: "short",
 });
 
-const chartDate = new Intl.DateTimeFormat("ko-KR", {
+const chartDate = new Intl.DateTimeFormat(IS_EN ? "en-US" : "ko-KR", {
   month: "short",
   day: "numeric",
 });
 
-const chartDateTime = new Intl.DateTimeFormat("ko-KR", {
+const chartDateTime = new Intl.DateTimeFormat(IS_EN ? "en-US" : "ko-KR", {
   month: "short",
   day: "numeric",
   hour: "2-digit",
   minute: "2-digit",
 });
 
+function t(ko, en) {
+  return IS_EN ? en : ko;
+}
+
 async function fetchQuotes() {
   const response = await fetch("/api/quotes", { cache: "no-store" });
   const data = await response.json().catch(() => null);
-
   if (!response.ok || !data?.ok) {
-    throw new Error(data?.message || `시세 API 오류: HTTP ${response.status}`);
+    throw new Error(data?.message || t(`시세 API 오류: HTTP ${response.status}`, `Quote API error: HTTP ${response.status}`));
   }
-
   return data;
 }
 
@@ -73,12 +74,14 @@ function pathFromPoints(points) {
 
 function renderChart(history) {
   const svg = output.priceChart;
-
   if (!svg) return;
 
-  if (!svg || !Array.isArray(history) || history.length < 2) {
+  if (!Array.isArray(history) || history.length < 2) {
     if (!output.chartEmpty) return;
-    output.chartEmpty.textContent = "ADR 일자별 가격 데이터가 아직 충분하지 않습니다. 2거래일 이상 쌓이면 본주와 함께 그래프로 표시됩니다.";
+    output.chartEmpty.textContent = t(
+      "ADR 일자별 가격 데이터가 아직 충분하지 않습니다. 2거래일 이상 쌓이면 본주와 함께 그래프로 표시됩니다.",
+      "ADR historical price data is not sufficient yet. Once two or more trading days are collected, it will be shown with the common-share price."
+    );
     output.chartEmpty.hidden = false;
     return;
   }
@@ -116,7 +119,9 @@ function renderChart(history) {
     label.setAttribute("x", padding.left - 12);
     label.setAttribute("y", lineY + 4);
     label.setAttribute("text-anchor", "end");
-    label.textContent = `${Math.round(value / 10000).toLocaleString("ko-KR")}만`;
+    label.textContent = IS_EN
+      ? `${Math.round(value / 1000).toLocaleString("en-US")}K`
+      : `${Math.round(value / 10000).toLocaleString("ko-KR")}만`;
     grid.append(label);
   }
 
@@ -153,54 +158,46 @@ function renderChart(history) {
   });
 }
 
-function renderQuote(quote, valueEl, timeEl, formatter, suffix = "") {
-  valueEl.textContent = `${formatter.format(quote.price)}${suffix}`;
-  const time = quote.marketTime ? dateTime.format(new Date(quote.marketTime)) : "시간 정보 없음";
-  const freshness = quote.marketTime ? ` · ${formatAge(Date.now() - quote.marketTime)} 기준` : "";
-  timeEl.textContent = `${quote.exchange} · ${time}${freshness}`;
+function formatAge(ageMs) {
+  if (!Number.isFinite(ageMs) || ageMs < 0) return t("방금", "just now");
+  const minutes = Math.round(ageMs / 60000);
+  if (minutes < 1) return t("방금", "just now");
+  if (minutes < 60) return IS_EN ? `${minutes} min ago` : `${minutes}분 전`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return IS_EN ? `${hours} hr ago` : `${hours}시간 전`;
+  const days = Math.round(hours / 24);
+  return IS_EN ? `${days} day${days === 1 ? "" : "s"} ago` : `${days}일 전`;
 }
 
-function formatAge(ageMs) {
-  if (!Number.isFinite(ageMs) || ageMs < 0) {
-    return "방금";
-  }
-
-  const minutes = Math.round(ageMs / 60000);
-
-  if (minutes < 1) {
-    return "방금";
-  }
-
-  if (minutes < 60) {
-    return `${minutes}분 전`;
-  }
-
-  const hours = Math.round(minutes / 60);
-
-  if (hours < 24) {
-    return `${hours}시간 전`;
-  }
-
-  const days = Math.round(hours / 24);
-  return `${days}일 전`;
+function renderQuote(quote, valueEl, timeEl, formatter, suffix = "") {
+  valueEl.textContent = `${formatter.format(quote.price)}${suffix}`;
+  const time = quote.marketTime ? dateTime.format(new Date(quote.marketTime)) : t("시간 정보 없음", "No time data");
+  const freshness = quote.marketTime ? ` · ${formatAge(Date.now() - quote.marketTime)} ${t("기준", "basis")}` : "";
+  timeEl.textContent = `${quote.exchange} · ${time}${freshness}`;
 }
 
 function buildTimingNotice(quotes) {
   const times = [quotes.adr.marketTime, quotes.kospi.marketTime, quotes.fx.marketTime].filter(Number.isFinite);
 
   if (times.length < 2) {
-    return "일부 시세의 기준 시각을 확인하지 못했습니다.";
+    return t("일부 시세의 기준 시각을 확인하지 못했습니다.", "Could not verify the timestamp for some quotes.");
   }
 
   const spreadMs = Math.max(...times) - Math.min(...times);
   const oldestMs = Date.now() - Math.min(...times);
 
   if (spreadMs >= 2 * 60 * 60 * 1000) {
-    return `세션 불일치 가능성이 있습니다. 세 가격의 기준 시각 차이가 약 ${formatAge(spreadMs)}입니다.`;
+    return t(
+      `세션 불일치 가능성이 있습니다. 세 가격의 기준 시각 차이가 약 ${formatAge(spreadMs)}입니다.`,
+      `Session mismatch is possible. The quote timestamps differ by about ${formatAge(spreadMs)}.`
+    );
   }
 
   if (oldestMs >= 6 * 60 * 60 * 1000) {
-    return `일부 가격이 오래된 값일 수 있습니다. 가장 오래된 기준 시각은 약 ${formatAge(oldestMs)}입니다.`;
+    return t(
+      `일부 가격이 오래된 값일 수 있습니다. 가장 오래된 기준 시각은 약 ${formatAge(oldestMs)}입니다.`,
+      `Some prices may be stale. The oldest timestamp is about ${formatAge(oldestMs)}.`
+    );
   }
 
   return "";
@@ -210,33 +207,32 @@ function renderResult({ adr, kospi, fx }, result) {
   output.adrSymbolLabel.textContent = `${adr.symbol} ADR`;
   renderQuote(adr, output.adrPrice, output.adrTime, usd);
   renderQuote(kospi, output.kospiPrice, output.kospiTime, won);
-  renderQuote(fx, output.fxRate, output.fxTime, number, "원");
+  renderQuote(fx, output.fxRate, output.fxTime, number, t("원", " KRW"));
 
   output.convertedPrice.textContent = won.format(result.converted);
   output.priceGap.textContent = won.format(result.gap);
   output.premiumRate.textContent = percent.format(result.premium);
 
   let premiumMessage = "";
-
   if (result.premium > 0.0025) {
     output.premiumRate.dataset.state = "premium";
-    premiumMessage = "ADR 환산 본주가가 코스피보다 높습니다.";
+    premiumMessage = t("ADR 환산 본주가가 코스피보다 높습니다.", "The ADR-implied common-share price is above the KOSPI share price.");
   } else if (result.premium < -0.0025) {
     output.premiumRate.dataset.state = "discount";
-    premiumMessage = "ADR 환산 본주가가 코스피보다 낮습니다.";
+    premiumMessage = t("ADR 환산 본주가가 코스피보다 낮습니다.", "The ADR-implied common-share price is below the KOSPI share price.");
   } else {
     output.premiumRate.dataset.state = "neutral";
-    premiumMessage = "두 시장 가격이 거의 비슷한 구간입니다.";
+    premiumMessage = t("두 시장 가격이 거의 비슷한 구간입니다.", "The two market prices are nearly aligned.");
   }
 
   const timingNotice = buildTimingNotice({ adr, kospi, fx });
-  output.premiumLabel.textContent = timingNotice ? `${premiumMessage} ⚠ ${timingNotice}` : premiumMessage;
+  output.premiumLabel.textContent = timingNotice ? `${premiumMessage} ${timingNotice}` : premiumMessage;
 }
 
 function setLoading(isLoading) {
   if (!output.refreshButton) return;
   output.refreshButton.disabled = isLoading;
-  output.refreshButton.textContent = isLoading ? "???? ??" : "????";
+  output.refreshButton.textContent = isLoading ? t("불러오는 중", "Loading") : t("새로고침", "Refresh");
 }
 
 function setStatus(message, state = "neutral") {
@@ -246,20 +242,22 @@ function setStatus(message, state = "neutral") {
 
 async function refreshQuotes() {
   setLoading(true);
-  setStatus("시세를 불러오는 중입니다…");
+  setStatus(t("시세를 불러오는 중입니다.", "Loading quotes."));
 
   try {
     const data = await fetchQuotes();
     renderResult(data.quotes, data.result);
     renderChart(data.history);
-    setStatus("시세 반영 완료. 데이터는 거래소·제공사 기준으로 지연될 수 있습니다.", "ok");
+    setStatus(t(
+      "시세 반영 완료. 데이터는 거래소·제공사 기준으로 지연될 수 있습니다.",
+      "Quotes updated. Data may be delayed depending on the exchange or provider."
+    ), "ok");
   } catch (error) {
-    setStatus(`${error.message} 잠시 후 다시 새로고침해 주세요.`, "error");
+    setStatus(`${error.message} ${t("잠시 후 다시 새로고침해 주세요.", "Please refresh again shortly.")}`, "error");
   } finally {
     setLoading(false);
   }
 }
 
 output.refreshButton?.addEventListener("click", refreshQuotes);
-
 refreshQuotes();

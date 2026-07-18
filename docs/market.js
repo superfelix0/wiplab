@@ -5,11 +5,9 @@ const marketPerLegend = document.querySelector("#marketPerLegend");
 const sourceList = document.querySelector("#sourceList");
 const refreshButton = document.querySelector("#marketRefresh");
 
-const numberFormatter = new Intl.NumberFormat("ko-KR", {
-  maximumFractionDigits: 2,
-});
-
-const dateTimeFormatter = new Intl.DateTimeFormat("ko-KR", {
+const IS_EN = document.documentElement.lang?.toLowerCase().startsWith("en");
+const numberFormatter = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", { maximumFractionDigits: 2 });
+const dateTimeFormatter = new Intl.DateTimeFormat(IS_EN ? "en-US" : "ko-KR", {
   year: "2-digit",
   month: "2-digit",
   day: "2-digit",
@@ -21,10 +19,18 @@ const dateTimeFormatter = new Intl.DateTimeFormat("ko-KR", {
 const FORWARD_PER_CONSENSUS = {
   value: 6.35,
   date: "2026-07-09",
-  sourceTitle: "Investing.com / EBN: KOSPI 12개월 선행 PER 6.35배",
+  sourceTitle: IS_EN
+    ? "Investing.com / EBN: KOSPI 12-month forward PER 6.35x"
+    : "Investing.com / EBN: KOSPI 12개월 선행 PER 6.35배",
   sourceUrl: "https://kr.investing.com/news/stock-market-news/article-2012684",
-  note: "기사에서 블룸버그 보고서를 인용해 2026년 7월 9일 기준 KOSPI 12개월 선행 PER이 6.35배라고 언급한 값을 Forward PER 참고치로 사용합니다.",
+  note: IS_EN
+    ? "The forward PER reference uses the article's cited Bloomberg estimate for KOSPI 12-month forward PER as of July 9, 2026."
+    : "기사에서 블룸버그 보고서를 인용해 2026년 7월 9일 기준 KOSPI 12개월 선행 PER이 6.35배라고 언급한 값을 Forward PER 참고치로 사용합니다.",
 };
+
+function t(ko, en) {
+  return IS_EN ? en : ko;
+}
 
 function setStatus(message, state = "") {
   if (!marketStatus) return;
@@ -33,11 +39,7 @@ function setStatus(message, state = "") {
 }
 
 function formatPer(value) {
-  return Number.isFinite(value) ? `${numberFormatter.format(value)}x` : "확인 필요";
-}
-
-function formatDate(value) {
-  return value || "기준일 확인 필요";
+  return Number.isFinite(value) ? `${numberFormatter.format(value)}x` : t("확인 필요", "Needs data");
 }
 
 function formatDateTime(value) {
@@ -57,20 +59,32 @@ function valuationMemo(currentPer, historicalPer, forwardPer) {
 
   if (forwardIsLow) {
     return {
-      title: "PER 판단 메모",
-      value: "저평가 가능성과 이익 의구심 공존",
-      badge: "해석",
-      description: `Forward PER가 현행 PER보다 낮으면 미래 이익 기준으로는 저평가 가능성이 있습니다. 다만 시장이 향후 이익 전망을 충분히 신뢰하지 못하는 환경일 수도 있으므로, 평균 PER 대비 현재 수준과 이익 전망의 지속성을 함께 봐야 합니다.`,
-      footnote: `현행 PER은 평균 PER보다 ${Number.isFinite(currentVsHistory) && currentVsHistory >= 0 ? "높은" : "낮은"} 구간입니다. Forward PER는 예상 이익이 바뀌면 함께 달라지는 참고 지표입니다.`,
+      title: t("PER 판단 메모", "PER reading memo"),
+      value: t("저평가 가능성과 이익 의구심 공존", "Low forward PER, but earnings trust matters"),
+      badge: t("해석", "Read"),
+      description: t(
+        "Forward PER가 현행 PER보다 낮으면 미래 이익 기준으로는 저평가 가능성이 있습니다. 다만 시장이 향후 이익 전망을 충분히 신뢰하지 못하는 환경일 수도 있으므로, 평균 PER 대비 현재 수준과 이익 전망의 지속성을 함께 봐야 합니다.",
+        "When forward PER is below current PER, the market can look inexpensive on expected earnings. But it may also mean investors doubt the durability of those earnings, so compare it with the historical average and earnings visibility."
+      ),
+      footnote: t(
+        `현행 PER은 평균 PER보다 ${Number.isFinite(currentVsHistory) && currentVsHistory >= 0 ? "높은" : "낮은"} 구간입니다. Forward PER는 예상 이익이 바뀌면 함께 달라지는 참고 지표입니다.`,
+        `Current PER is ${Number.isFinite(currentVsHistory) && currentVsHistory >= 0 ? "above" : "below"} the historical average. Forward PER is a reference point that moves with earnings estimates.`
+      ),
     };
   }
 
   return {
-    title: "PER 판단 메모",
-    value: "혼합 구간",
-    badge: "해석",
-    description: "현행 PER, 역사적 평균, Forward PER의 방향이 엇갈립니다. 단순 고평가·저평가보다 이익 전망의 지속성을 함께 봐야 합니다.",
-    footnote: "Forward PER는 예상 이익이 바뀌면 함께 달라지는 참고 지표입니다.",
+    title: t("PER 판단 메모", "PER reading memo"),
+    value: t("혼합 구간", "Mixed zone"),
+    badge: t("해석", "Read"),
+    description: t(
+      "현행 PER, 역사적 평균, Forward PER의 방향이 엇갈립니다. 단순 고평가·저평가보다 이익 전망의 지속성을 함께 봐야 합니다.",
+      "Current PER, historical average PER, and forward PER point in different directions. The key is whether the expected earnings path is durable."
+    ),
+    footnote: t(
+      "Forward PER는 예상 이익이 바뀌면 함께 달라지는 참고 지표입니다.",
+      "Forward PER is a reference point that changes when earnings estimates change."
+    ),
   };
 }
 
@@ -125,9 +139,9 @@ function renderMarketPerChart(perData) {
 
   marketPerChart.innerHTML = "";
   marketPerLegend.innerHTML = `
-    <span><i style="background:var(--amber)"></i>연도별 평균 PER</span>
-    <span><i style="background:var(--muted)"></i>평균 PER ${formatPer(historicalAveragePer)}</span>
-    <span><i style="background:var(--green)"></i>현재 PER ${formatPer(currentPer)}</span>
+    <span><i style="background:var(--amber)"></i>${t("연도별 평균 PER", "Annual average PER")}</span>
+    <span><i style="background:var(--muted)"></i>${t("평균 PER", "Average PER")} ${formatPer(historicalAveragePer)}</span>
+    <span><i style="background:var(--green)"></i>${t("현재 PER", "Current PER")} ${formatPer(currentPer)}</span>
     <span><i style="background:var(--red)"></i>Forward PER ${formatPer(forwardPer)}</span>
   `;
 
@@ -139,7 +153,7 @@ function renderMarketPerChart(perData) {
       x2: width - pad.right,
       y1: yy,
       y2: yy,
-      stroke: "rgba(255,255,255,0.08)",
+      stroke: "rgba(34,49,38,0.12)",
     }));
     const label = svgEl("text", {
       x: pad.left - 10,
@@ -183,8 +197,8 @@ function renderMarketPerChart(perData) {
   });
 
   [
-    { value: historicalAveragePer, label: `평균 ${formatPer(historicalAveragePer)}`, color: "var(--muted)", dash: "2 6" },
-    { value: currentPer, label: `현재 ${formatPer(currentPer)}`, color: "var(--green)" },
+    { value: historicalAveragePer, label: `${t("평균", "Avg")} ${formatPer(historicalAveragePer)}`, color: "var(--muted)", dash: "2 6" },
+    { value: currentPer, label: `${t("현재", "Current")} ${formatPer(currentPer)}`, color: "var(--green)" },
     { value: forwardPer, label: `Forward ${formatPer(forwardPer)}`, color: "var(--red)" },
   ].forEach((line) => {
     if (!Number.isFinite(line.value)) return;
@@ -214,7 +228,7 @@ async function fetchMarketPerData() {
   const data = await response.json().catch(() => null);
 
   if (!response.ok || !data?.markets?.kospi200) {
-    throw new Error("KRX PER 데이터를 불러오지 못했습니다.");
+    throw new Error(t("KRX PER 데이터를 불러오지 못했습니다.", "Could not load KRX PER data."));
   }
 
   return data;
@@ -255,7 +269,10 @@ function renderSources(perData) {
     {
       title: "KRX index fundamentals via pykrx",
       url: "https://github.com/sharebook-kr/pykrx",
-      note: `KOSPI 현행 PER와 2010년 이후 누적 평균 PER를 KRX 기준으로 갱신합니다. 최근 기준일: ${kospi.date}`,
+      note: t(
+        `KOSPI 현행 PER와 2010년 이후 누적 평균 PER를 KRX 기준으로 갱신합니다. 최근 기준일: ${kospi.date}`,
+        `Updates current KOSPI PER and the average PER since 2010 using KRX-based data. Latest data date: ${kospi.date}`
+      ),
     },
     {
       title: FORWARD_PER_CONSENSUS.sourceTitle,
@@ -275,24 +292,25 @@ function renderSources(perData) {
 }
 
 async function loadMarketDashboard() {
-  if (refreshButton) {
-    refreshButton.disabled = true;
-  }
-
-  setStatus("KRX PER 데이터를 불러오는 중입니다.");
+  if (refreshButton) refreshButton.disabled = true;
+  setStatus(t("KRX PER 데이터를 불러오는 중입니다.", "Loading KRX PER data."));
 
   try {
     const perData = await fetchMarketPerData();
     renderCards(perData);
     renderMarketPerChart(perData);
     renderSources(perData);
-    setStatus(`업데이트 완료: ${formatDateTime(perData.generatedAt)} · 투자 권유가 아닌 참고용 실험 화면입니다.`, "ok");
+    setStatus(
+      t(
+        `업데이트 완료: ${formatDateTime(perData.generatedAt)} · 투자 권유가 아닌 참고용 실험 화면입니다.`,
+        `Updated: ${formatDateTime(perData.generatedAt)} · Experimental reference page, not investment advice.`
+      ),
+      "ok"
+    );
   } catch (error) {
-    setStatus(error.message || "KRX PER 데이터를 불러오지 못했습니다.", "error");
+    setStatus(error.message || t("KRX PER 데이터를 불러오지 못했습니다.", "Could not load KRX PER data."), "error");
   } finally {
-    if (refreshButton) {
-      refreshButton.disabled = false;
-    }
+    if (refreshButton) refreshButton.disabled = false;
   }
 }
 

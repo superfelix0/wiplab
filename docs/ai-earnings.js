@@ -12,13 +12,16 @@ const earningsEls = {
   group: document.querySelector("#earningsGroup"),
 };
 
-const moneyFormatter = new Intl.NumberFormat("ko-KR", {
-  maximumFractionDigits: 1,
-});
+const IS_EN = document.documentElement.lang?.toLowerCase().startsWith("en");
+const moneyFormatter = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", { maximumFractionDigits: 1 });
 
 let earningsData = null;
 let selectedGroup = "all";
 let selectedCompare = "growth";
+
+function t(ko, en) {
+  return IS_EN ? en : ko;
+}
 
 function setEarningsStatus(message, state = "neutral") {
   earningsEls.status.textContent = message;
@@ -32,7 +35,7 @@ function compactMoney(value, currency = "") {
   if (abs >= 1e12) return `${sign}${moneyFormatter.format(abs / 1e12)}T ${currency}`;
   if (abs >= 1e9) return `${sign}${moneyFormatter.format(abs / 1e9)}B ${currency}`;
   if (abs >= 1e6) return `${sign}${moneyFormatter.format(abs / 1e6)}M ${currency}`;
-  return `${sign}${moneyFormatter.format(abs)} ${currency}`;
+  return `${sign}${moneyFormatter.format(abs)} ${currency}`.trim();
 }
 
 function pct(value) {
@@ -82,15 +85,16 @@ function capexProfitCoverage(latest) {
 function capexCoverageNote(latest) {
   const capexToOcf = capexBurden(latest);
   const capexToProfit = capexProfitCoverage(latest);
+  const profitMetric = latest.profitMetric || t("이익", "profit");
   const ocfNote = Number.isFinite(capexToOcf)
-    ? `OCF 대비 ${pct(capexToOcf)}`
-    : "OCF 비교 불가";
+    ? `${t("OCF 대비", "vs OCF")} ${pct(capexToOcf)}`
+    : t("OCF 비교 불가", "OCF comparison unavailable");
   const profitNote = Number.isFinite(capexToProfit)
-    ? `${latest.profitMetric} 대비 ${pct(capexToProfit)}`
-    : `${latest.profitMetric || "이익"} 대비 비교 불가`;
+    ? `${profitMetric} ${t("대비", "coverage")} ${pct(capexToProfit)}`
+    : `${profitMetric} ${t("대비 비교 불가", "comparison unavailable")}`;
   const fcfNote = Number.isFinite(latest?.freeCashFlow)
-    ? `FCF ${latest.freeCashFlow >= 0 ? "양수" : "음수"}`
-    : "FCF 확인 불가";
+    ? `FCF ${latest.freeCashFlow >= 0 ? t("양수", "positive") : t("음수", "negative")}`
+    : t("FCF 확인 불가", "FCF unavailable");
   return `${ocfNote} · ${profitNote} · ${fcfNote}`;
 }
 
@@ -107,17 +111,27 @@ function average(values) {
   return valid.reduce((sum, value) => sum + value, 0) / valid.length;
 }
 
+function burdenKey(capexToOcf, capexToProfit) {
+  if (!Number.isFinite(capexToOcf) && !Number.isFinite(capexToProfit)) return "unknown";
+  if ((capexToOcf ?? 0) <= 0.7 && (capexToProfit ?? 0) <= 0.9) return "comfortable";
+  if ((capexToOcf ?? 0) <= 1.0 && (capexToProfit ?? 0) <= 1.2) return "manageable";
+  return "stretched";
+}
+
 function burdenLabel(capexToOcf, capexToProfit) {
-  if (!Number.isFinite(capexToOcf) && !Number.isFinite(capexToProfit)) return "확인 필요";
-  if ((capexToOcf ?? 0) <= 0.7 && (capexToProfit ?? 0) <= 0.9) return "여유";
-  if ((capexToOcf ?? 0) <= 1.0 && (capexToProfit ?? 0) <= 1.2) return "관리 가능";
-  return "부담 확대";
+  const key = burdenKey(capexToOcf, capexToProfit);
+  return {
+    unknown: t("확인 필요", "Needs data"),
+    comfortable: t("여유", "Comfortable"),
+    manageable: t("관리 가능", "Manageable"),
+    stretched: t("부담 확대", "Burden rising"),
+  }[key];
 }
 
 function countByBurden(rows) {
   return rows.reduce((acc, { latest }) => {
-    const label = burdenLabel(capexBurden(latest), capexProfitCoverage(latest));
-    acc[label] = (acc[label] || 0) + 1;
+    const key = burdenKey(capexBurden(latest), capexProfitCoverage(latest));
+    acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
 }
@@ -137,33 +151,45 @@ function renderTakeaways(data) {
   const counts = countByBurden(rows);
   const heavyOcf = capexOcfRows.sort((a, b) => capexBurden(b.latest) - capexBurden(a.latest))[0];
   const heavyProfit = capexProfitRows.sort((a, b) => capexProfitCoverage(b.latest) - capexProfitCoverage(a.latest))[0];
-  const manageable = (counts["여유"] || 0) + (counts["관리 가능"] || 0);
+  const manageable = (counts.comfortable || 0) + (counts.manageable || 0);
 
   earningsEls.takeaways.innerHTML = `
     <article>
-      <span>종합 판단</span>
+      <span>${t("종합 판단", "Overall read")}</span>
       <strong>${overallLabel}</strong>
-      <p>하이퍼스케일러 ${rows.length}개사의 평균 CAPEX 부담을 OCF와 순이익 기준으로 함께 봅니다.</p>
+      <p>${t(
+        `하이퍼스케일러 ${rows.length}개사의 평균 CAPEX 부담을 OCF와 순이익 기준으로 함께 봅니다.`,
+        `Reads the average CAPEX burden of ${rows.length} hyperscalers against operating cash flow and net income.`
+      )}</p>
     </article>
     <article>
       <span>CAPEX/OCF</span>
       <strong>${pct(avgCapexOcf)}</strong>
-      <p>영업현금흐름 안에서 AI 인프라 투자를 얼마나 감당하는지 봅니다. 100%를 넘으면 OCF보다 CAPEX가 큽니다.</p>
+      <p>${t(
+        "영업현금흐름 안에서 AI 인프라 투자를 얼마나 감당하는지 봅니다. 100%를 넘으면 OCF보다 CAPEX가 큽니다.",
+        "Shows how much AI infrastructure investment is covered by operating cash flow. Above 100% means CAPEX is larger than OCF for the quarter."
+      )}</p>
     </article>
     <article>
-      <span>CAPEX/순이익</span>
+      <span>${t("CAPEX/순이익", "CAPEX/net income")}</span>
       <strong>${pct(avgCapexProfit)}</strong>
-      <p>분기 순이익 대비 설비투자 부담입니다. 100%를 넘으면 이익보다 투자 지출이 더 큰 구간입니다.</p>
+      <p>${t(
+        "분기 순이익 대비 설비투자 부담입니다. 100%를 넘으면 이익보다 투자 지출이 더 큰 구간입니다.",
+        "Shows CAPEX burden relative to quarterly net income. Above 100% means investment spending exceeds profit."
+      )}</p>
     </article>
     <article>
-      <span>회사별 분포</span>
-      <strong>${manageable}/${rows.length}개 관리 가능</strong>
-      <p>여유·관리 가능으로 분류된 회사 수입니다. 평균이 높아도 회사별 체력 차이가 크면 해석을 나눠야 합니다.</p>
+      <span>${t("회사별 분포", "Company distribution")}</span>
+      <strong>${manageable}/${rows.length} ${t("개 관리 가능", "manageable")}</strong>
+      <p>${t(
+        "여유·관리 가능으로 분류된 회사 수입니다. 평균이 높아도 회사별 체력 차이가 크면 해석을 나눠야 합니다.",
+        "Number of companies classified as comfortable or manageable. A high average can hide major company-by-company differences."
+      )}</p>
     </article>
     <article>
-      <span>주의할 지점</span>
+      <span>${t("주의할 지점", "Watch point")}</span>
       <strong>${heavyProfit ? heavyProfit.company.name : heavyOcf ? heavyOcf.company.name : "N/A"}</strong>
-      <p>${heavyOcf ? `CAPEX/OCF 부담 상위는 ${heavyOcf.company.name}(${pct(capexBurden(heavyOcf.latest))})입니다.` : ""} ${heavyProfit ? `CAPEX/순이익 부담 상위는 ${heavyProfit.company.name}(${pct(capexProfitCoverage(heavyProfit.latest))})입니다.` : ""}</p>
+      <p>${heavyOcf ? `${t("CAPEX/OCF 부담 상위는", "Highest CAPEX/OCF burden:")} ${heavyOcf.company.name} (${pct(capexBurden(heavyOcf.latest))}).` : ""} ${heavyProfit ? `${t("CAPEX/순이익 부담 상위는", "Highest CAPEX/net income burden:")} ${heavyProfit.company.name} (${pct(capexProfitCoverage(heavyProfit.latest))}).` : ""}</p>
     </article>
   `;
 }
@@ -183,39 +209,39 @@ function renderSummary(data) {
 
   earningsEls.summary.innerHTML = `
     <article data-tone="neutral">
-      <span>커버리지</span>
+      <span>${t("커버리지", "Coverage")}</span>
       <strong>${rows.length}/${currentCompanies(data).length}</strong>
-      <small>분기 실적이 있는 기업 수입니다. Kioxia처럼 공개 시계열이 비어 있는 회사는 상세표에 따로 표시합니다.</small>
+      <small>${t("분기 실적이 있는 기업 수입니다. Kioxia처럼 공개 시계열이 비어 있는 회사는 상세표에 따로 표시합니다.", "Number of companies with quarterly data. Companies with missing public time series are shown separately in the detail table.")}</small>
     </article>
     <article data-tone="${toneForGrowth(average(growthValues))}">
-      <span>평균 이익 성장률</span>
+      <span>${t("평균 이익 성장률", "Avg profit growth")}</span>
       <strong>${pct(average(growthValues))}</strong>
-      <small>최근 분기 QoQ 평균입니다. 적자/흑자 전환 기업은 변동률이 크게 튈 수 있습니다.</small>
+      <small>${t("최근 분기 QoQ 평균입니다. 적자/흑자 전환 기업은 변동률이 크게 튈 수 있습니다.", "Average QoQ growth for the latest quarter. Turnaround quarters can create unusually large percentages.")}</small>
     </article>
     <article data-tone="neutral">
-      <span>평균 CAPEX/OCF</span>
+      <span>${t("평균 CAPEX/OCF", "Avg CAPEX/OCF")}</span>
       <strong>${pct(average(capexBurdenValues))}</strong>
-      <small>영업현금흐름 안에서 설비투자가 어느 정도 감당되는지 보는 지표입니다. 100%를 넘으면 해당 분기 OCF보다 CAPEX가 큽니다.</small>
+      <small>${t("영업현금흐름 안에서 설비투자가 어느 정도 감당되는지 보는 지표입니다. 100%를 넘으면 해당 분기 OCF보다 CAPEX가 큽니다.", "Shows how much CAPEX is covered by operating cash flow. Above 100% means CAPEX exceeds OCF for the quarter.")}</small>
     </article>
     <article data-tone="neutral">
-      <span>평균 CAPEX/이익</span>
+      <span>${t("평균 CAPEX/이익", "Avg CAPEX/profit")}</span>
       <strong>${pct(average(capexProfitValues))}</strong>
-      <small>영업이익 또는 순이익 대비 설비투자 부담입니다. 이익이 작거나 적자면 비교 가능성이 낮아집니다.</small>
+      <small>${t("영업이익 또는 순이익 대비 설비투자 부담입니다. 이익이 작거나 적자면 비교 가능성이 낮아집니다.", "CAPEX burden relative to operating or net income. Comparability drops when profit is small or negative.")}</small>
     </article>
     <article data-tone="${fcfPositive >= rows.length / 2 ? "positive" : "negative"}">
-      <span>FCF 플러스</span>
+      <span>${t("FCF 플러스", "Positive FCF")}</span>
       <strong>${fcfPositive}/${rows.length}</strong>
-      <small>최근 분기 잉여현금흐름이 플러스인 기업 수입니다.</small>
+      <small>${t("최근 분기 잉여현금흐름이 플러스인 기업 수입니다.", "Number of companies with positive free cash flow in the latest quarter.")}</small>
     </article>
     <article data-tone="positive">
-      <span>성장률 1위</span>
+      <span>${t("성장률 1위", "Top growth")}</span>
       <strong>${topGrowth ? topGrowth.company.name : "N/A"}</strong>
-      <small>${topGrowth ? `${pct(topGrowth.latest.profitGrowthQoQ)} · ${topGrowth.latest.date}` : "데이터 없음"}</small>
+      <small>${topGrowth ? `${pct(topGrowth.latest.profitGrowthQoQ)} · ${topGrowth.latest.date}` : t("데이터 없음", "No data")}</small>
     </article>
     <article data-tone="negative">
-      <span>CAPEX 부담 1위</span>
+      <span>${t("CAPEX 부담 1위", "Highest CAPEX burden")}</span>
       <strong>${deepestCapex ? deepestCapex.company.name : "N/A"}</strong>
-      <small>${deepestCapex ? `CAPEX/OCF ${pct(capexBurden(deepestCapex.latest))}` : "데이터 없음"}</small>
+      <small>${deepestCapex ? `CAPEX/OCF ${pct(capexBurden(deepestCapex.latest))}` : t("데이터 없음", "No data")}</small>
     </article>
   `;
 }
@@ -223,7 +249,7 @@ function renderSummary(data) {
 function renderRankList(target, rows, metric, options = {}) {
   const valid = rows.filter(({ latest }) => Number.isFinite(metric(latest)));
   if (!valid.length) {
-    target.innerHTML = `<p class="empty-note">표시할 데이터가 없습니다.</p>`;
+    target.innerHTML = `<p class="empty-note">${t("표시할 데이터가 없습니다.", "No data to display.")}</p>`;
     return;
   }
 
@@ -250,16 +276,9 @@ function renderRankList(target, rows, metric, options = {}) {
 
 function renderRankings(data) {
   const rows = companiesWithLatest(data);
-  renderRankList(earningsEls.ranking, rows, (latest) => latest.profitGrowthQoQ, {
-    format: (value) => pct(value),
-  });
-  renderRankList(earningsEls.capexRanking, rows, capexBurden, {
-    lowerIsBetter: true,
-    format: (value) => pct(value),
-  });
-  renderRankList(earningsEls.fcfRanking, rows, (latest) => latest.freeCashFlow, {
-    format: (value, latest, company) => compactMoney(value, company.currency),
-  });
+  renderRankList(earningsEls.ranking, rows, (latest) => latest.profitGrowthQoQ, { format: (value) => pct(value) });
+  renderRankList(earningsEls.capexRanking, rows, capexBurden, { lowerIsBetter: true, format: (value) => pct(value) });
+  renderRankList(earningsEls.fcfRanking, rows, (latest) => latest.freeCashFlow, { format: (value, latest, company) => compactMoney(value, company.currency) });
   syncCompareTabs();
 }
 
@@ -291,11 +310,11 @@ function renderCards(data) {
         <span>${company.symbol} · ${company.group}</span>
         <strong>${company.name}</strong>
         <dl>
-          <div><dt>최근 분기</dt><dd>${latest.date}</dd></div>
+          <div><dt>${t("최근 분기", "Latest quarter")}</dt><dd>${latest.date}</dd></div>
           <div><dt>${latest.profitMetric}</dt><dd>${compactMoney(latest.profit, company.currency)}</dd></div>
-          <div><dt>이익 QoQ</dt><dd>${pct(latest.profitGrowthQoQ)}</dd></div>
+          <div><dt>${t("이익 QoQ", "Profit QoQ")}</dt><dd>${pct(latest.profitGrowthQoQ)}</dd></div>
           <div><dt>CAPEX</dt><dd>${compactMoney(latest.capex, company.currency)}</dd></div>
-          <div><dt>CAPEX/이익</dt><dd>${pct(profitCoverage)}</dd></div>
+          <div><dt>${t("CAPEX/이익", "CAPEX/profit")}</dt><dd>${pct(profitCoverage)}</dd></div>
           <div><dt>CAPEX/OCF</dt><dd>${pct(burden)}</dd></div>
           <div><dt>FCF</dt><dd>${compactMoney(latest.freeCashFlow, company.currency)}</dd></div>
           <div><dt>FCF Margin</dt><dd>${pct(margin)}</dd></div>
@@ -315,7 +334,7 @@ function renderTable(data) {
         <tr>
           <td>${company.name}<br><small>${company.symbol}</small></td>
           <td>${company.group}</td>
-          <td colspan="11">분기 실적 데이터 없음 · ${company.message || ""}</td>
+          <td colspan="11">${t("분기 실적 데이터 없음", "No quarterly financial data")} · ${company.message || ""}</td>
         </tr>
       `;
     }
@@ -351,13 +370,13 @@ function renderTable(data) {
   earningsEls.table.innerHTML = `
     <thead>
       <tr>
-        <th>회사</th>
-        <th>그룹</th>
-        <th>분기</th>
-        <th>이익</th>
-        <th>이익 QoQ</th>
+        <th>${t("회사", "Company")}</th>
+        <th>${t("그룹", "Group")}</th>
+        <th>${t("분기", "Quarter")}</th>
+        <th>${t("이익", "Profit")}</th>
+        <th>${t("이익 QoQ", "Profit QoQ")}</th>
         <th>CAPEX</th>
-        <th>CAPEX/이익</th>
+        <th>${t("CAPEX/이익", "CAPEX/profit")}</th>
         <th>OCF</th>
         <th>FCF</th>
         <th>CAPEX/OCF</th>
@@ -368,11 +387,19 @@ function renderTable(data) {
   `;
 }
 
+function sourceNote(source) {
+  if (!IS_EN) return source.note;
+  if (source.title?.includes("Yahoo")) {
+    return "Quarterly income-statement and cash-flow items from Yahoo Finance public fundamentals time series. Coverage can vary by ticker.";
+  }
+  return source.note || "";
+}
+
 function renderSources(data) {
   earningsEls.sources.innerHTML = (data.sources || []).map((source) => `
     <li>
       <a href="${source.url}" target="_blank" rel="noopener noreferrer">${source.title}</a>
-      <span>${source.note}</span>
+      <span>${sourceNote(source)}</span>
     </li>
   `).join("");
 }
@@ -388,19 +415,19 @@ function render(data) {
 
 async function loadEarnings() {
   if (earningsEls.refresh) earningsEls.refresh.disabled = true;
-  setEarningsStatus("AI 실적 데이터를 불러오는 중입니다.");
+  setEarningsStatus(t("AI 실적 데이터를 불러오는 중입니다.", "Loading AI earnings data."));
 
   try {
     const response = await fetch(`/data/ai-earnings.json?ts=${Date.now()}`, { cache: "no-store" });
     const data = await response.json().catch(() => null);
     if (!response.ok || !data?.ok) {
-      throw new Error("AI 실적 데이터를 불러오지 못했습니다.");
+      throw new Error(t("AI 실적 데이터를 불러오지 못했습니다.", "Could not load AI earnings data."));
     }
     earningsData = data;
     render(data);
-    setEarningsStatus(`업데이트 완료: ${data.generatedAt} · ${data.source}`, "ok");
+    setEarningsStatus(t(`업데이트 완료: ${data.generatedAt} · ${data.source}`, `Updated: ${data.generatedAt} · ${data.source}`), "ok");
   } catch (error) {
-    setEarningsStatus(error.message || "AI 실적 데이터를 불러오지 못했습니다.", "error");
+    setEarningsStatus(error.message || t("AI 실적 데이터를 불러오지 못했습니다.", "Could not load AI earnings data."), "error");
   } finally {
     if (earningsEls.refresh) earningsEls.refresh.disabled = false;
   }
