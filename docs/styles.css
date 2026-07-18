@@ -720,6 +720,10 @@ h3 {
   margin-top: 12px;
 }
 
+.memory-summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .earnings-compare-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -1200,6 +1204,57 @@ h3 {
   background: var(--amber);
 }
 
+.memory-timeline-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.memory-timeline-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.7fr) minmax(0, 2.3fr);
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line-soft);
+  background: color-mix(in srgb, var(--panel-2) 78%, transparent);
+  padding: 10px;
+}
+
+.memory-timeline-row strong {
+  color: var(--title);
+  font-size: 12px;
+}
+
+.memory-quarter-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.memory-quarter-strip span {
+  border: 1px solid var(--line-dash);
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  padding: 8px;
+}
+
+.memory-quarter-strip b,
+.memory-quarter-strip em {
+  display: block;
+  font-style: normal;
+}
+
+.memory-quarter-strip b {
+  color: var(--faint);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.memory-quarter-strip em {
+  margin-top: 5px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .legend-adr,
 .legend-current,
 .legend-regression {
@@ -1518,6 +1573,7 @@ footer p {
   .liquidity-summary,
   .liquidity-card-grid,
   .earnings-insight-grid,
+  .memory-summary-grid,
   .earnings-compare-layout,
   .earnings-card-grid,
   .note-grid,
@@ -1541,5 +1597,10 @@ footer p {
 
   .service-tabs {
     width: 100%;
+  }
+
+  .memory-timeline-row,
+  .memory-quarter-strip {
+    grid-template-columns: 1fr;
   }
 }

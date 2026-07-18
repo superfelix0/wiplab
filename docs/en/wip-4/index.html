@@ -11,10 +11,10 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="Compare operating-profit growth, revenue growth, and operating margins for major memory semiconductor companies over at least four quarters.">
+  <meta name="description" content="Compare quarterly operating-margin changes, revenue growth, and operating margins for major memory semiconductor companies.">
   <meta name="theme-color" content="#f5f1e8">
   <meta property="og:title" content="F4 - Memory Operating Profit Monitor">
-  <meta property="og:description" content="Compares operating-profit trends for TSMC, Kioxia, SanDisk, Micron, Samsung Electronics, and SK Hynix.">
+  <meta property="og:description" content="Compares quarterly performance trends for TSMC, SanDisk, Micron, Samsung Electronics, and SK Hynix.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/en/wip-4/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
@@ -22,26 +22,106 @@
   <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/wip-4/">
   <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/wip-4/">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../../styles.css?v=memory-op-20260718">
+  <link rel="stylesheet" href="../../styles.css?v=memory-op-tabs-20260718">
   <title>F4 - Memory Operating Profit Monitor</title>
 </head>
 <body>
-  <header class="site-header"><a class="brand" href="../"><span>WIP</span><strong>WIP Labs</strong></a><nav class="service-tabs" aria-label="Main menu"><a href="../">HOME</a><a href="../wip-1/">F1</a><a href="../wip-2/">F2</a><a href="../wip-3/">F3</a><a href="../wip-4/" aria-current="page">F4</a><a href="../wip-5/">F5</a><a href="../wip-6/">F6</a><a class="lang-switch" href="../../wip-4/">KO</a><a class="lang-switch" href="./" aria-current="true">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav></header>
-  <div class="ticker-strip" aria-label="Market ticker"><span>KOSPI <b id="tickerKospi">-</b></span><span>NASDAQ <b id="tickerNasdaq">-</b></span><span>S&amp;P500 <b id="tickerSp500">-</b></span><span>USD/KRW <b id="tickerUsdKrw">-</b></span></div>
+  <header class="site-header">
+    <a class="brand" href="../"><span>WIP</span><strong>WIP Labs</strong></a>
+    <nav class="service-tabs" aria-label="Main menu">
+      <a href="../">HOME</a>
+      <a href="../wip-1/">F1</a>
+      <a href="../wip-2/">F2</a>
+      <a href="../wip-3/">F3</a>
+      <a href="../wip-4/" aria-current="page">F4</a>
+      <a href="../wip-5/">F5</a>
+      <a href="../wip-6/">F6</a>
+      <a class="lang-switch" href="../../wip-4/">KO</a>
+      <a class="lang-switch" href="./" aria-current="true">EN</a>
+      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a>
+    </nav>
+  </header>
+  <div class="ticker-strip" aria-label="Market ticker">
+    <span>KOSPI <b id="tickerKospi">--</b></span>
+    <span>NASDAQ <b id="tickerNasdaq">--</b></span>
+    <span>S&amp;P500 <b id="tickerSp500">--</b></span>
+    <span>USD/KRW <b id="tickerUsdKrw">--</b></span>
+  </div>
   <main>
-    <section class="hero service-hero"><p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./memory-op <span class="flag">--trend</span></p><h1>Memory Operating Profit Monitor</h1><p class="hero-copy">First read the operating-profit growth trend, then compare revenue, growth, operating profit, and margins in a table.</p></section>
-    <section class="reading-note"><h2>What to read</h2><ul><li>Memory cycles often show up sharply in operating-profit growth.</li><li>The chart compares at least four recent quarters of QoQ operating-profit growth by company.</li><li>The table adds revenue, revenue growth, operating profit, operating margin, and QoQ operating-profit growth.</li></ul></section>
+    <section class="hero service-hero">
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./memory-op <span class="flag">--trend</span></p>
+      <h1>Memory Operating Profit Monitor</h1>
+      <p class="hero-copy">Compare quarterly operating-margin changes and earnings flow for major memory semiconductor companies.</p>
+    </section>
+
+    <section class="reading-note">
+      <h2>What to read</h2>
+      <ul>
+        <li>Operating-margin change shows how much each company’s margin improved or deteriorated versus the prior quarter.</li>
+        <li>A separate tab lists four quarters of operating-profit growth, including the latest reported quarter.</li>
+        <li>Kioxia is excluded from this page because comparable public quarterly data coverage is limited.</li>
+      </ul>
+    </section>
+
     <section class="earnings-dashboard">
-      <div class="section-title"><div><h2>Memory operating-profit flow</h2><p class="section-copy">Shows companies with available public quarterly data among TSMC, Kioxia, SanDisk, Micron, Samsung Electronics, and SK Hynix.</p></div></div>
+      <div class="section-title">
+        <div>
+          <h2>Memory profitability flow</h2>
+          <p class="section-copy">Compares public quarterly data for TSMC, SanDisk, Micron, Samsung Electronics, and SK Hynix.</p>
+        </div>
+      </div>
       <div class="status" id="memoryStatus">Loading memory earnings data.</div>
-      <div class="earnings-insight-grid" id="memorySummary"></div>
-      <div class="chart-panel"><div class="chart-head"><div><h3>Operating-profit growth trend</h3><p class="chart-note">Quarter-over-quarter. Loss-to-profit or profit-to-loss transitions can produce large percentages.</p></div><div class="chart-legend" id="memoryLegend"></div></div><div class="chart-wrap"><svg id="memoryOpChart" viewBox="0 0 900 360" role="img" aria-label="Memory semiconductor operating-profit growth trend"></svg></div></div>
-      <div class="chart-panel"><div class="chart-head"><div><h3>Revenue and operating-profit comparison</h3><p class="chart-note">Latest quarter. Revenue growth and operating-profit growth are quarter-over-quarter.</p></div></div><div class="earnings-table-wrap"><table class="earnings-table" id="memoryTable"></table></div></div>
-      <div class="source-panel"><h2>Data source</h2><p>Quarterly income-statement items use Yahoo Finance public fundamentals time-series. Coverage and accounting basis can vary by company.</p><ul id="memorySources"></ul></div>
+      <div class="earnings-insight-grid memory-summary-grid" id="memorySummary"></div>
+
+      <div class="earnings-chart-tabs" role="tablist" aria-label="Memory metric view">
+        <button class="is-active" type="button" data-memory-tab="margin-bars" aria-selected="true">Operating-margin change</button>
+        <button type="button" data-memory-tab="op-growth-timeline" aria-selected="false">Operating-profit growth, 4Q</button>
+      </div>
+
+      <div class="chart-panel" data-memory-panel="margin-bars">
+        <div class="chart-head">
+          <div>
+            <h3>Operating-margin change bars</h3>
+            <p class="chart-note">Compares the quarter-over-quarter change in operating margin by company, shown in percentage points.</p>
+          </div>
+          <div class="chart-legend" id="memoryLegend"></div>
+        </div>
+        <div class="chart-wrap">
+          <svg id="memoryOpChart" viewBox="0 0 900 360" role="img" aria-label="Memory semiconductor operating-margin change bar chart"></svg>
+        </div>
+      </div>
+
+      <div class="chart-panel" data-memory-panel="op-growth-timeline" hidden>
+        <div class="chart-head">
+          <div>
+            <h3>Operating-profit growth, four quarters</h3>
+            <p class="chart-note">Quarter-over-quarter operating-profit growth for the latest four reported quarters. Loss-to-profit or profit-to-loss transitions can create large percentages.</p>
+          </div>
+        </div>
+        <div id="memoryTimeline" class="memory-timeline-grid"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="chart-head">
+          <div>
+            <h3>Revenue and operating-profit comparison</h3>
+            <p class="chart-note">Latest reported quarter. The table keeps the comparison compact with revenue, revenue growth, operating profit, and operating margin.</p>
+          </div>
+        </div>
+        <div class="earnings-table-wrap">
+          <table class="earnings-table" id="memoryTable"></table>
+        </div>
+      </div>
+
+      <div class="source-panel">
+        <h2>Data source</h2>
+        <p>Quarterly income-statement items use Yahoo Finance public fundamentals time-series. Coverage and accounting basis can vary by company.</p>
+        <ul id="memorySources"></ul>
+      </div>
     </section>
   </main>
-  <footer><div><strong>F4</strong><p>Memory operating-profit trend experiment.</p></div><span>© 2026</span></footer>
+  <footer><div><strong>F4</strong><p>Memory semiconductor profitability trend experiment.</p></div><span>© 2026</span></footer>
   <script src="../../ticker.js?v=i18n-20260718"></script>
-  <script src="../../memory-earnings.js?v=memory-op-20260718"></script>
+  <script src="../../memory-earnings.js?v=memory-op-tabs-20260718"></script>
 </body>
 </html>

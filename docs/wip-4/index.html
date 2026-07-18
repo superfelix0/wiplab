@@ -11,10 +11,10 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="주요 메모리 반도체 업체의 최근 4개 분기 이상 영업이익 증가율, 매출 성장률, 영업이익률을 비교합니다.">
+  <meta name="description" content="주요 메모리 반도체 업체의 최근 분기 영업이익률 변화, 매출 성장률, 영업이익률을 비교합니다.">
   <meta name="theme-color" content="#f5f1e8">
-  <meta property="og:title" content="F4 — Memory Operating Profit Monitor">
-  <meta property="og:description" content="TSMC, Kioxia, SanDisk, Micron, Samsung Electronics, SK Hynix의 영업이익 흐름을 비교합니다.">
+  <meta property="og:title" content="F4 - Memory Operating Profit Monitor">
+  <meta property="og:description" content="TSMC, SanDisk, Micron, Samsung Electronics, SK Hynix의 분기 실적 흐름을 비교합니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/wip-4/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
@@ -22,29 +22,106 @@
   <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/wip-4/">
   <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/wip-4/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../styles.css?v=memory-op-20260718">
-  <title>F4 — Memory Operating Profit Monitor</title>
+  <link rel="stylesheet" href="../styles.css?v=memory-op-tabs-20260718">
+  <title>F4 - Memory Operating Profit Monitor</title>
 </head>
 <body>
-  <header class="site-header"><a class="brand" href="../"><span>WIP</span><strong>WIP Labs</strong></a><nav class="service-tabs" aria-label="Main menu"><a href="../">HOME</a><a href="../wip-1/">F1</a><a href="../wip-2/">F2</a><a href="../wip-3/">F3</a><a href="../wip-4/" aria-current="page">F4</a><a href="../wip-5/">F5</a><a href="../wip-6/">F6</a><a class="lang-switch" href="../wip-4/" aria-current="true">KO</a><a class="lang-switch" href="../en/wip-4/">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav></header>
-  <div class="ticker-strip" aria-label="시장 티커"><span>KOSPI <b id="tickerKospi">--</b></span><span>NASDAQ <b id="tickerNasdaq">--</b></span><span>S&amp;P500 <b id="tickerSp500">--</b></span><span>USD/KRW <b id="tickerUsdKrw">--</b></span></div>
+  <header class="site-header">
+    <a class="brand" href="../"><span>WIP</span><strong>WIP Labs</strong></a>
+    <nav class="service-tabs" aria-label="Main menu">
+      <a href="../">HOME</a>
+      <a href="../wip-1/">F1</a>
+      <a href="../wip-2/">F2</a>
+      <a href="../wip-3/">F3</a>
+      <a href="../wip-4/" aria-current="page">F4</a>
+      <a href="../wip-5/">F5</a>
+      <a href="../wip-6/">F6</a>
+      <a class="lang-switch" href="../wip-4/" aria-current="true">KO</a>
+      <a class="lang-switch" href="../en/wip-4/">EN</a>
+      <a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a>
+    </nav>
+  </header>
+  <div class="ticker-strip" aria-label="시장 티커">
+    <span>KOSPI <b id="tickerKospi">--</b></span>
+    <span>NASDAQ <b id="tickerNasdaq">--</b></span>
+    <span>S&amp;P500 <b id="tickerSp500">--</b></span>
+    <span>USD/KRW <b id="tickerUsdKrw">--</b></span>
+  </div>
   <main>
-    <section class="hero service-hero"><p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./memory-op <span class="flag">--trend</span></p><h1>Memory Operating Profit Monitor</h1><p class="hero-copy">메모리 반도체 업체들의 영업이익 증가율 추이를 먼저 보고, 매출·영업이익·마진을 표로 비교합니다.</p></section>
-    <section class="reading-note"><h2>무엇을 보나?</h2><ul><li>메모리 사이클은 영업이익 증가율이 먼저 크게 움직이는 경우가 많습니다.</li><li>그래프는 최근 최소 4개 분기의 영업이익 전분기 대비 증가율을 회사별로 비교합니다.</li><li>표에서는 매출액과 성장률, 영업이익과 이익률, 전분기 대비 증가율을 함께 봅니다.</li></ul></section>
+    <section class="hero service-hero">
+      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./memory-op <span class="flag">--trend</span></p>
+      <h1>Memory Operating Profit Monitor</h1>
+      <p class="hero-copy">메모리 반도체 업체들의 분기별 영업이익률 변화와 실적 흐름을 비교합니다.</p>
+    </section>
+
+    <section class="reading-note">
+      <h2>무엇을 보나?</h2>
+      <ul>
+        <li>영업이익률 변화폭은 전분기 대비 마진이 얼마나 개선되거나 악화됐는지를 보여줍니다.</li>
+        <li>별도 탭에서는 최근 결산 분기를 포함한 4개 분기의 영업이익 증가율을 회사별로 나열합니다.</li>
+        <li>키옥시아는 비교 가능한 공개 분기 데이터 범위가 부족해 이 페이지에서는 제외합니다.</li>
+      </ul>
+    </section>
+
     <section class="earnings-dashboard">
-      <div class="section-title"><div><h2>메모리 업체 영업이익 흐름</h2><p class="section-copy">TSMC, Kioxia, SanDisk, Micron, Samsung Electronics, SK Hynix 중 공개 분기 데이터가 있는 회사를 표시합니다.</p></div></div>
-      <div class="status" id="memoryStatus">메모리 실적 데이터를 불러오는 중입니다.</div>
-      <div class="earnings-insight-grid" id="memorySummary"></div>
-      <div class="chart-panel">
-        <div class="chart-head"><div><h3>영업이익 증가율 추이</h3><p class="chart-note">최근 분기별 QoQ 기준입니다. 적자 전환·흑자 전환 구간은 변동률이 크게 보일 수 있습니다.</p></div><div class="chart-legend" id="memoryLegend"></div></div>
-        <div class="chart-wrap"><svg id="memoryOpChart" viewBox="0 0 900 360" role="img" aria-label="메모리 반도체 업체 영업이익 증가율 추이"></svg></div>
+      <div class="section-title">
+        <div>
+          <h2>메모리 업체 수익성 흐름</h2>
+          <p class="section-copy">TSMC, SanDisk, Micron, Samsung Electronics, SK Hynix의 공개 분기 데이터를 기준으로 비교합니다.</p>
+        </div>
       </div>
-      <div class="chart-panel"><div class="chart-head"><div><h3>매출과 영업이익 비교표</h3><p class="chart-note">최근 분기 기준. 매출 성장률과 영업이익 증가율은 전분기 대비입니다.</p></div></div><div class="earnings-table-wrap"><table class="earnings-table" id="memoryTable"></table></div></div>
-      <div class="source-panel"><h2>데이터 출처</h2><p>분기 손익계산서 항목은 Yahoo Finance 공개 fundamentals time-series를 사용합니다. 회사별 공개 항목과 회계 기준이 다를 수 있습니다.</p><ul id="memorySources"></ul></div>
+      <div class="status" id="memoryStatus">메모리 실적 데이터를 불러오는 중입니다.</div>
+      <div class="earnings-insight-grid memory-summary-grid" id="memorySummary"></div>
+
+      <div class="earnings-chart-tabs" role="tablist" aria-label="메모리 지표 보기">
+        <button class="is-active" type="button" data-memory-tab="margin-bars" aria-selected="true">영업이익률 변화</button>
+        <button type="button" data-memory-tab="op-growth-timeline" aria-selected="false">영업이익 증가율 4분기</button>
+      </div>
+
+      <div class="chart-panel" data-memory-panel="margin-bars">
+        <div class="chart-head">
+          <div>
+            <h3>영업이익률 변화 막대그래프</h3>
+            <p class="chart-note">각 회사의 분기별 영업이익률이 전분기보다 얼마나 변했는지 %p 단위로 비교합니다.</p>
+          </div>
+          <div class="chart-legend" id="memoryLegend"></div>
+        </div>
+        <div class="chart-wrap">
+          <svg id="memoryOpChart" viewBox="0 0 900 360" role="img" aria-label="메모리 반도체 업체 영업이익률 변화 막대그래프"></svg>
+        </div>
+      </div>
+
+      <div class="chart-panel" data-memory-panel="op-growth-timeline" hidden>
+        <div class="chart-head">
+          <div>
+            <h3>영업이익 증가율 4분기</h3>
+            <p class="chart-note">최근 결산 분기를 포함한 4개 분기의 전분기 대비 영업이익 증가율입니다. 흑자 전환이나 적자 전환 구간은 변동률이 크게 보일 수 있습니다.</p>
+          </div>
+        </div>
+        <div id="memoryTimeline" class="memory-timeline-grid"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="chart-head">
+          <div>
+            <h3>매출과 영업이익 비교표</h3>
+            <p class="chart-note">최근 결산 분기 기준입니다. 하단 표는 매출액, 매출 성장률, 영업이익, 영업이익률만 간단히 비교합니다.</p>
+          </div>
+        </div>
+        <div class="earnings-table-wrap">
+          <table class="earnings-table" id="memoryTable"></table>
+        </div>
+      </div>
+
+      <div class="source-panel">
+        <h2>데이터 출처</h2>
+        <p>분기 손익계산서 항목은 Yahoo Finance 공개 fundamentals time-series를 사용합니다. 회사별 공개 범위와 회계 기준은 다를 수 있습니다.</p>
+        <ul id="memorySources"></ul>
+      </div>
     </section>
   </main>
-  <footer><div><strong>F4</strong><p>메모리 반도체 영업이익 추이 실험.</p></div><span>© 2026</span></footer>
+  <footer><div><strong>F4</strong><p>메모리 반도체 수익성 추이 실험.</p></div><span>© 2026</span></footer>
   <script src="../ticker.js?v=i18n-20260718"></script>
-  <script src="../memory-earnings.js?v=memory-op-20260718"></script>
+  <script src="../memory-earnings.js?v=memory-op-tabs-20260718"></script>
 </body>
 </html>
