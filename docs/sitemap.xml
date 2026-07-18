@@ -180,4 +180,28 @@
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://wiplabs.pages.dev/en/about/</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://wiplabs.pages.dev/en/privacy/</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://wiplabs.pages.dev/en/disclaimer/</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://wiplabs.pages.dev/en/contact/</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>
