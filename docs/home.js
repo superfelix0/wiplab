@@ -250,14 +250,25 @@ function updateLiquidityComment(data) {
   setComment("f4", "M2, 지급준비금, RRP, TGA 흐름을 종합해 미국 유동성 방향을 봅니다.");
 }
 
+function updateAdrComment(data) {
+  const premium = Number(data?.result?.premium);
+  if (!Number.isFinite(premium)) {
+    setComment("f5", "괴리율 확인 중");
+    return;
+  }
+
+  setComment("f5", `괴리율 ${pctText(premium)}`);
+}
+
 async function loadHomeRead() {
   try {
-    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult] = await Promise.allSettled([
+    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult, adrResult] = await Promise.allSettled([
       readJson("data/market-per.json"),
       readJson("data/kospi-sentiment-meta.json"),
       readText("data/kospi-sentiment.csv"),
       readJson("data/us-liquidity.json"),
       readJson("data/ai-earnings.json"),
+      readJson("/api/quotes"),
     ]);
 
     const per = perResult.status === "fulfilled" ? perResult.value : null;
@@ -265,13 +276,15 @@ async function loadHomeRead() {
     const sentimentRows = sentimentRowsResult.status === "fulfilled" ? parseSentimentCsv(sentimentRowsResult.value) : [];
     const liquidity = liquidityResult.status === "fulfilled" ? liquidityResult.value : null;
     const earnings = earningsResult.status === "fulfilled" ? earningsResult.value : null;
+    const adr = adrResult.status === "fulfilled" ? adrResult.value : null;
 
     updatePerComment(per);
     updateSentimentComment(sentiment, sentimentRows);
     updateEarningsComment(earnings);
     updateLiquidityComment(liquidity);
+    updateAdrComment(adr);
 
-    const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt].filter(Boolean);
+    const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt].filter(Boolean);
     if (homeEls.updatedAt) {
       homeEls.updatedAt.textContent = timestamps.length ? `최근 업데이트 ${timestamps.sort().at(-1)}` : "업데이트 정보 없음";
     }
