@@ -153,6 +153,7 @@ function renderMethodology(data) {
       <div><dt>${bt("채널명", "Channel")}</dt><dd>${escapeBear(video.channel || "TODO")}</dd></div>
       <div><dt>${bt("게시일", "Published date")}</dt><dd>${escapeBear(video.publishedDate || "TODO")}</dd></div>
       <div><dt>URL</dt><dd>${video.url && video.url !== "TODO" ? `<a href="${escapeBear(video.url)}" target="_blank" rel="noopener noreferrer">${escapeBear(video.url)}</a>` : "TODO"}</dd></div>
+      <div><dt>${bt("보조 확인 링크", "Cross-check link")}</dt><dd>${video.podcastUrl ? `<a href="${escapeBear(video.podcastUrl)}" target="_blank" rel="noopener noreferrer">Apple Podcasts</a>` : "TODO"}</dd></div>
     </dl>
     <h3>${bt("확인된 타임스탬프 후보", "Verified timestamp candidates")}</h3>
     <ul>${(framework.timestampCandidates || []).map((item) => `<li>${escapeBear(BEAR_IS_EN ? item.labelEn : item.labelKo)} · ${escapeBear(item.time)}</li>`).join("")}</ul>
