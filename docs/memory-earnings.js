@@ -6,6 +6,7 @@ const memoryEls = {
   table: document.querySelector("#memoryTable"),
   timeline: document.querySelector("#memoryTimeline"),
   sources: document.querySelector("#memorySources"),
+  eventMemo: document.querySelector("#memoryEventMemo"),
   tabs: document.querySelectorAll("[data-memory-tab]"),
   panels: document.querySelectorAll("[data-memory-panel]"),
 };
@@ -219,6 +220,59 @@ function renderMemorySources(data) {
     .join("");
 }
 
+function renderMemoryEventMemo(registry) {
+  if (!memoryEls.eventMemo) return;
+  const events = (registry.events || []).filter((event) => event.active && event.memorySectorImpact?.displayOnF4);
+  if (!events.length) {
+    memoryEls.eventMemo.hidden = true;
+    return;
+  }
+  memoryEls.eventMemo.innerHTML = events.map((event) => {
+    const impact = event.memorySectorImpact || {};
+    const points = MEMORY_IS_EN ? impact.pointsEn : impact.pointsKo;
+    const sources = (event.sources || []).map((source) => `
+      <a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.name)}</a>
+    `).join("");
+    return `
+      <article class="memory-event-card">
+        <div class="memory-event-head">
+          <div>
+            <span class="memory-event-kicker">${mt("업황 이벤트", "Industry event")} · ${escapeHtml(MEMORY_IS_EN ? impact.levelEn : impact.levelKo)}</span>
+            <h2>${escapeHtml(MEMORY_IS_EN ? event.companyEn : event.companyKo)}</h2>
+            <p>${escapeHtml(MEMORY_IS_EN ? impact.headlineEn : impact.headlineKo)}</p>
+          </div>
+          <div class="memory-event-amount">
+            <span>${mt("예상 조달액", "Expected proceeds")}</span>
+            <strong>US$${memoryNumber.format(event.proceedsUsdBillions)}B</strong>
+            <small>${escapeHtml(MEMORY_IS_EN ? event.marketEn : event.marketKo)}</small>
+          </div>
+        </div>
+        <div class="memory-event-body">
+          <ul>${(points || []).map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ul>
+          <div class="memory-event-meta">
+            <span>${mt("판단", "Read")}: <b>${escapeHtml(MEMORY_IS_EN ? event.noteEn : event.noteKo)}</b></span>
+            <span>${mt("확인일", "Checked")}: ${escapeHtml(registry.updatedAt || event.announcedDate || "N/A")}</span>
+            <span class="memory-event-sources">${mt("출처", "Sources")}: ${sources || "TODO"}</span>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+  memoryEls.eventMemo.hidden = false;
+}
+
+async function loadMemoryEvents() {
+  if (!memoryEls.eventMemo) return;
+  try {
+    const response = await fetch(`/data/global-mega-ipo-events.json?ts=${Date.now()}`, { cache: "no-store" });
+    const registry = await response.json().catch(() => null);
+    if (!response.ok || !registry) throw new Error("event data unavailable");
+    renderMemoryEventMemo(registry);
+  } catch (error) {
+    memoryEls.eventMemo.hidden = true;
+  }
+}
+
 function setupMemoryTabs() {
   if (!memoryEls.tabs.length || !memoryEls.panels.length) return;
   memoryEls.tabs.forEach((button) => {
@@ -256,3 +310,4 @@ async function loadMemoryEarnings() {
 
 setupMemoryTabs();
 loadMemoryEarnings();
+loadMemoryEvents();

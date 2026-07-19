@@ -651,6 +651,108 @@ h3 {
   font-weight: 800;
 }
 
+.memory-event-panel {
+  margin-top: 12px;
+}
+
+.memory-event-card {
+  border: 1px solid color-mix(in srgb, var(--amber) 58%, var(--line));
+  border-left: 5px solid var(--amber);
+  background: color-mix(in srgb, var(--amber-dim) 38%, var(--panel));
+  box-shadow: 0 8px 24px rgba(77, 89, 79, 0.08);
+  padding: 18px;
+}
+
+.memory-event-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: start;
+}
+
+.memory-event-kicker {
+  color: var(--red);
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.memory-event-head h2 {
+  color: var(--title);
+  font-size: 16px;
+  margin: 7px 0 0;
+}
+
+.memory-event-head p {
+  color: var(--text);
+  font-weight: 700;
+  margin: 5px 0 0;
+}
+
+.memory-event-amount {
+  min-width: 172px;
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, var(--line));
+  background: var(--panel);
+  padding: 12px;
+}
+
+.memory-event-amount span,
+.memory-event-amount small {
+  color: var(--muted);
+  display: block;
+  font-size: 10px;
+}
+
+.memory-event-amount strong {
+  color: var(--amber);
+  display: block;
+  font-size: 20px;
+  margin: 5px 0;
+}
+
+.memory-event-body {
+  border-top: 1px dashed color-mix(in srgb, var(--amber) 42%, var(--line));
+  margin-top: 15px;
+  padding-top: 13px;
+}
+
+.memory-event-body ul {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.memory-event-body li::before {
+  color: var(--amber);
+  content: "→";
+  font-weight: 800;
+  margin-right: 8px;
+}
+
+.memory-event-meta {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 13px;
+}
+
+.memory-event-meta b {
+  color: var(--text);
+}
+
+.memory-event-sources a {
+  color: var(--green);
+  font-weight: 700;
+  margin-left: 6px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .metric {
   color: var(--muted);
   font-size: 11px;
@@ -1820,5 +1922,13 @@ footer p {
   .memory-timeline-row,
   .memory-quarter-strip {
     grid-template-columns: 1fr;
+  }
+
+  .memory-event-head {
+    grid-template-columns: 1fr;
+  }
+
+  .memory-event-amount {
+    min-width: 0;
   }
 }

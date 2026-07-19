@@ -23,6 +23,23 @@
       "listingDate": "TODO",
       "noteKo": "미국 시장의 직접적인 유동성 흡수보다 메모리 업종의 공급 확대와 경쟁 심화 가능성을 함께 보는 보정 사건입니다.",
       "noteEn": "This is treated less as direct U.S. liquidity absorption and more as a memory-sector capacity and competition risk event.",
+      "memorySectorImpact": {
+        "displayOnF4": true,
+        "levelKo": "공급·경쟁 리스크",
+        "levelEn": "Supply & competition risk",
+        "headlineKo": "대규모 IPO 자금이 DRAM 증설과 기술개발로 이어질 가능성",
+        "headlineEn": "Large IPO proceeds may support DRAM capacity expansion and technology development",
+        "pointsKo": [
+          "미국 증시에서 자금이 직접 빠지는 사건이라기보다 중국 DRAM 업체의 투자 여력이 커지는 사건으로 봅니다.",
+          "중장기적으로 범용 DRAM 공급과 가격 경쟁이 확대되면 삼성전자·SK하이닉스·마이크론의 업황에 부담이 될 수 있습니다.",
+          "당장 분기 실적을 바꾸는 확정 신호는 아니므로 실제 CAPEX 집행, 생산능력과 수율 개선을 후속 확인합니다."
+        ],
+        "pointsEn": [
+          "This is less a direct drain on U.S. market liquidity and more an increase in a Chinese DRAM producer's investment capacity.",
+          "If commodity DRAM supply and price competition expand over time, the cycle could become less favorable for Samsung Electronics, SK Hynix, and Micron.",
+          "It is not yet a confirmed near-term earnings shock; actual CAPEX deployment, capacity, and yield improvement require follow-up."
+        ]
+      },
       "sources": [
         {
           "name": "Reuters via MarketScreener",
