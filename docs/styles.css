@@ -1255,6 +1255,213 @@ h3 {
   font-weight: 800;
 }
 
+.risk-dashboard {
+  display: grid;
+  gap: 18px;
+}
+
+.risk-summary-board,
+.risk-card-grid,
+.risk-detail-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.risk-summary-board {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.risk-card-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.risk-summary-board article,
+.risk-card-grid article,
+.risk-detail,
+.risk-detail-grid article,
+.risk-subgrid > div {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.risk-summary-board article,
+.risk-card-grid article,
+.risk-detail-grid article,
+.risk-subgrid > div {
+  padding: 13px;
+}
+
+.risk-summary-board span,
+.risk-card-head span,
+.risk-detail-grid span,
+.risk-video-meta dt {
+  display: block;
+  color: var(--faint);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.risk-summary-board strong {
+  display: block;
+  margin-top: 12px;
+  color: var(--title);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.risk-total-card strong {
+  color: var(--amber);
+}
+
+#bearStage[data-tone="positive"],
+.risk-card-grid article[data-tone="positive"] .risk-state {
+  color: var(--green);
+}
+
+#bearStage[data-tone="caution"],
+#bearStage[data-tone="warning"],
+.risk-card-grid article[data-tone="caution"] .risk-state,
+.risk-card-grid article[data-tone="warning"] .risk-state {
+  color: var(--amber);
+}
+
+#bearStage[data-tone="negative"],
+.risk-card-grid article[data-tone="negative"] .risk-state {
+  color: var(--red);
+}
+
+.risk-summary-board small,
+.risk-card-grid small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.risk-summary-text {
+  border-left: 3px solid var(--amber);
+  background: var(--panel);
+  margin: 0;
+  padding: 13px 15px;
+  color: var(--title);
+}
+
+.risk-card-grid article {
+  min-height: 190px;
+}
+
+.risk-card-grid article[data-tone="positive"] {
+  border-color: rgba(35, 120, 74, 0.4);
+}
+
+.risk-card-grid article[data-tone="neutral"],
+.risk-card-grid article[data-tone="caution"],
+.risk-card-grid article[data-tone="warning"] {
+  border-color: rgba(169, 112, 21, 0.42);
+}
+
+.risk-card-grid article[data-tone="negative"] {
+  border-color: rgba(182, 74, 52, 0.46);
+}
+
+.risk-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.risk-card-head strong {
+  color: var(--amber);
+  font-size: 12px;
+}
+
+.risk-card-grid h3 {
+  margin-top: 14px;
+  color: var(--title);
+  font-size: 14px;
+}
+
+.risk-state {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+.risk-card-grid p {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.risk-card-grid a {
+  display: inline-flex;
+  margin-top: 8px;
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.risk-history-wrap {
+  margin-top: 12px;
+}
+
+.risk-detail {
+  margin-top: 14px;
+  padding: 16px;
+  scroll-margin-top: 90px;
+}
+
+.risk-detail-score {
+  color: var(--amber);
+  font-size: 12px;
+}
+
+.risk-detail-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.risk-detail-grid p,
+.risk-subgrid li,
+.risk-subgrid p,
+.risk-video-meta dd {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.risk-subgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.risk-subgrid h3,
+.risk-methodology h3 {
+  color: var(--title);
+  font-size: 13px;
+}
+
+.risk-subgrid ul,
+.risk-video-meta,
+.risk-methodology ul {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.risk-video-meta {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.risk-video-meta div,
+.risk-methodology li {
+  border-top: 1px solid var(--line-soft);
+  padding-top: 8px;
+}
+
 .legend-adr,
 .legend-current,
 .legend-regression {
@@ -1277,7 +1484,8 @@ h3 {
 .chart-wrap,
 .market-chart-wrap,
 .liquidity-chart-wrap,
-.sentiment-chart-wrap {
+.sentiment-chart-wrap,
+.risk-chart-wrap {
   position: relative;
   min-height: 260px;
   border: 1px dashed var(--line-dash);
@@ -1289,7 +1497,8 @@ h3 {
 .chart-wrap::before,
 .market-chart-wrap::before,
 .liquidity-chart-wrap::before,
-.sentiment-chart-wrap::before {
+.sentiment-chart-wrap::before,
+.risk-chart-wrap::before {
   content: "▚ DATA VISUAL SLOT ▚";
   position: absolute;
   top: 10px;
@@ -1304,7 +1513,8 @@ h3 {
 .chart-wrap svg,
 .market-chart-wrap svg,
 .liquidity-chart-wrap svg,
-.sentiment-chart-wrap svg {
+.sentiment-chart-wrap svg,
+.risk-chart-wrap svg {
   position: relative;
   z-index: 1;
   display: block;
@@ -1579,6 +1789,14 @@ footer p {
   .note-grid,
   .trust-grid,
   .sentiment-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .risk-summary-board,
+  .risk-card-grid,
+  .risk-detail-grid,
+  .risk-subgrid,
+  .risk-video-meta {
     grid-template-columns: 1fr;
   }
 

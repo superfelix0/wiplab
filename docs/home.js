@@ -7,6 +7,7 @@ const homeEls = {
     f4: document.querySelector("#commentF4"),
     f5: document.querySelector("#commentF5"),
     f6: document.querySelector("#commentF6"),
+    f7: document.querySelector("#commentF7"),
   },
 };
 
@@ -221,15 +222,33 @@ function updateAdrComment(data) {
   setComment("f6", ht(`괴리율 ${pctText(premium)}`, `Spread ${pctText(premium)}`));
 }
 
+function scoreTextHome(value) {
+  return Number.isFinite(value) ? `${homeNumber.format(value)}/10` : "N/A";
+}
+
+function riskStage(score, scale = []) {
+  return scale.find((item) => score >= item.min && score <= item.max) || null;
+}
+
+function updateBearRiskComment(data) {
+  const score = Number(data?.summary?.totalScore);
+  if (!Number.isFinite(score)) return setComment("f7", ht("약세장 위험 점수를 확인합니다.", "Checks bear-market transition risk."));
+  const stage = riskStage(score, data?.scoreScale);
+  const label = stage ? (IS_EN ? stage.labelEn : stage.labelKo) : ht("확인 필요", "Needs data");
+  const sample = data?.sample ? ht("샘플", "sample") : ht("실데이터", "live data");
+  setComment("f7", ht(`현재 ${scoreTextHome(score)}, ${label} 단계입니다. (${sample})`, `Current score ${scoreTextHome(score)}, ${label} stage. (${sample})`));
+}
+
 async function loadHomeRead() {
   try {
-    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult, adrResult] = await Promise.allSettled([
+    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult, adrResult, bearRiskResult] = await Promise.allSettled([
       readJson("/data/market-per.json"),
       readJson("/data/kospi-sentiment-meta.json"),
       readText("/data/kospi-sentiment.csv"),
       readJson("/data/us-liquidity.json"),
       readJson("/data/ai-earnings.json"),
       readJson("/api/quotes"),
+      readJson("/data/bear-market-risk.json"),
     ]);
     const per = perResult.status === "fulfilled" ? perResult.value : null;
     const sentiment = sentimentResult.status === "fulfilled" ? sentimentResult.value : null;
@@ -237,6 +256,7 @@ async function loadHomeRead() {
     const liquidity = liquidityResult.status === "fulfilled" ? liquidityResult.value : null;
     const earnings = earningsResult.status === "fulfilled" ? earningsResult.value : null;
     const adr = adrResult.status === "fulfilled" ? adrResult.value : null;
+    const bearRisk = bearRiskResult.status === "fulfilled" ? bearRiskResult.value : null;
 
     updatePerComment(per);
     updateSentimentComment(sentiment, sentimentRows);
@@ -244,8 +264,9 @@ async function loadHomeRead() {
     updateMemoryComment(earnings);
     updateLiquidityComment(liquidity);
     updateAdrComment(adr);
+    updateBearRiskComment(bearRisk);
 
-    const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt].filter(Boolean);
+    const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt, bearRisk?.generatedAt].filter(Boolean);
     if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${timestamps.sort().at(-1)}` : ht("업데이트 정보 없음", "No update information");
   } catch {
     setComment("f1", ht("요약 데이터를 불러오지 못했습니다. 각 페이지에서 개별 지표를 확인해 주세요.", "Could not load the summary. Please open each module page."));
