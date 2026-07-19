@@ -1,7 +1,7 @@
 {
   "ok": true,
   "sample": false,
-  "generatedAt": "2026-07-19T14:02:45+09:00",
+  "generatedAt": "2026-07-19T14:03:15+09:00",
   "lastUpdated": "2026-07-19",
   "operatorNote": {
     "ko": "기존 사이트 수집 데이터와 공개 데이터 대용치를 이용해 자동 산출합니다.",
@@ -265,9 +265,9 @@
         "corporateIpos": 36.0,
         "spacShare": 0.6262626262626263,
         "priorFourQuarterAverageIpos": 94.0,
-        "priorFourQuarterAverageProceedsUsdMillions": 17568.85,
+        "priorFourQuarterAverageProceedsUsdMillions": 17568.850000000002,
         "countRatio": 1.053191489361702,
-        "proceedsRatio": 1.254561340099096,
+        "proceedsRatio": 1.2545613400990958,
         "medianProceedsRatio": 1.926318324103058
       }
     },
