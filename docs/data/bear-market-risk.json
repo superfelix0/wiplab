@@ -1,18 +1,18 @@
 {
   "ok": true,
   "sample": false,
-  "generatedAt": "2026-07-19T13:16:43+09:00",
+  "generatedAt": "2026-07-19T14:02:45+09:00",
   "lastUpdated": "2026-07-19",
   "operatorNote": {
     "ko": "기존 사이트 수집 데이터와 공개 데이터 대용치를 이용해 자동 산출합니다.",
     "en": "Automatically calculated from existing site datasets and public-data proxies."
   },
   "summary": {
-    "totalScore": 2.5,
-    "previousScore": 2.5,
+    "totalScore": 4.5,
+    "previousScore": 4.0,
     "interpretation": {
-      "ko": "실제 연결 데이터 기준 현재 총점은 2.5/10, 관찰 단계입니다. IPO 항목은 아직 데이터 대기 상태라 실제 원천 확정 후 재산출이 필요합니다.",
-      "en": "Using connected data, the current score is 2.5/10, Watch stage. The IPO item is still data-pending and should be recalculated after a live source is chosen."
+      "ko": "실제 연결 데이터 기준 현재 총점은 4.5/10, 주의 단계입니다. IPO 항목은 SEC 분기 IPO 통계를 이용해 산출합니다.",
+      "en": "Using connected data, the current score is 4.5/10, Caution stage. The IPO item is calculated from SEC quarterly IPO statistics."
     }
   },
   "scoreScale": [
@@ -224,32 +224,52 @@
     },
     {
       "id": "ipo-liquidity",
-      "score": 0.0,
-      "statusKo": "데이터 대기",
-      "statusEn": "Data pending",
+      "score": 1.8,
+      "statusKo": "위험",
+      "statusEn": "Risk",
       "titleKo": "IPO 질적 악화 및 유동성 흡수",
       "titleEn": "IPO quality deterioration & liquidity absorption",
       "anchor": "#ipo-liquidity",
-      "observationKo": "아직 실제 IPO 원천이 연결되지 않아 점수 산출에서 제외합니다.",
-      "observationEn": "Live IPO source is not connected yet, so this item is excluded from risk scoring for now.",
+      "observationKo": "SEC 2026:Q1 기준 IPO 99건, 조달액 22,041.2백만 달러, SPAC 비중 62.6%입니다.",
+      "observationEn": "SEC 2026:Q1: 99 IPOs, US$22,041.2 million proceeds, and 62.6% SPAC share.",
       "recentChangeKo": "자동 산출",
       "recentChangeEn": "Auto-calculated",
-      "judgmentKo": "대형 IPO 조달 규모, 상장 후 수익률, 적자 기업 비중을 연결해야 합니다.",
-      "judgmentEn": "Needs deal size, aftermarket returns, and loss-making issuer share.",
-      "dataKo": "데이터 대기: NYSE/Nasdaq, KRX, IPO 캘린더 또는 수동 CSV 중 하나를 확정해야 합니다.",
-      "dataEn": "Data pending: choose NYSE/Nasdaq, KRX, IPO calendar, or a maintained CSV source.",
-      "criteriaKo": "실제 원천 연결 전까지 점수는 0점으로 두고 상태를 데이터 대기로 표시합니다.",
-      "criteriaEn": "Until a real source is connected, score stays at 0 and status is marked data pending.",
-      "interpretationKo": "아직 실제 IPO 원천이 연결되지 않아 점수 산출에서 제외합니다.",
-      "interpretationEn": "Live IPO source is not connected yet, so this item is excluded from risk scoring for now.",
-      "sources": [],
+      "judgmentKo": "IPO 시장이 과열되어 시중 유동성을 흡수하거나, SPAC·백지수표 회사 비중이 높아져 상장 품질이 낮아지는지 봅니다.",
+      "judgmentEn": "Checks whether IPO activity absorbs liquidity or whether a high SPAC/blank-check share points to weaker listing quality.",
+      "dataKo": "최근 분기와 직전 4개 분기 평균 비교: 건수 +5.3%, 조달액 +25.5%, 중간 조달액 +92.6%. 일반 기업 IPO 36건, SPAC 62건.",
+      "dataEn": "Latest quarter versus prior four-quarter average: count +5.3%, proceeds +25.5%, median proceeds +92.6%. Corporate IPOs 36, SPACs 62.",
+      "criteriaKo": "조달액·건수가 직전 4개 분기 평균보다 빠르게 늘고 SPAC 비중이 35~50%를 넘으면 위험 점수가 올라갑니다. 상장 후 수익률과 적자 기업 비중은 아직 무료 자동 원천을 확정하지 않아 보조 판단에서 제외합니다.",
+      "criteriaEn": "Score rises when proceeds/counts run above the prior four-quarter average and SPAC share exceeds 35-50%. Aftermarket returns and loss-making issuer share are not yet included because a free automated source has not been confirmed.",
+      "interpretationKo": "SEC 2026:Q1 기준 IPO 99건, 조달액 22,041.2백만 달러, SPAC 비중 62.6%입니다.",
+      "interpretationEn": "SEC 2026:Q1: 99 IPOs, US$22,041.2 million proceeds, and 62.6% SPAC share.",
+      "sources": [
+        {
+          "name": "SEC IPO Statistics",
+          "type": "official public statistics",
+          "url": "https://www.sec.gov/data-research/statistics-data-visualizations/initial-public-offerings-ipos",
+          "checkedAt": "2026-07-19",
+          "note": "Quarterly IPO counts/proceeds and issuer-type breakdown; downloadable workbook through 2026:Q1."
+        }
+      ],
       "historyKo": [
         "2026-07-19 자동 산출"
       ],
       "historyEn": [
         "2026-07-19 auto-calculated"
       ],
-      "dataPending": true
+      "computedData": {
+        "latestPeriod": "2026:Q1",
+        "totalIpos": 99.0,
+        "totalProceedsUsdMillions": 22041.2,
+        "spacIpos": 62.0,
+        "corporateIpos": 36.0,
+        "spacShare": 0.6262626262626263,
+        "priorFourQuarterAverageIpos": 94.0,
+        "priorFourQuarterAverageProceedsUsdMillions": 17568.85,
+        "countRatio": 1.053191489361702,
+        "proceedsRatio": 1.254561340099096,
+        "medianProceedsRatio": 1.926318324103058
+      }
     },
     {
       "id": "eps-revision",
@@ -390,7 +410,7 @@
     },
     {
       "date": "2026-07-19",
-      "totalScore": 2.5,
+      "totalScore": 4.5,
       "changesKo": [
         "자동 산출 데이터 갱신"
       ],
@@ -400,13 +420,13 @@
     }
   ],
   "sourceRegistry": {
-    "noteKo": "F7은 기존 WIP Labs 데이터 파일을 재활용해 자동 산출합니다. IPO 항목은 실제 원천 확정 전까지 데이터 대기로 유지합니다.",
-    "noteEn": "F7 reuses existing WIP Labs data files for automatic scoring. IPO remains data-pending until a live source is selected.",
+    "noteKo": "F7은 기존 WIP Labs 데이터 파일과 무료 공개 원천을 조합해 자동 산출합니다. IPO 항목은 SEC 분기 IPO 통계를 우선 사용합니다.",
+    "noteEn": "F7 combines existing WIP Labs datasets with free public sources. The IPO item uses SEC quarterly IPO statistics first.",
     "examples": [
       "KRX/pykrx",
       "FRED",
       "Yahoo Finance fundamentals",
-      "Maintained IPO CSV"
+      "SEC IPO Statistics"
     ]
   },
   "disclaimer": {

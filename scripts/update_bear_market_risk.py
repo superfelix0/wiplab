@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import csv
+import io
 import json
 import math
+import urllib.request
+import zipfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
 
 KST = timezone(timedelta(hours=9))
@@ -15,6 +19,8 @@ LIQUIDITY_JSON = Path("docs/data/us-liquidity.json")
 EARNINGS_JSON = Path("docs/data/ai-earnings.json")
 MARKET_PER_JSON = Path("docs/data/market-per.json")
 FORWARD_PER_REFERENCE = 6.35
+SEC_IPO_XLSX_URL = "https://www.sec.gov/files/sec-stats-ipos-20260630.xlsx"
+SEC_IPO_PAGE_URL = "https://www.sec.gov/data-research/statistics-data-visualizations/initial-public-offerings-ipos"
 
 SOURCE_FRAMEWORK = {
     "nameKo": "신영증권 김효진 박사 약세장 전환 신호 프레임워크",
@@ -323,26 +329,182 @@ def build_end_demand(earnings: dict) -> dict:
     )
 
 
-def build_ipo() -> dict:
-    item = indicator(
-        "ipo-liquidity",
-        0.0,
-        "IPO 질적 악화 및 유동성 흡수",
-        "IPO quality deterioration & liquidity absorption",
-        "아직 실제 IPO 원천이 연결되지 않아 점수 산출에서 제외합니다.",
-        "Live IPO source is not connected yet, so this item is excluded from risk scoring for now.",
-        "대형 IPO 조달 규모, 상장 후 수익률, 적자 기업 비중을 연결해야 합니다.",
-        "Needs deal size, aftermarket returns, and loss-making issuer share.",
-        "데이터 대기: NYSE/Nasdaq, KRX, IPO 캘린더 또는 수동 CSV 중 하나를 확정해야 합니다.",
-        "Data pending: choose NYSE/Nasdaq, KRX, IPO calendar, or a maintained CSV source.",
-        "실제 원천 연결 전까지 점수는 0점으로 두고 상태를 데이터 대기로 표시합니다.",
-        "Until a real source is connected, score stays at 0 and status is marked data pending.",
-        [],
+def excel_col_index(cell_ref: str) -> int:
+    col = "".join(ch for ch in cell_ref if ch.isalpha())
+    result = 0
+    for ch in col:
+        result = result * 26 + ord(ch.upper()) - ord("A") + 1
+    return result - 1
+
+
+def fetch_sec_ipo_rows() -> list[dict]:
+    req = urllib.request.Request(
+        SEC_IPO_XLSX_URL,
+        headers={
+            "User-Agent": "wiplabs-research contact@example.com",
+            "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*",
+        },
     )
-    item["statusKo"] = "데이터 대기"
-    item["statusEn"] = "Data pending"
-    item["dataPending"] = True
-    return item
+    with urllib.request.urlopen(req, timeout=30) as response:
+        workbook = response.read()
+
+    zf = zipfile.ZipFile(io.BytesIO(workbook))
+    ns = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+    shared_root = ET.fromstring(zf.read("xl/sharedStrings.xml"))
+    shared = []
+    for item in shared_root.findall("m:si", ns):
+        shared.append("".join((node.text or "") for node in item.findall(".//m:t", ns)))
+
+    def cell_value(cell):
+        value = cell.find("m:v", ns)
+        if value is None:
+            return ""
+        raw = value.text or ""
+        if cell.get("t") == "s":
+            return shared[int(raw)]
+        try:
+            number = float(raw)
+            return int(number) if number.is_integer() else number
+        except ValueError:
+            return raw
+
+    sheet = ET.fromstring(zf.read("xl/worksheets/sheet1.xml"))
+    rows = []
+    for row in sheet.findall(".//m:row", ns):
+        values = []
+        for cell in row.findall("m:c", ns):
+            idx = excel_col_index(cell.get("r", "A1"))
+            while len(values) <= idx:
+                values.append("")
+            values[idx] = cell_value(cell)
+        if any(value != "" for value in values):
+            rows.append(values)
+    if len(rows) < 3:
+        raise RuntimeError("SEC IPO workbook has no usable data rows.")
+    headers = [str(value) for value in rows[0]]
+    return [dict(zip(headers, row)) for row in rows[1:] if row and row[0] != ""]
+
+
+def to_number(value) -> float | None:
+    if isinstance(value, (int, float)):
+        return float(value)
+    if value in ("", "-", None):
+        return None
+    try:
+        return float(str(value).replace(",", ""))
+    except ValueError:
+        return None
+
+
+def average(values: list[float | None]) -> float | None:
+    clean = [value for value in values if finite(value)]
+    if not clean:
+        return None
+    return sum(clean) / len(clean)
+
+
+def period_sort_key(row: dict) -> tuple[int, int]:
+    period = str(row.get("Time Period", ""))
+    if ":Q" in period:
+        year, quarter = period.split(":Q", 1)
+        return int(year), int(quarter)
+    return int(float(period)), 4
+
+
+def build_ipo(previous: dict) -> dict:
+    previous_item = next((item for item in previous.get("indicators", []) if item.get("id") == "ipo-liquidity"), {})
+    try:
+        rows = sorted(fetch_sec_ipo_rows(), key=period_sort_key)
+        quarter_rows = [row for row in rows if ":Q" in str(row.get("Time Period", ""))]
+        latest = quarter_rows[-1]
+        base = quarter_rows[-5:-1]
+        latest_period = str(latest.get("Time Period"))
+        total_ipos = to_number(latest.get("Total number of IPOs"))
+        total_proceeds = to_number(latest.get("IPO total proceeds (US$ Millions)"))
+        spac_ipos = to_number(latest.get("Number of IPOs by blank check/SPAC issuers"))
+        corporate_ipos = to_number(latest.get("Number of IPOs by corporate issuers"))
+        median_proceeds = to_number(latest.get("IPO median proceeds (US$ Millions)"))
+        avg_ipos = average([to_number(row.get("Total number of IPOs")) for row in base])
+        avg_proceeds = average([to_number(row.get("IPO total proceeds (US$ Millions)")) for row in base])
+        avg_median = average([to_number(row.get("IPO median proceeds (US$ Millions)")) for row in base])
+        count_ratio = total_ipos / avg_ipos if finite(total_ipos) and finite(avg_ipos) and avg_ipos else None
+        proceeds_ratio = total_proceeds / avg_proceeds if finite(total_proceeds) and finite(avg_proceeds) and avg_proceeds else None
+        median_ratio = median_proceeds / avg_median if finite(median_proceeds) and finite(avg_median) and avg_median else None
+        spac_share = spac_ipos / total_ipos if finite(spac_ipos) and finite(total_ipos) and total_ipos else None
+        score = 0.0
+        if finite(proceeds_ratio):
+            score += 0.6 if proceeds_ratio >= 1.25 else 0.3 if proceeds_ratio >= 1.05 else 0.0
+        if finite(count_ratio):
+            score += 0.4 if count_ratio >= 1.15 else 0.2 if count_ratio >= 1.0 else 0.0
+        if finite(spac_share):
+            score += 0.6 if spac_share >= 0.5 else 0.3 if spac_share >= 0.35 else 0.0
+        if finite(median_ratio):
+            score += 0.4 if median_ratio >= 1.5 else 0.2 if median_ratio >= 1.2 else 0.0
+        checked_at = now_kst().date().isoformat()
+        item = indicator(
+            "ipo-liquidity",
+            round(clamp(score), 1),
+            "IPO 질적 악화 및 유동성 흡수",
+            "IPO quality deterioration & liquidity absorption",
+            f"SEC {latest_period} 기준 IPO {total_ipos:.0f}건, 조달액 {total_proceeds:,.1f}백만 달러, SPAC 비중 {spac_share * 100:.1f}%입니다.",
+            f"SEC {latest_period}: {total_ipos:.0f} IPOs, US${total_proceeds:,.1f} million proceeds, and {spac_share * 100:.1f}% SPAC share.",
+            "IPO 시장이 과열되어 시중 유동성을 흡수하거나, SPAC·백지수표 회사 비중이 높아져 상장 품질이 낮아지는지 봅니다.",
+            "Checks whether IPO activity absorbs liquidity or whether a high SPAC/blank-check share points to weaker listing quality.",
+            f"최근 분기와 직전 4개 분기 평균 비교: 건수 {pct(count_ratio - 1 if finite(count_ratio) else None)}, 조달액 {pct(proceeds_ratio - 1 if finite(proceeds_ratio) else None)}, 중간 조달액 {pct(median_ratio - 1 if finite(median_ratio) else None)}. 일반 기업 IPO {corporate_ipos:.0f}건, SPAC {spac_ipos:.0f}건.",
+            f"Latest quarter versus prior four-quarter average: count {pct(count_ratio - 1 if finite(count_ratio) else None)}, proceeds {pct(proceeds_ratio - 1 if finite(proceeds_ratio) else None)}, median proceeds {pct(median_ratio - 1 if finite(median_ratio) else None)}. Corporate IPOs {corporate_ipos:.0f}, SPACs {spac_ipos:.0f}.",
+            "조달액·건수가 직전 4개 분기 평균보다 빠르게 늘고 SPAC 비중이 35~50%를 넘으면 위험 점수가 올라갑니다. 상장 후 수익률과 적자 기업 비중은 아직 무료 자동 원천을 확정하지 않아 보조 판단에서 제외합니다.",
+            "Score rises when proceeds/counts run above the prior four-quarter average and SPAC share exceeds 35-50%. Aftermarket returns and loss-making issuer share are not yet included because a free automated source has not been confirmed.",
+            [{
+                "name": "SEC IPO Statistics",
+                "type": "official public statistics",
+                "url": SEC_IPO_PAGE_URL,
+                "checkedAt": checked_at,
+                "note": "Quarterly IPO counts/proceeds and issuer-type breakdown; downloadable workbook through 2026:Q1.",
+            }],
+        )
+        item["computedData"] = {
+            "latestPeriod": latest_period,
+            "totalIpos": total_ipos,
+            "totalProceedsUsdMillions": total_proceeds,
+            "spacIpos": spac_ipos,
+            "corporateIpos": corporate_ipos,
+            "spacShare": spac_share,
+            "priorFourQuarterAverageIpos": avg_ipos,
+            "priorFourQuarterAverageProceedsUsdMillions": avg_proceeds,
+            "countRatio": count_ratio,
+            "proceedsRatio": proceeds_ratio,
+            "medianProceedsRatio": median_ratio,
+        }
+        return item
+    except Exception as exc:
+        cached = previous_item.get("computedData")
+        if cached:
+            item = dict(previous_item)
+            item["recentChangeKo"] = "SEC 실시간 확인 실패, 직전 산출값 유지"
+            item["recentChangeEn"] = "SEC live check failed; kept prior computed value"
+            item["historyKo"] = [f"{now_kst().date().isoformat()} SEC 수집 실패: {exc}"]
+            item["historyEn"] = [f"{now_kst().date().isoformat()} SEC fetch failed: {exc}"]
+            item["stale"] = True
+            return item
+        item = indicator(
+            "ipo-liquidity",
+            0.0,
+            "IPO 질적 악화 및 유동성 흡수",
+            "IPO quality deterioration & liquidity absorption",
+            "SEC IPO 통계 수집에 실패해 이번 산출에서는 0점으로 둡니다.",
+            "SEC IPO statistics could not be fetched, so this item is set to 0 for this run.",
+            "무료 원천은 SEC 분기 IPO 통계를 우선 사용하고, 개별 IPO 캘린더는 추후 보조 데이터로 연결합니다.",
+            "Uses SEC quarterly IPO statistics first; individual IPO calendars may be added later as a secondary source.",
+            "데이터 수집 실패. 다음 자동 실행에서 다시 시도합니다.",
+            "Data fetch failed. The next scheduled run will retry.",
+            "실제 원천 수집 실패 시 점수 왜곡을 막기 위해 0점으로 처리합니다.",
+            "When the live source fails and no cache exists, score is set to 0 to avoid overstating risk.",
+            [],
+        )
+        item["statusKo"] = "데이터 대기"
+        item["statusEn"] = "Data pending"
+        item["dataPending"] = True
+        return item
 
 
 def build_eps(market: dict) -> dict:
@@ -425,6 +587,14 @@ def load_previous_history(previous: dict) -> list[dict]:
     return list(previous.get("history", []))[-11:]
 
 
+def previous_comparison_score(previous: dict, date: str, fallback: float) -> float:
+    for row in reversed(previous.get("history", [])):
+        if row.get("date") != date and finite(row.get("totalScore")):
+            return row["totalScore"]
+    value = previous.get("summary", {}).get("totalScore")
+    return value if finite(value) else fallback
+
+
 def main() -> None:
     previous = read_json(OUT)
     liquidity = read_json(LIQUIDITY_JSON)
@@ -434,15 +604,15 @@ def main() -> None:
         build_breadth_liquidity(liquidity),
         build_leadership(earnings),
         build_end_demand(earnings),
-        build_ipo(),
+        build_ipo(previous),
         build_eps(market),
     ]
-    total = round(sum(item["score"] for item in indicators), 1)
-    previous_score = previous.get("summary", {}).get("totalScore", total)
+    total = round(sum(item["score"] for item in indicators) * 2) / 2
     label_ko, label_en, tone = stage(total)
     date = now_kst().date().isoformat()
-    summary_ko = f"실제 연결 데이터 기준 현재 총점은 {total:.1f}/10, {label_ko} 단계입니다. IPO 항목은 아직 데이터 대기 상태라 실제 원천 확정 후 재산출이 필요합니다."
-    summary_en = f"Using connected data, the current score is {total:.1f}/10, {label_en} stage. The IPO item is still data-pending and should be recalculated after a live source is chosen."
+    previous_score = previous_comparison_score(previous, date, total)
+    summary_ko = f"실제 연결 데이터 기준 현재 총점은 {total:.1f}/10, {label_ko} 단계입니다. IPO 항목은 SEC 분기 IPO 통계를 이용해 산출합니다."
+    summary_en = f"Using connected data, the current score is {total:.1f}/10, {label_en} stage. The IPO item is calculated from SEC quarterly IPO statistics."
     history = load_previous_history(previous)
     if not history or history[-1].get("date") != date:
         history.append({"date": date, "totalScore": total, "changesKo": ["자동 산출 데이터 갱신"], "changesEn": ["Auto-calculated data update"]})
@@ -469,9 +639,9 @@ def main() -> None:
         "indicators": indicators,
         "history": history[-12:],
         "sourceRegistry": {
-            "noteKo": "F7은 기존 WIP Labs 데이터 파일을 재활용해 자동 산출합니다. IPO 항목은 실제 원천 확정 전까지 데이터 대기로 유지합니다.",
-            "noteEn": "F7 reuses existing WIP Labs data files for automatic scoring. IPO remains data-pending until a live source is selected.",
-            "examples": ["KRX/pykrx", "FRED", "Yahoo Finance fundamentals", "Maintained IPO CSV"],
+            "noteKo": "F7은 기존 WIP Labs 데이터 파일과 무료 공개 원천을 조합해 자동 산출합니다. IPO 항목은 SEC 분기 IPO 통계를 우선 사용합니다.",
+            "noteEn": "F7 combines existing WIP Labs datasets with free public sources. The IPO item uses SEC quarterly IPO statistics first.",
+            "examples": ["KRX/pykrx", "FRED", "Yahoo Finance fundamentals", "SEC IPO Statistics"],
         },
         "disclaimer": DISCLAIMER,
     }
