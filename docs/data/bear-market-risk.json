@@ -1,26 +1,56 @@
 {
   "ok": true,
-  "sample": true,
-  "generatedAt": "2026-07-19T00:00:00+09:00",
+  "sample": false,
+  "generatedAt": "2026-07-19T13:09:37+09:00",
   "lastUpdated": "2026-07-19",
   "operatorNote": {
-    "ko": "현재 값은 실데이터 자동 연결 전 UI·운영 모델을 확인하기 위한 샘플입니다.",
-    "en": "Current values are sample data for validating the UI and operating model before live data is connected."
+    "ko": "기존 사이트 수집 데이터와 공개 데이터 대용치를 이용해 자동 산출합니다.",
+    "en": "Automatically calculated from existing site datasets and public-data proxies."
   },
   "summary": {
-    "totalScore": 4.5,
-    "previousScore": 4.0,
+    "totalScore": 2.5,
+    "previousScore": 2.5,
     "interpretation": {
-      "ko": "일부 위험 신호가 관찰 단계에서 주의 단계로 올라왔습니다. 시장 폭과 EPS 전망을 우선 확인하고, IPO·전방 수요 지표는 다음 업데이트에서 재검증합니다.",
-      "en": "Some warning signals have moved from watch to caution. Market breadth and EPS revisions deserve priority checks, while IPO and end-demand signals should be rechecked at the next update."
+      "ko": "실제 연결 데이터 기준 현재 총점은 2.5/10, 관찰 단계입니다. IPO 항목은 아직 데이터 대기 상태라 실제 원천 확정 후 재산출이 필요합니다.",
+      "en": "Using connected data, the current score is 2.5/10, Watch stage. The IPO item is still data-pending and should be recalculated after a live source is chosen."
     }
   },
   "scoreScale": [
-    { "min": 0, "max": 2, "labelKo": "정상", "labelEn": "Normal", "tone": "positive" },
-    { "min": 2.5, "max": 4, "labelKo": "관찰", "labelEn": "Watch", "tone": "neutral" },
-    { "min": 4.5, "max": 6, "labelKo": "주의", "labelEn": "Caution", "tone": "caution" },
-    { "min": 6.5, "max": 8, "labelKo": "경계", "labelEn": "Alert", "tone": "warning" },
-    { "min": 8.5, "max": 10, "labelKo": "위험", "labelEn": "Risk", "tone": "negative" }
+    {
+      "min": 0,
+      "max": 2,
+      "labelKo": "정상",
+      "labelEn": "Normal",
+      "tone": "positive"
+    },
+    {
+      "min": 2.5,
+      "max": 4,
+      "labelKo": "관찰",
+      "labelEn": "Watch",
+      "tone": "neutral"
+    },
+    {
+      "min": 4.5,
+      "max": 6,
+      "labelKo": "주의",
+      "labelEn": "Caution",
+      "tone": "caution"
+    },
+    {
+      "min": 6.5,
+      "max": 8,
+      "labelKo": "경계",
+      "labelEn": "Alert",
+      "tone": "warning"
+    },
+    {
+      "min": 8.5,
+      "max": 10,
+      "labelKo": "위험",
+      "labelEn": "Risk",
+      "tone": "negative"
+    }
   ],
   "sourceFramework": {
     "nameKo": "신영증권 김효진 박사 약세장 전환 신호 프레임워크",
@@ -35,158 +65,348 @@
       "noteEn": "The YouTube URL and preview title were verified from the link preview shown in a Blind post. The program and publication information were cross-checked with the matching Apple Podcasts episode listing."
     },
     "timestampCandidates": [
-      { "labelKo": "주변부 붕괴", "labelEn": "Peripheral weakness", "time": "29:12" },
-      { "labelKo": "주도주 역전/이익 훼손", "labelEn": "Leadership reversal / earnings damage", "time": "21:15" },
-      { "labelKo": "전방 수요 피크아웃", "labelEn": "End-demand peak-out", "time": "22:30" },
-      { "labelKo": "초대형 IPO 질적 악화", "labelEn": "Quality deterioration in mega IPOs", "time": "32:45" },
-      { "labelKo": "초대형 IPO 관련 설명", "labelEn": "Mega IPO related discussion", "time": "36:52" }
+      {
+        "labelKo": "주변부 붕괴",
+        "labelEn": "Peripheral weakness",
+        "time": "29:12"
+      },
+      {
+        "labelKo": "주도주 역전/이익 훼손",
+        "labelEn": "Leadership reversal / earnings damage",
+        "time": "21:15"
+      },
+      {
+        "labelKo": "전방 수요 피크아웃",
+        "labelEn": "End-demand peak-out",
+        "time": "22:30"
+      },
+      {
+        "labelKo": "초대형 IPO 질적 악화",
+        "labelEn": "Quality deterioration in mega IPOs",
+        "time": "32:45"
+      },
+      {
+        "labelKo": "초대형 IPO 관련 설명",
+        "labelEn": "Mega IPO related discussion",
+        "time": "36:52"
+      }
     ]
   },
   "indicators": [
     {
       "id": "breadth-liquidity",
       "score": 1.0,
-      "statusKo": "관찰",
-      "statusEn": "Watch",
+      "statusKo": "주의",
+      "statusEn": "Caution",
       "titleKo": "시장 폭·유동성 다이버전스",
       "titleEn": "Market breadth & liquidity divergence",
       "anchor": "#breadth-liquidity",
-      "observationKo": "지수는 견조하지만 상승 종목 확산은 둔화되는 샘플 상태입니다.",
-      "observationEn": "Sample state: index level is resilient, but participation breadth is narrowing.",
-      "recentChangeKo": "전주 대비 +0.5점",
-      "recentChangeEn": "+0.5 pts WoW",
-      "judgmentKo": "주도주 중심 상승이 이어지되 주변부가 약해지는지 확인합니다.",
-      "judgmentEn": "Watch whether leadership stays strong while the market periphery weakens.",
-      "dataKo": "상승/하락 종목 수, 52주 신고가/신저가, 신용스프레드, 주요 유동성 보조지표.",
-      "dataEn": "Advancers/decliners, 52-week highs/lows, credit spreads, and liquidity proxies.",
-      "criteriaKo": "지수 고점 갱신에도 상승 종목 비중이 하락하거나 신저가가 증가하면 1~2점.",
-      "criteriaEn": "Score 1-2 when the index rises while breadth deteriorates or new lows expand.",
-      "interpretationKo": "샘플 판단: 아직 붕괴는 아니지만 시장 폭 확인이 필요합니다.",
-      "interpretationEn": "Sample read: not a breakdown yet, but breadth needs monitoring.",
-      "sources": [],
-      "historyKo": ["샘플 데이터 생성", "시장 폭 지표 연결 전 임시 판단"],
-      "historyEn": ["Sample data created", "Temporary read before breadth data is connected"]
+      "observationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -5.66조원, z=-1.28. 실질 유동성 보조값 3개월 변화 +8.3B USD.",
+      "observationEn": "Latest weekly retail net buying is -5.66T KRW versus its usual pattern, z=-1.28. 3-month real-liquidity proxy change +8.3B USD.",
+      "recentChangeKo": "자동 산출",
+      "recentChangeEn": "Auto-calculated",
+      "judgmentKo": "개인 수급의 비정상적 위축과 미국 유동성 악화를 함께 봅니다.",
+      "judgmentEn": "Combines unusual retail-flow weakness and U.S. liquidity deterioration.",
+      "dataKo": "개인 순매수 잔차, KOSPI 주간 수익률, FRED 유동성 보조값.",
+      "dataEn": "Retail-flow residuals, KOSPI weekly returns, and FRED liquidity proxy.",
+      "criteriaKo": "개인 수급이 평소 패턴보다 크게 약하거나 유동성 방향이 악화되면 점수를 높입니다.",
+      "criteriaEn": "Score rises when retail flow is unusually weak or liquidity direction deteriorates.",
+      "interpretationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -5.66조원, z=-1.28. 실질 유동성 보조값 3개월 변화 +8.3B USD.",
+      "interpretationEn": "Latest weekly retail net buying is -5.66T KRW versus its usual pattern, z=-1.28. 3-month real-liquidity proxy change +8.3B USD.",
+      "sources": [
+        {
+          "name": "FRED M2SL",
+          "type": "public data",
+          "url": "https://fred.stlouisfed.org/series/M2SL",
+          "checkedAt": "2026-07-18T18:21:49+09:00"
+        },
+        {
+          "name": "FRED WRESBAL",
+          "type": "public data",
+          "url": "https://fred.stlouisfed.org/series/WRESBAL",
+          "checkedAt": "2026-07-18T18:21:49+09:00"
+        },
+        {
+          "name": "FRED RRPONTSYD",
+          "type": "public data",
+          "url": "https://fred.stlouisfed.org/series/RRPONTSYD",
+          "checkedAt": "2026-07-18T18:21:49+09:00"
+        },
+        {
+          "name": "FRED WTREGEN",
+          "type": "public data",
+          "url": "https://fred.stlouisfed.org/series/WTREGEN",
+          "checkedAt": "2026-07-18T18:21:49+09:00"
+        },
+        {
+          "name": "KRX investor flow via pykrx",
+          "type": "public market data",
+          "url": "https://github.com/sharebook-kr/pykrx",
+          "checkedAt": "2026-07-16"
+        }
+      ],
+      "historyKo": [
+        "2026-07-19 자동 산출"
+      ],
+      "historyEn": [
+        "2026-07-19 auto-calculated"
+      ]
     },
     {
       "id": "leadership-quality",
-      "score": 0.5,
-      "statusKo": "정상",
-      "statusEn": "Normal",
+      "score": 1.2,
+      "statusKo": "주의",
+      "statusEn": "Caution",
       "titleKo": "주도주 경쟁력 약화",
       "titleEn": "Leadership quality weakening",
       "anchor": "#leadership-quality",
-      "observationKo": "주도 업종 이익률과 상대강도 훼손은 제한적인 샘플 상태입니다.",
-      "observationEn": "Sample state: margin and relative-strength damage in leaders remains limited.",
-      "recentChangeKo": "전주 대비 변화 없음",
-      "recentChangeEn": "No WoW change",
-      "judgmentKo": "주도주의 가격 상승이 실적 경쟁력으로 뒷받침되는지 봅니다.",
-      "judgmentEn": "Checks whether leading stocks are still backed by earnings competitiveness.",
-      "dataKo": "주도 업종 상대강도, 매출·영업이익 증가율, 이익률, 가이던스 변화.",
-      "dataEn": "Sector relative strength, revenue and operating-profit growth, margins, and guidance revisions.",
-      "criteriaKo": "주도주의 상대강도 둔화와 이익 전망 하향이 함께 나오면 점수를 높입니다.",
-      "criteriaEn": "Raise the score when leadership loses relative strength while earnings expectations fall.",
-      "interpretationKo": "샘플 판단: 현재는 주도주 훼손 신호가 약합니다.",
-      "interpretationEn": "Sample read: leadership damage is still mild.",
-      "sources": [],
-      "historyKo": ["샘플 데이터 생성"],
-      "historyEn": ["Sample data created"]
+      "observationKo": "하이퍼스케일러 평균 CAPEX/OCF +97.1%, CAPEX/순이익 +150.9%, 순이익 QoQ +28.1%.",
+      "observationEn": "Hyperscaler average CAPEX/OCF +97.1%, CAPEX/net income +150.9%, net-income QoQ +28.1%.",
+      "recentChangeKo": "자동 산출",
+      "recentChangeEn": "Auto-calculated",
+      "judgmentKo": "AI 주도주의 투자 부담이 현금흐름과 이익을 과도하게 압박하는지 봅니다.",
+      "judgmentEn": "Checks whether AI leaders' investment burden is pressuring cash flow and earnings.",
+      "dataKo": "Yahoo Finance 분기 현금흐름·손익계산서 기반 CAPEX/OCF, CAPEX/순이익, 순이익 증가율.",
+      "dataEn": "CAPEX/OCF, CAPEX/net income, and net-income growth from Yahoo Finance quarterly fundamentals.",
+      "criteriaKo": "CAPEX가 OCF나 순이익을 크게 초과하거나 이익 증가율이 둔화되면 점수를 높입니다.",
+      "criteriaEn": "Score rises when CAPEX materially exceeds OCF/net income or earnings growth weakens.",
+      "interpretationKo": "하이퍼스케일러 평균 CAPEX/OCF +97.1%, CAPEX/순이익 +150.9%, 순이익 QoQ +28.1%.",
+      "interpretationEn": "Hyperscaler average CAPEX/OCF +97.1%, CAPEX/net income +150.9%, net-income QoQ +28.1%.",
+      "sources": [
+        {
+          "name": "Yahoo Finance fundamentals time-series",
+          "type": "public endpoint",
+          "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT",
+          "checkedAt": "2026-07-18T18:21:48+09:00"
+        }
+      ],
+      "historyKo": [
+        "2026-07-19 자동 산출"
+      ],
+      "historyEn": [
+        "2026-07-19 auto-calculated"
+      ]
     },
     {
       "id": "end-demand",
-      "score": 1.0,
-      "statusKo": "관찰",
-      "statusEn": "Watch",
+      "score": 0.0,
+      "statusKo": "정상",
+      "statusEn": "Normal",
       "titleKo": "전방 수요 피크아웃",
       "titleEn": "End-demand peak-out",
       "anchor": "#end-demand",
-      "observationKo": "일부 수요 지표가 고점 통과 가능성을 보이는 샘플 상태입니다.",
-      "observationEn": "Sample state: some demand proxies may be past peak momentum.",
-      "recentChangeKo": "전주 대비 변화 없음",
-      "recentChangeEn": "No WoW change",
-      "judgmentKo": "가격·출하·재고가 동시에 둔화되는지를 확인합니다.",
-      "judgmentEn": "Checks whether pricing, shipments, and inventory trends weaken together.",
-      "dataKo": "주요 산업 출하, 재고일수, 가격 지표, 기업 수주·가이던스.",
-      "dataEn": "Shipments, days of inventory, pricing indicators, orders, and company guidance.",
-      "criteriaKo": "수요 둔화와 재고 증가가 동반되면 1점, 가격 하락까지 겹치면 2점.",
-      "criteriaEn": "Score 1 when demand slows with inventory build; score 2 when pricing also weakens.",
-      "interpretationKo": "샘플 판단: 피크아웃 가능성은 관찰하되 확정 신호는 아닙니다.",
-      "interpretationEn": "Sample read: peak-out risk should be watched, but it is not confirmed.",
-      "sources": [],
-      "historyKo": ["샘플 데이터 생성"],
-      "historyEn": ["Sample data created"]
+      "observationKo": "메모리 업체 평균 매출 QoQ +57.1%, 영업이익 QoQ +138.3%.",
+      "observationEn": "Memory-company average revenue QoQ +57.1%, operating-profit QoQ +138.3%.",
+      "recentChangeKo": "자동 산출",
+      "recentChangeEn": "Auto-calculated",
+      "judgmentKo": "메모리 업체 매출과 영업이익이 동시에 둔화되는지 봅니다.",
+      "judgmentEn": "Checks whether memory-company revenue and operating profit weaken together.",
+      "dataKo": "TSMC, SanDisk, Micron, Samsung Electronics, SK Hynix의 분기 매출과 영업이익.",
+      "dataEn": "Quarterly revenue and operating profit for TSMC, SanDisk, Micron, Samsung Electronics, and SK Hynix.",
+      "criteriaKo": "평균 매출 증가율이 0% 근처로 내려오거나 음수 기업이 늘면 점수를 높입니다.",
+      "criteriaEn": "Score rises when average revenue growth approaches zero or more companies turn negative.",
+      "interpretationKo": "메모리 업체 평균 매출 QoQ +57.1%, 영업이익 QoQ +138.3%.",
+      "interpretationEn": "Memory-company average revenue QoQ +57.1%, operating-profit QoQ +138.3%.",
+      "sources": [
+        {
+          "name": "Yahoo Finance fundamentals time-series",
+          "type": "public endpoint",
+          "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MU",
+          "checkedAt": "2026-07-18T18:21:48+09:00"
+        }
+      ],
+      "historyKo": [
+        "2026-07-19 자동 산출"
+      ],
+      "historyEn": [
+        "2026-07-19 auto-calculated"
+      ]
     },
     {
       "id": "ipo-liquidity",
-      "score": 0.5,
-      "statusKo": "정상",
-      "statusEn": "Normal",
+      "score": 0.0,
+      "statusKo": "데이터 대기",
+      "statusEn": "Data pending",
       "titleKo": "IPO 질적 악화 및 유동성 흡수",
       "titleEn": "IPO quality deterioration & liquidity absorption",
       "anchor": "#ipo-liquidity",
-      "observationKo": "초대형 IPO가 유동성을 강하게 흡수하는 국면은 아닌 샘플 상태입니다.",
-      "observationEn": "Sample state: mega IPO liquidity absorption does not look severe yet.",
-      "recentChangeKo": "전주 대비 변화 없음",
-      "recentChangeEn": "No WoW change",
-      "judgmentKo": "상장 규모뿐 아니라 상장 후 수익률과 적자 기업 비중을 함께 봅니다.",
-      "judgmentEn": "Looks at deal size, post-listing returns, and the share of loss-making issuers.",
-      "dataKo": "IPO 조달액, 대형 IPO 비중, 상장 후 수익률, 적자 기업 비중.",
-      "dataEn": "IPO proceeds, mega-deal share, post-listing returns, and loss-making issuer share.",
-      "criteriaKo": "대형 IPO 증가와 상장 후 부진, 적자 기업 비중 확대가 겹치면 점수를 높입니다.",
-      "criteriaEn": "Raise the score when mega issuance rises, aftermarket performance weakens, and loss-making issuers increase.",
-      "interpretationKo": "샘플 판단: 아직 유동성 흡수 위험은 낮게 둡니다.",
-      "interpretationEn": "Sample read: liquidity absorption risk remains low for now.",
+      "observationKo": "아직 실제 IPO 원천이 연결되지 않아 점수 산출에서 제외합니다.",
+      "observationEn": "Live IPO source is not connected yet, so this item is excluded from risk scoring for now.",
+      "recentChangeKo": "자동 산출",
+      "recentChangeEn": "Auto-calculated",
+      "judgmentKo": "대형 IPO 조달 규모, 상장 후 수익률, 적자 기업 비중을 연결해야 합니다.",
+      "judgmentEn": "Needs deal size, aftermarket returns, and loss-making issuer share.",
+      "dataKo": "데이터 대기: NYSE/Nasdaq, KRX, IPO 캘린더 또는 수동 CSV 중 하나를 확정해야 합니다.",
+      "dataEn": "Data pending: choose NYSE/Nasdaq, KRX, IPO calendar, or a maintained CSV source.",
+      "criteriaKo": "실제 원천 연결 전까지 점수는 0점으로 두고 상태를 데이터 대기로 표시합니다.",
+      "criteriaEn": "Until a real source is connected, score stays at 0 and status is marked data pending.",
+      "interpretationKo": "아직 실제 IPO 원천이 연결되지 않아 점수 산출에서 제외합니다.",
+      "interpretationEn": "Live IPO source is not connected yet, so this item is excluded from risk scoring for now.",
       "sources": [],
-      "historyKo": ["샘플 데이터 생성"],
-      "historyEn": ["Sample data created"]
+      "historyKo": [
+        "2026-07-19 자동 산출"
+      ],
+      "historyEn": [
+        "2026-07-19 auto-calculated"
+      ],
+      "dataPending": true
     },
     {
       "id": "eps-revision",
-      "score": 1.5,
-      "statusKo": "주의",
-      "statusEn": "Caution",
+      "score": 0.3,
+      "statusKo": "정상",
+      "statusEn": "Normal",
       "titleKo": "EPS 전망 하향 조정",
       "titleEn": "EPS forecast downgrades",
       "anchor": "#eps-revision",
-      "observationKo": "이익 전망 하향이 가장 먼저 점수를 높이는 샘플 상태입니다.",
-      "observationEn": "Sample state: earnings downgrades are the strongest contributor to the score.",
-      "recentChangeKo": "전주 대비 +0.5점",
-      "recentChangeEn": "+0.5 pts WoW",
-      "judgmentKo": "지수 상승이 EPS 상향 없이 밸류에이션 확장만으로 유지되는지 확인합니다.",
-      "judgmentEn": "Checks whether index gains rely on valuation expansion without EPS upgrades.",
-      "dataKo": "12개월 선행 EPS, 이익수정비율, 업종별 EPS 변화, 컨센서스 하향 폭.",
-      "dataEn": "12-month forward EPS, earnings revision ratio, sector EPS changes, and consensus downgrade size.",
-      "criteriaKo": "EPS 하향과 이익수정비율 악화가 2주 이상 이어지면 1~2점.",
-      "criteriaEn": "Score 1-2 when EPS downgrades and revision ratios deteriorate for two or more weeks.",
-      "interpretationKo": "샘플 판단: 현재는 EPS가 전체 위험 점수의 핵심입니다.",
-      "interpretationEn": "Sample read: EPS is the main driver of the current risk score.",
-      "sources": [],
-      "historyKo": ["샘플 데이터 생성", "EPS 하향 조정 항목을 별도 지표로 확장"],
-      "historyEn": ["Sample data created", "EPS downgrade item added as a separate operator-designed indicator"]
+      "observationKo": "현행 PER 18.54배, 역사적 평균 15.64배, Forward PER 참고치 6.35배. 내재 이익 개선 기대 +192.0%.",
+      "observationEn": "Current PER 18.54x, historical average 15.64x, forward PER reference 6.35x. Implied earnings-growth expectation +192.0%.",
+      "recentChangeKo": "자동 산출",
+      "recentChangeEn": "Auto-calculated",
+      "judgmentKo": "현재 PER와 Forward PER 참고치의 차이로 이익 기대가 충분한지 점검합니다.",
+      "judgmentEn": "Uses the gap between current PER and a forward PER reference to check whether earnings expectations look sufficient.",
+      "dataKo": "KRX KOSPI PER, 사용자 제공 역사적 PER CSV, 공개 기사 기반 Forward PER 참고치.",
+      "dataEn": "KRX KOSPI PER, user-provided historical PER CSV, and public-article forward PER reference.",
+      "criteriaKo": "Forward PER가 현행 PER와 평균 PER보다 높거나 내재 이익 개선 기대가 낮으면 점수를 높입니다.",
+      "criteriaEn": "Score rises when forward PER is high relative to current/average PER or implied earnings growth is weak.",
+      "interpretationKo": "현행 PER 18.54배, 역사적 평균 15.64배, Forward PER 참고치 6.35배. 내재 이익 개선 기대 +192.0%.",
+      "interpretationEn": "Current PER 18.54x, historical average 15.64x, forward PER reference 6.35x. Implied earnings-growth expectation +192.0%.",
+      "sources": [
+        {
+          "name": "KRX KOSPI PER data",
+          "type": "public/user-provided market data",
+          "url": "https://data.krx.co.kr/",
+          "checkedAt": "2026-07-18T21:43:53+09:00"
+        }
+      ],
+      "historyKo": [
+        "2026-07-19 자동 산출"
+      ],
+      "historyEn": [
+        "2026-07-19 auto-calculated"
+      ]
     }
   ],
   "history": [
-    { "date": "2026-05-03", "totalScore": 2.0, "changesKo": ["샘플 이력 시작"], "changesEn": ["Sample history begins"] },
-    { "date": "2026-05-10", "totalScore": 2.0, "changesKo": ["변화 없음"], "changesEn": ["No change"] },
-    { "date": "2026-05-17", "totalScore": 2.5, "changesKo": ["전방 수요 관찰 점수 상향"], "changesEn": ["End-demand watch score raised"] },
-    { "date": "2026-05-24", "totalScore": 3.0, "changesKo": ["시장 폭 둔화 반영"], "changesEn": ["Breadth deterioration reflected"] },
-    { "date": "2026-05-31", "totalScore": 3.0, "changesKo": ["변화 없음"], "changesEn": ["No change"] },
-    { "date": "2026-06-07", "totalScore": 3.5, "changesKo": ["EPS 전망 하향 반영"], "changesEn": ["EPS downgrade risk reflected"] },
-    { "date": "2026-06-14", "totalScore": 3.5, "changesKo": ["변화 없음"], "changesEn": ["No change"] },
-    { "date": "2026-06-21", "totalScore": 4.0, "changesKo": ["시장 폭·유동성 다이버전스 상향"], "changesEn": ["Breadth/liquidity divergence raised"] },
-    { "date": "2026-06-28", "totalScore": 4.0, "changesKo": ["변화 없음"], "changesEn": ["No change"] },
-    { "date": "2026-07-05", "totalScore": 4.0, "changesKo": ["주도주 경쟁력 점검 유지"], "changesEn": ["Leadership quality watch maintained"] },
-    { "date": "2026-07-12", "totalScore": 4.0, "changesKo": ["변화 없음"], "changesEn": ["No change"] },
-    { "date": "2026-07-19", "totalScore": 4.5, "changesKo": ["EPS 전망 하향 점수 상향"], "changesEn": ["EPS downgrade score raised"] }
+    {
+      "date": "2026-05-10",
+      "totalScore": 2.0,
+      "changesKo": [
+        "변화 없음"
+      ],
+      "changesEn": [
+        "No change"
+      ]
+    },
+    {
+      "date": "2026-05-17",
+      "totalScore": 2.5,
+      "changesKo": [
+        "전방 수요 관찰 점수 상향"
+      ],
+      "changesEn": [
+        "End-demand watch score raised"
+      ]
+    },
+    {
+      "date": "2026-05-24",
+      "totalScore": 3.0,
+      "changesKo": [
+        "시장 폭 둔화 반영"
+      ],
+      "changesEn": [
+        "Breadth deterioration reflected"
+      ]
+    },
+    {
+      "date": "2026-05-31",
+      "totalScore": 3.0,
+      "changesKo": [
+        "변화 없음"
+      ],
+      "changesEn": [
+        "No change"
+      ]
+    },
+    {
+      "date": "2026-06-07",
+      "totalScore": 3.5,
+      "changesKo": [
+        "EPS 전망 하향 반영"
+      ],
+      "changesEn": [
+        "EPS downgrade risk reflected"
+      ]
+    },
+    {
+      "date": "2026-06-14",
+      "totalScore": 3.5,
+      "changesKo": [
+        "변화 없음"
+      ],
+      "changesEn": [
+        "No change"
+      ]
+    },
+    {
+      "date": "2026-06-21",
+      "totalScore": 4.0,
+      "changesKo": [
+        "시장 폭·유동성 다이버전스 상향"
+      ],
+      "changesEn": [
+        "Breadth/liquidity divergence raised"
+      ]
+    },
+    {
+      "date": "2026-06-28",
+      "totalScore": 4.0,
+      "changesKo": [
+        "변화 없음"
+      ],
+      "changesEn": [
+        "No change"
+      ]
+    },
+    {
+      "date": "2026-07-05",
+      "totalScore": 4.0,
+      "changesKo": [
+        "주도주 경쟁력 점검 유지"
+      ],
+      "changesEn": [
+        "Leadership quality watch maintained"
+      ]
+    },
+    {
+      "date": "2026-07-12",
+      "totalScore": 4.0,
+      "changesKo": [
+        "변화 없음"
+      ],
+      "changesEn": [
+        "No change"
+      ]
+    },
+    {
+      "date": "2026-07-19",
+      "totalScore": 2.5,
+      "changesKo": [
+        "자동 산출 데이터 갱신"
+      ],
+      "changesEn": [
+        "Auto-calculated data update"
+      ]
+    }
   ],
   "sourceRegistry": {
-    "noteKo": "실제 출처를 연결하면 각 지표 sources 배열에 출처명, 기관/유형, URL, 확인일, 비고를 입력합니다. 유료 데이터는 실제 사용 전까지 기본 출처로 확정 표기하지 않습니다.",
-    "noteEn": "When live sources are connected, add name, institution/type, URL, checked date, and notes to each indicator's sources array. Paid sources should not be shown as confirmed until actually used.",
+    "noteKo": "F7은 기존 WIP Labs 데이터 파일을 재활용해 자동 산출합니다. IPO 항목은 실제 원천 확정 전까지 데이터 대기로 유지합니다.",
+    "noteEn": "F7 reuses existing WIP Labs data files for automatic scoring. IPO remains data-pending until a live source is selected.",
     "examples": [
-      "Company IR",
-      "SEC filings",
+      "KRX/pykrx",
       "FRED",
-      "CBOE",
-      "NYSE/Nasdaq"
+      "Yahoo Finance fundamentals",
+      "Maintained IPO CSV"
     ]
   },
   "disclaimer": {
