@@ -1,18 +1,18 @@
 {
   "ok": true,
   "sample": false,
-  "generatedAt": "2026-07-19T14:03:15+09:00",
+  "generatedAt": "2026-07-19T14:10:56+09:00",
   "lastUpdated": "2026-07-19",
   "operatorNote": {
     "ko": "기존 사이트 수집 데이터와 공개 데이터 대용치를 이용해 자동 산출합니다.",
     "en": "Automatically calculated from existing site datasets and public-data proxies."
   },
   "summary": {
-    "totalScore": 4.5,
+    "totalScore": 4.0,
     "previousScore": 4.0,
     "interpretation": {
-      "ko": "실제 연결 데이터 기준 현재 총점은 4.5/10, 주의 단계입니다. IPO 항목은 SEC 분기 IPO 통계를 이용해 산출합니다.",
-      "en": "Using connected data, the current score is 4.5/10, Caution stage. The IPO item is calculated from SEC quarterly IPO statistics."
+      "ko": "실제 연결 데이터 기준 현재 총점은 4.0/10, 관찰 단계입니다. IPO 항목은 SEC 분기 IPO 통계를 이용해 산출합니다. IPO 항목은 SEC 분기 통계와 미국 외 초대형 IPO 사건을 함께 반영합니다.",
+      "en": "Using connected data, the current score is 4.0/10, Watch stage. The IPO item combines SEC quarterly statistics with verified non-U.S. mega-IPO events."
     }
   },
   "scoreScale": [
@@ -224,24 +224,24 @@
     },
     {
       "id": "ipo-liquidity",
-      "score": 1.8,
+      "score": 1.7,
       "statusKo": "위험",
       "statusEn": "Risk",
       "titleKo": "IPO 질적 악화 및 유동성 흡수",
       "titleEn": "IPO quality deterioration & liquidity absorption",
       "anchor": "#ipo-liquidity",
-      "observationKo": "SEC 2026:Q1 기준 IPO 99건, 조달액 22,041.2백만 달러, SPAC 비중 62.6%입니다.",
-      "observationEn": "SEC 2026:Q1: 99 IPOs, US$22,041.2 million proceeds, and 62.6% SPAC share.",
-      "recentChangeKo": "자동 산출",
-      "recentChangeEn": "Auto-calculated",
+      "observationKo": "SEC 2026:Q1 기준 IPO 99건, 조달액 22,041.2백만 달러, SPAC 비중 62.6%입니다. 미국 외 초대형 IPO 보정 0.3점(창신메모리(CXMT))을 포함합니다.",
+      "observationEn": "SEC 2026:Q1: 99 IPOs, US$22,041.2 million proceeds, and 62.6% SPAC share. Includes a 0.3-point non-U.S. mega-IPO overlay (ChangXin Memory Technologies (CXMT)).",
+      "recentChangeKo": "SEC 기본 1.35점 + 미국 외 초대형 IPO 보정 0.3점",
+      "recentChangeEn": "SEC base 1.35 + non-U.S. mega-IPO overlay 0.3",
       "judgmentKo": "IPO 시장이 과열되어 시중 유동성을 흡수하거나, SPAC·백지수표 회사 비중이 높아져 상장 품질이 낮아지는지 봅니다.",
       "judgmentEn": "Checks whether IPO activity absorbs liquidity or whether a high SPAC/blank-check share points to weaker listing quality.",
       "dataKo": "최근 분기와 직전 4개 분기 평균 비교: 건수 +5.3%, 조달액 +25.5%, 중간 조달액 +92.6%. 일반 기업 IPO 36건, SPAC 62건.",
-      "dataEn": "Latest quarter versus prior four-quarter average: count +5.3%, proceeds +25.5%, median proceeds +92.6%. Corporate IPOs 36, SPACs 62.",
+      "dataEn": "Latest quarter versus prior four-quarter average: count +5.3%, proceeds +25.5%, median proceeds +92.6%. Corporate IPOs 36, SPACs 62. Includes a 0.3-point non-U.S. mega-IPO overlay (ChangXin Memory Technologies (CXMT)).",
       "criteriaKo": "조달액·건수가 직전 4개 분기 평균보다 빠르게 늘고 SPAC 비중이 35~50%를 넘으면 위험 점수가 올라갑니다. 상장 후 수익률과 적자 기업 비중은 아직 무료 자동 원천을 확정하지 않아 보조 판단에서 제외합니다.",
       "criteriaEn": "Score rises when proceeds/counts run above the prior four-quarter average and SPAC share exceeds 35-50%. Aftermarket returns and loss-making issuer share are not yet included because a free automated source has not been confirmed.",
-      "interpretationKo": "SEC 2026:Q1 기준 IPO 99건, 조달액 22,041.2백만 달러, SPAC 비중 62.6%입니다.",
-      "interpretationEn": "SEC 2026:Q1: 99 IPOs, US$22,041.2 million proceeds, and 62.6% SPAC share.",
+      "interpretationKo": "SEC 2026:Q1 기준 IPO 99건, 조달액 22,041.2백만 달러, SPAC 비중 62.6%입니다. 미국 외 초대형 IPO 보정 0.3점(창신메모리(CXMT))을 포함합니다.",
+      "interpretationEn": "SEC 2026:Q1: 99 IPOs, US$22,041.2 million proceeds, and 62.6% SPAC share. Includes a 0.3-point non-U.S. mega-IPO overlay (ChangXin Memory Technologies (CXMT)).",
       "sources": [
         {
           "name": "SEC IPO Statistics",
@@ -249,6 +249,20 @@
           "url": "https://www.sec.gov/data-research/statistics-data-visualizations/initial-public-offerings-ipos",
           "checkedAt": "2026-07-19",
           "note": "Quarterly IPO counts/proceeds and issuer-type breakdown; downloadable workbook through 2026:Q1."
+        },
+        {
+          "name": "Reuters via MarketScreener",
+          "type": "news report",
+          "url": "https://www.marketscreener.com/news/china-memory-chipmaker-cxmt-expects-to-raise-57-9-billion-yuan-in-ipo-ce7f5eddd98dff26",
+          "checkedAt": "2026-07-19",
+          "note": "Reported expected proceeds of CNY 57.9 billion before over-allotment."
+        },
+        {
+          "name": "State Council Information Office / Xinhua",
+          "type": "official public information",
+          "url": "https://english.scio.gov.cn/pressroom/2026-06/15/content_118548438.html",
+          "checkedAt": "2026-07-19",
+          "note": "Confirmed approval of the STAR Market IPO registration and the earlier prospectus plan."
         }
       ],
       "historyKo": [
@@ -267,8 +281,50 @@
         "priorFourQuarterAverageIpos": 94.0,
         "priorFourQuarterAverageProceedsUsdMillions": 17568.850000000002,
         "countRatio": 1.053191489361702,
-        "proceedsRatio": 1.2545613400990958,
-        "medianProceedsRatio": 1.926318324103058
+        "proceedsRatio": 1.254561340099096,
+        "medianProceedsRatio": 1.926318324103058,
+        "componentScores": {
+          "secBase": 1.35,
+          "globalMegaIpoOverlay": 0.3
+        },
+        "globalMegaIpoEvents": [
+          {
+            "id": "cxmt-star-market-2026",
+            "active": true,
+            "companyKo": "창신메모리(CXMT)",
+            "companyEn": "ChangXin Memory Technologies (CXMT)",
+            "countryKo": "중국",
+            "countryEn": "China",
+            "marketKo": "상하이 STAR Market",
+            "marketEn": "Shanghai STAR Market",
+            "sectorKo": "DRAM 반도체",
+            "sectorEn": "DRAM semiconductors",
+            "proceedsUsdBillions": 8.55,
+            "directLeaderSector": true,
+            "speculativeDemandConcern": false,
+            "announcedDate": "2026-07-18",
+            "listingDate": "TODO",
+            "noteKo": "미국 시장의 직접적인 유동성 흡수보다 메모리 업종의 공급 확대와 경쟁 심화 가능성을 함께 보는 보정 사건입니다.",
+            "noteEn": "This is treated less as direct U.S. liquidity absorption and more as a memory-sector capacity and competition risk event.",
+            "sources": [
+              {
+                "name": "Reuters via MarketScreener",
+                "type": "news report",
+                "url": "https://www.marketscreener.com/news/china-memory-chipmaker-cxmt-expects-to-raise-57-9-billion-yuan-in-ipo-ce7f5eddd98dff26",
+                "checkedAt": "2026-07-19",
+                "note": "Reported expected proceeds of CNY 57.9 billion before over-allotment."
+              },
+              {
+                "name": "State Council Information Office / Xinhua",
+                "type": "official public information",
+                "url": "https://english.scio.gov.cn/pressroom/2026-06/15/content_118548438.html",
+                "checkedAt": "2026-07-19",
+                "note": "Confirmed approval of the STAR Market IPO registration and the earlier prospectus plan."
+              }
+            ],
+            "overlayScore": 0.3
+          }
+        ]
       }
     },
     {
@@ -410,7 +466,7 @@
     },
     {
       "date": "2026-07-19",
-      "totalScore": 4.5,
+      "totalScore": 4.0,
       "changesKo": [
         "자동 산출 데이터 갱신"
       ],
@@ -421,12 +477,13 @@
   ],
   "sourceRegistry": {
     "noteKo": "F7은 기존 WIP Labs 데이터 파일과 무료 공개 원천을 조합해 자동 산출합니다. IPO 항목은 SEC 분기 IPO 통계를 우선 사용합니다.",
-    "noteEn": "F7 combines existing WIP Labs datasets with free public sources. The IPO item uses SEC quarterly IPO statistics first.",
+    "noteEn": "F7 combines existing WIP Labs datasets with free public sources. The IPO item combines SEC quarterly statistics with a verified non-U.S. mega-IPO event registry.",
     "examples": [
       "KRX/pykrx",
       "FRED",
       "Yahoo Finance fundamentals",
-      "SEC IPO Statistics"
+      "SEC IPO Statistics",
+      "verified non-U.S. mega-IPO reports"
     ]
   },
   "disclaimer": {

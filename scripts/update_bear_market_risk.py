@@ -18,6 +18,7 @@ SENTIMENT_META = Path("docs/data/kospi-sentiment-meta.json")
 LIQUIDITY_JSON = Path("docs/data/us-liquidity.json")
 EARNINGS_JSON = Path("docs/data/ai-earnings.json")
 MARKET_PER_JSON = Path("docs/data/market-per.json")
+GLOBAL_MEGA_IPO_JSON = Path("docs/data/global-mega-ipo-events.json")
 FORWARD_PER_REFERENCE = 6.35
 SEC_IPO_XLSX_URL = "https://www.sec.gov/files/sec-stats-ipos-20260630.xlsx"
 SEC_IPO_PAGE_URL = "https://www.sec.gov/data-research/statistics-data-visualizations/initial-public-offerings-ipos"
@@ -411,6 +412,31 @@ def period_sort_key(row: dict) -> tuple[int, int]:
     return int(float(period)), 4
 
 
+def global_mega_ipo_overlay() -> tuple[float, dict]:
+    registry = read_json(GLOBAL_MEGA_IPO_JSON)
+    active_events = [event for event in registry.get("events", []) if event.get("active")]
+    event_results = []
+    total = 0.0
+    sources = []
+    for event in active_events:
+        proceeds = to_float(event.get("proceedsUsdBillions")) or 0.0
+        event_score = 0.3 if proceeds >= 10 else 0.2 if proceeds >= 5 else 0.0
+        if event.get("directLeaderSector"):
+            event_score += 0.1
+        if event.get("speculativeDemandConcern"):
+            event_score += 0.1
+        event_score = min(0.5, event_score)
+        total += event_score
+        event_results.append({**event, "overlayScore": round(event_score, 1)})
+        sources.extend(event.get("sources", []))
+    return round(min(0.5, total), 1), {
+        "updatedAt": registry.get("updatedAt"),
+        "methodology": registry.get("methodology", {}),
+        "events": event_results,
+        "sources": sources,
+    }
+
+
 def build_ipo(previous: dict) -> dict:
     previous_item = next((item for item in previous.get("indicators", []) if item.get("id") == "ipo-liquidity"), {})
     try:
@@ -431,27 +457,34 @@ def build_ipo(previous: dict) -> dict:
         proceeds_ratio = total_proceeds / avg_proceeds if finite(total_proceeds) and finite(avg_proceeds) and avg_proceeds else None
         median_ratio = median_proceeds / avg_median if finite(median_proceeds) and finite(avg_median) and avg_median else None
         spac_share = spac_ipos / total_ipos if finite(spac_ipos) and finite(total_ipos) and total_ipos else None
-        score = 0.0
+        sec_raw_score = 0.0
         if finite(proceeds_ratio):
-            score += 0.6 if proceeds_ratio >= 1.25 else 0.3 if proceeds_ratio >= 1.05 else 0.0
+            sec_raw_score += 0.6 if proceeds_ratio >= 1.25 else 0.3 if proceeds_ratio >= 1.05 else 0.0
         if finite(count_ratio):
-            score += 0.4 if count_ratio >= 1.15 else 0.2 if count_ratio >= 1.0 else 0.0
+            sec_raw_score += 0.4 if count_ratio >= 1.15 else 0.2 if count_ratio >= 1.0 else 0.0
         if finite(spac_share):
-            score += 0.6 if spac_share >= 0.5 else 0.3 if spac_share >= 0.35 else 0.0
+            sec_raw_score += 0.6 if spac_share >= 0.5 else 0.3 if spac_share >= 0.35 else 0.0
         if finite(median_ratio):
-            score += 0.4 if median_ratio >= 1.5 else 0.2 if median_ratio >= 1.2 else 0.0
+            sec_raw_score += 0.4 if median_ratio >= 1.5 else 0.2 if median_ratio >= 1.2 else 0.0
+        sec_score = round(clamp(sec_raw_score) * 0.75, 2)
+        global_score, global_overlay = global_mega_ipo_overlay()
+        score = round(clamp(sec_score + global_score), 1)
+        active_names_ko = ", ".join(event.get("companyKo", event.get("id", "")) for event in global_overlay["events"])
+        active_names_en = ", ".join(event.get("companyEn", event.get("id", "")) for event in global_overlay["events"])
+        global_obs_ko = f" 미국 외 초대형 IPO 보정 {global_score:.1f}점({active_names_ko})을 포함합니다." if active_names_ko else ""
+        global_obs_en = f" Includes a {global_score:.1f}-point non-U.S. mega-IPO overlay ({active_names_en})." if active_names_en else ""
         checked_at = now_kst().date().isoformat()
         item = indicator(
             "ipo-liquidity",
-            round(clamp(score), 1),
+            score,
             "IPO 질적 악화 및 유동성 흡수",
             "IPO quality deterioration & liquidity absorption",
             f"SEC {latest_period} 기준 IPO {total_ipos:.0f}건, 조달액 {total_proceeds:,.1f}백만 달러, SPAC 비중 {spac_share * 100:.1f}%입니다.",
-            f"SEC {latest_period}: {total_ipos:.0f} IPOs, US${total_proceeds:,.1f} million proceeds, and {spac_share * 100:.1f}% SPAC share.",
+            f"SEC {latest_period}: {total_ipos:.0f} IPOs, US${total_proceeds:,.1f} million proceeds, and {spac_share * 100:.1f}% SPAC share.{global_obs_en}",
             "IPO 시장이 과열되어 시중 유동성을 흡수하거나, SPAC·백지수표 회사 비중이 높아져 상장 품질이 낮아지는지 봅니다.",
             "Checks whether IPO activity absorbs liquidity or whether a high SPAC/blank-check share points to weaker listing quality.",
             f"최근 분기와 직전 4개 분기 평균 비교: 건수 {pct(count_ratio - 1 if finite(count_ratio) else None)}, 조달액 {pct(proceeds_ratio - 1 if finite(proceeds_ratio) else None)}, 중간 조달액 {pct(median_ratio - 1 if finite(median_ratio) else None)}. 일반 기업 IPO {corporate_ipos:.0f}건, SPAC {spac_ipos:.0f}건.",
-            f"Latest quarter versus prior four-quarter average: count {pct(count_ratio - 1 if finite(count_ratio) else None)}, proceeds {pct(proceeds_ratio - 1 if finite(proceeds_ratio) else None)}, median proceeds {pct(median_ratio - 1 if finite(median_ratio) else None)}. Corporate IPOs {corporate_ipos:.0f}, SPACs {spac_ipos:.0f}.",
+            f"Latest quarter versus prior four-quarter average: count {pct(count_ratio - 1 if finite(count_ratio) else None)}, proceeds {pct(proceeds_ratio - 1 if finite(proceeds_ratio) else None)}, median proceeds {pct(median_ratio - 1 if finite(median_ratio) else None)}. Corporate IPOs {corporate_ipos:.0f}, SPACs {spac_ipos:.0f}.{global_obs_en}",
             "조달액·건수가 직전 4개 분기 평균보다 빠르게 늘고 SPAC 비중이 35~50%를 넘으면 위험 점수가 올라갑니다. 상장 후 수익률과 적자 기업 비중은 아직 무료 자동 원천을 확정하지 않아 보조 판단에서 제외합니다.",
             "Score rises when proceeds/counts run above the prior four-quarter average and SPAC share exceeds 35-50%. Aftermarket returns and loss-making issuer share are not yet included because a free automated source has not been confirmed.",
             [{
@@ -460,8 +493,12 @@ def build_ipo(previous: dict) -> dict:
                 "url": SEC_IPO_PAGE_URL,
                 "checkedAt": checked_at,
                 "note": "Quarterly IPO counts/proceeds and issuer-type breakdown; downloadable workbook through 2026:Q1.",
-            }],
+            }, *global_overlay["sources"]],
         )
+        item["observationKo"] += global_obs_ko
+        item["interpretationKo"] += global_obs_ko
+        item["recentChangeKo"] = f"SEC 기본 {sec_score:.2f}점 + 미국 외 초대형 IPO 보정 {global_score:.1f}점"
+        item["recentChangeEn"] = f"SEC base {sec_score:.2f} + non-U.S. mega-IPO overlay {global_score:.1f}"
         item["computedData"] = {
             "latestPeriod": latest_period,
             "totalIpos": total_ipos,
@@ -474,6 +511,8 @@ def build_ipo(previous: dict) -> dict:
             "countRatio": count_ratio,
             "proceedsRatio": proceeds_ratio,
             "medianProceedsRatio": median_ratio,
+            "componentScores": {"secBase": sec_score, "globalMegaIpoOverlay": global_score},
+            "globalMegaIpoEvents": global_overlay["events"],
         }
         return item
     except Exception as exc:
@@ -612,7 +651,8 @@ def main() -> None:
     date = now_kst().date().isoformat()
     previous_score = previous_comparison_score(previous, date, total)
     summary_ko = f"실제 연결 데이터 기준 현재 총점은 {total:.1f}/10, {label_ko} 단계입니다. IPO 항목은 SEC 분기 IPO 통계를 이용해 산출합니다."
-    summary_en = f"Using connected data, the current score is {total:.1f}/10, {label_en} stage. The IPO item is calculated from SEC quarterly IPO statistics."
+    summary_ko += " IPO 항목은 SEC 분기 통계와 미국 외 초대형 IPO 사건을 함께 반영합니다."
+    summary_en = f"Using connected data, the current score is {total:.1f}/10, {label_en} stage. The IPO item combines SEC quarterly statistics with verified non-U.S. mega-IPO events."
     history = load_previous_history(previous)
     if not history or history[-1].get("date") != date:
         history.append({"date": date, "totalScore": total, "changesKo": ["자동 산출 데이터 갱신"], "changesEn": ["Auto-calculated data update"]})
@@ -640,8 +680,8 @@ def main() -> None:
         "history": history[-12:],
         "sourceRegistry": {
             "noteKo": "F7은 기존 WIP Labs 데이터 파일과 무료 공개 원천을 조합해 자동 산출합니다. IPO 항목은 SEC 분기 IPO 통계를 우선 사용합니다.",
-            "noteEn": "F7 combines existing WIP Labs datasets with free public sources. The IPO item uses SEC quarterly IPO statistics first.",
-            "examples": ["KRX/pykrx", "FRED", "Yahoo Finance fundamentals", "SEC IPO Statistics"],
+            "noteEn": "F7 combines existing WIP Labs datasets with free public sources. The IPO item combines SEC quarterly statistics with a verified non-U.S. mega-IPO event registry.",
+            "examples": ["KRX/pykrx", "FRED", "Yahoo Finance fundamentals", "SEC IPO Statistics", "verified non-U.S. mega-IPO reports"],
         },
         "disclaimer": DISCLAIMER,
     }

@@ -1,0 +1,44 @@
+{
+  "updatedAt": "2026-07-19",
+  "methodology": {
+    "ko": "SEC 통계에 포함되지 않는 미국 외 초대형 IPO를 보완하는 사건 목록입니다. 활성 사건의 조달 규모와 시장 주도 업종 관련성을 이용해 IPO 위험점수에 최대 0.5점을 더합니다.",
+    "en": "This event registry supplements the SEC series with mega IPOs outside the United States. Active events add up to 0.5 points based on proceeds and relevance to market-leading sectors."
+  },
+  "events": [
+    {
+      "id": "cxmt-star-market-2026",
+      "active": true,
+      "companyKo": "창신메모리(CXMT)",
+      "companyEn": "ChangXin Memory Technologies (CXMT)",
+      "countryKo": "중국",
+      "countryEn": "China",
+      "marketKo": "상하이 STAR Market",
+      "marketEn": "Shanghai STAR Market",
+      "sectorKo": "DRAM 반도체",
+      "sectorEn": "DRAM semiconductors",
+      "proceedsUsdBillions": 8.55,
+      "directLeaderSector": true,
+      "speculativeDemandConcern": false,
+      "announcedDate": "2026-07-18",
+      "listingDate": "TODO",
+      "noteKo": "미국 시장의 직접적인 유동성 흡수보다 메모리 업종의 공급 확대와 경쟁 심화 가능성을 함께 보는 보정 사건입니다.",
+      "noteEn": "This is treated less as direct U.S. liquidity absorption and more as a memory-sector capacity and competition risk event.",
+      "sources": [
+        {
+          "name": "Reuters via MarketScreener",
+          "type": "news report",
+          "url": "https://www.marketscreener.com/news/china-memory-chipmaker-cxmt-expects-to-raise-57-9-billion-yuan-in-ipo-ce7f5eddd98dff26",
+          "checkedAt": "2026-07-19",
+          "note": "Reported expected proceeds of CNY 57.9 billion before over-allotment."
+        },
+        {
+          "name": "State Council Information Office / Xinhua",
+          "type": "official public information",
+          "url": "https://english.scio.gov.cn/pressroom/2026-06/15/content_118548438.html",
+          "checkedAt": "2026-07-19",
+          "note": "Confirmed approval of the STAR Market IPO registration and the earlier prospectus plan."
+        }
+      ]
+    }
+  ]
+}

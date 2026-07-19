@@ -13,6 +13,7 @@ on:
       - "docs/data/us-liquidity.json"
       - "docs/data/ai-earnings.json"
       - "docs/data/market-per.json"
+      - "docs/data/global-mega-ipo-events.json"
   schedule:
     # F7 Bear Market Risk: Sunday 09:30 KST. GitHub Actions cron uses UTC.
     - cron: "30 0 * * 0"
