@@ -16,6 +16,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: wiplabs-main-data-writers
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -26,6 +30,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -67,5 +73,13 @@ jobs:
             echo "No data changes to commit."
           else
             git commit -m "Update KOSPI market data"
-            git push
+            for attempt in 1 2 3; do
+              git pull --rebase origin main
+              if git push origin HEAD:main; then
+                exit 0
+              fi
+              echo "Push attempt ${attempt}/3 failed. Retrying after remote sync."
+              sleep $((attempt * 10))
+            done
+            exit 1
           fi
