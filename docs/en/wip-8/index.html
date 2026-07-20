@@ -3,18 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag("js", new Date());
-    gtag("config", "G-GD6K8FB589");
-  </script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-GD6K8FB589");</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="Manually enter foreign-investor spot and futures net buying to read the latest five-session flow combination and market stage.">
+  <meta name="description" content="Automatically collect KRX foreign-investor KOSPI spot and KOSPI 200 futures net buying and read the latest five-session flow combination.">
   <meta name="theme-color" content="#f5f1e8">
   <meta property="og:title" content="F8 - Foreign Flow Pulse">
-  <meta property="og:description" content="A manual tool for reading market state from foreign spot and futures flows.">
+  <meta property="og:description" content="An automatic dashboard for reading market state from foreign spot and futures flows.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/en/wip-8/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
@@ -22,72 +17,27 @@
   <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/wip-8/">
   <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/wip-8/">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../../styles.css?v=foreign-flow-20260721">
+  <link rel="stylesheet" href="../../styles.css?v=foreign-flow-auto-20260721">
   <title>F8 - Foreign Flow Pulse</title>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="../"><span>WIP</span><strong>WIP Labs</strong></a>
-    <nav class="service-tabs" aria-label="Main menu"><a href="../">HOME</a><a href="../wip-1/">F1</a><a href="../wip-2/">F2</a><a href="../wip-3/">F3</a><a href="../wip-4/">F4</a><a href="../wip-5/">F5</a><a href="../wip-6/">F6</a><a href="../wip-7/">F7</a><a href="../wip-8/" aria-current="page">F8</a><a class="lang-switch" href="../../wip-8/">KO</a><a class="lang-switch" href="./" aria-current="true">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav>
-  </header>
+  <header class="site-header"><a class="brand" href="../"><span>WIP</span><strong>WIP Labs</strong></a><nav class="service-tabs" aria-label="Main menu"><a href="../">HOME</a><a href="../wip-1/">F1</a><a href="../wip-2/">F2</a><a href="../wip-3/">F3</a><a href="../wip-4/">F4</a><a href="../wip-5/">F5</a><a href="../wip-6/">F6</a><a href="../wip-7/">F7</a><a href="../wip-8/" aria-current="page">F8</a><a class="lang-switch" href="../../wip-8/">KO</a><a class="lang-switch" href="./" aria-current="true">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav></header>
   <div class="ticker-strip" aria-label="Market ticker"><span>KOSPI <b id="tickerKospi">--</b></span><span>NASDAQ <b id="tickerNasdaq">--</b></span><span>S&amp;P500 <b id="tickerSp500">--</b></span><span>USD/KRW <b id="tickerUsdKrw">--</b></span></div>
   <main>
-    <section class="hero service-hero">
-      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./foreign-flow <span class="flag">--pulse</span></p>
-      <h1>Foreign Flow Pulse</h1>
-      <p class="hero-copy">Read foreign-investor direction through spot and futures flow combinations.</p>
-    </section>
-
-    <section class="reading-note">
-      <h2>What to read</h2>
-      <ul>
-        <li>Enter daily foreign-investor spot and futures net buying in KRW trillions.</li>
-        <li>The tool calculates the latest five dated sessions and four daily flow combinations.</li>
-        <li>Results are summarized as Sell-off, Short cover, Bottom search, Accumulation turn, or Trend strengthening.</li>
-      </ul>
-    </section>
-
+    <section class="hero service-hero"><p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./foreign-flow <span class="flag">--pulse</span></p><h1>Foreign Flow Pulse</h1><p class="hero-copy">Read foreign-investor direction through KOSPI spot and KOSPI 200 futures flow combinations.</p></section>
+    <section class="reading-note"><h2>What to read</h2><ul><li>KRX previous-business-day foreign spot and futures net trading values are collected automatically each day.</li><li>The dashboard calculates the latest five dated sessions and four daily flow combinations.</li><li>Results are summarized as Sell-off, Short cover, Bottom search, Accumulation turn, or Trend strengthening.</li></ul><p class="flow-data-line"><strong id="flowDataStatus">Loading automatic data</strong><span>Latest data <b id="flowUpdated">--</b></span><a id="flowSource" href="https://data.krx.co.kr/" target="_blank" rel="noopener noreferrer">Source: KRX</a></p></section>
     <section class="flow-dashboard" aria-labelledby="flow-stage-title">
       <h2 class="visually-hidden" id="flow-stage-title">Market stage</h2>
-      <div class="flow-stage-card">
-        <span>Current stage</span>
-        <strong id="flowStage">--</strong>
-        <p id="flowStageNote">Calculating the data.</p>
-      </div>
+      <div class="flow-stage-card"><span>Current stage</span><strong id="flowStage">--</strong><p id="flowStageNote">Waiting for automatic data.</p></div>
       <div class="flow-stage-track" id="flowStageTrack" aria-label="Five market stages"></div>
-
-      <div class="flow-metric-grid" aria-label="Latest five-session summary">
-        <article><span>Spot, 5-session total</span><strong id="flowSpotTotal">--</strong><small id="flowSpotDays">--</small></article>
-        <article><span>Futures, 5-session total</span><strong id="flowFuturesTotal">--</strong><small id="flowFuturesDays">--</small></article>
-        <article><span>Joint buying</span><strong id="flowJointDays">--</strong><small>Spot and futures bought on the same day</small></article>
-        <article data-tone="neutral"><span>Decision window</span><strong id="flowWindow">--</strong><small>Latest observations by date</small></article>
-      </div>
-
-      <div class="flow-commentary"><span>Auto commentary</span><p id="flowCommentary">Checking inputs.</p><small>This simplified flow interpretation should not be used as the sole basis for an investment decision.</small></div>
+      <div class="flow-metric-grid" aria-label="Latest five-session summary"><article><span>Spot, 5-session total</span><strong id="flowSpotTotal">--</strong><small id="flowSpotDays">--</small></article><article><span>Futures, 5-session total</span><strong id="flowFuturesTotal">--</strong><small id="flowFuturesDays">--</small></article><article><span>Joint buying</span><strong id="flowJointDays">--</strong><small>Spot and futures bought on the same day</small></article><article data-tone="neutral"><span>Decision window</span><strong id="flowWindow">--</strong><small>Latest observations by date</small></article></div>
+      <div class="flow-commentary"><span>Auto commentary</span><p id="flowCommentary">Checking the data.</p><small>This simplified flow interpretation should not be used as the sole basis for an investment decision.</small></div>
     </section>
-
-    <section class="flow-input-section">
-      <div class="section-title">
-        <div><h2>Daily flow input</h2><p class="section-copy">Positive means net buying; negative means net selling. Entries are stored only in this browser on this device.</p></div>
-        <div class="flow-actions"><button type="button" class="quiet-button" id="flowReset">Restore example</button><button type="button" class="add-button" id="flowAdd">+ Add session</button></div>
-      </div>
-      <div class="flow-table-wrap">
-        <table class="flow-table"><thead><tr><th>Date</th><th>Spot net buying<small>KRW tn</small></th><th>Futures net buying<small>KRW tn</small></th><th>Auto classification</th><th><span class="visually-hidden">Delete</span></th></tr></thead><tbody id="flowTableBody"></tbody></table>
-      </div>
-      <p class="flow-table-note">Only the latest five dated observations are included. Avoid entering duplicate dates.</p>
-    </section>
-
-    <section class="reading-note flow-method">
-      <h2>Rules and next extension</h2>
-      <ul>
-        <li>Positive spot and futures flows mean Joint buying; negative spot with positive futures means Futures-led rebound / short cover.</li>
-        <li>Positive spot with negative futures suggests Arbitrage / hedge possibility; both negative means Risk-off.</li>
-        <li><strong>The 20-session total</strong> is reserved as a follow-up extension for reading medium-term flow persistence.</li>
-      </ul>
-    </section>
+    <section class="flow-input-section"><div class="section-title"><div><h2>Automatically collected daily flow</h2><p class="section-copy">Positive means net buying; negative means net selling. KRX source values in KRW billions are converted to KRW trillions.</p></div></div><div class="flow-table-wrap"><table class="flow-table"><thead><tr><th>Date</th><th>Spot net buying<small>KRW tn</small></th><th>Futures net buying<small>KRW tn</small></th><th>Auto classification</th></tr></thead><tbody id="flowTableBody"></tbody></table></div><p class="flow-table-note">On holidays, KRX returns the previous business day's row and the same date is not stored twice. The complete decision window will fill after five trading sessions.</p></section>
+    <section class="reading-note flow-method"><h2>Rules and next extension</h2><ul><li>Positive spot and futures flows mean Joint buying; negative spot with positive futures means Futures-led rebound / short cover.</li><li>Positive spot with negative futures suggests Arbitrage / hedge possibility; both negative means Risk-off.</li><li><strong>The 20-session total</strong> remains a follow-up extension for reading medium-term flow persistence.</li></ul></section>
   </main>
   <footer><div><strong>F8</strong><p>Foreign spot and futures flow experiment.</p></div><span>© 2026</span></footer>
-  <script src="../../ticker.js?v=i18n-20260718"></script>
-  <script src="../../foreign-flow-pulse.js?v=foreign-flow-20260721"></script>
+  <script src="../../ticker.js?v=intraday-20260721"></script>
+  <script src="../../foreign-flow-pulse.js?v=auto-20260721"></script>
 </body>
 </html>

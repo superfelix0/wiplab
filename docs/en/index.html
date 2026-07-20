@@ -64,7 +64,7 @@
         <a href="wip-5/" data-category="finance"><span>F5</span><strong>US Liquidity Monitor</strong><small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small><small class="metric">M2/RRP/TGA</small><small class="module-note">Combines M2, reserves, RRP, and TGA to read U.S. liquidity direction.</small><small class="module-comment" id="commentF5">Loading liquidity comment.</small><small class="live-dot">* AD HOC</small></a>
         <a href="wip-6/" data-category="finance"><span>F6</span><strong>SK Hynix ADR Spread</strong><small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small><small class="metric">ADR/KRW</small><small class="module-note">Compares the ADR-implied common-share price with the KOSPI-listed share price.</small><small class="module-comment" id="commentF6">Checking spread</small><small class="live-dot">* DAILY</small></a>
         <a href="wip-7/" data-category="finance"><span>F7</span><strong>Bear Market Risk</strong><small class="cmd"><b>$</b> ./bear-risk <em>--dashboard</em></small><small class="metric">RISK/10</small><small class="module-note">Scores market breadth, leadership, end demand, IPO activity, and EPS revisions.</small><small class="module-comment" id="commentF7">Loading risk comment.</small><small class="live-dot">* WEEKLY</small></a>
-        <a href="wip-8/" data-category="finance"><span>F8</span><strong>Foreign Flow Pulse</strong><small class="cmd"><b>$</b> ./foreign-flow <em>--pulse</em></small><small class="metric">SPOT/FUTURES</small><small class="module-note">Reads the latest five-session market stage from foreign spot and futures flows.</small><small class="module-comment">Inputs stay on this device and recalculate immediately.</small><small class="live-dot">* MANUAL</small></a>
+        <a href="wip-8/" data-category="finance"><span>F8</span><strong>Foreign Flow Pulse</strong><small class="cmd"><b>$</b> ./foreign-flow <em>--pulse</em></small><small class="metric">SPOT/FUTURES</small><small class="module-note">Reads the latest five-session market stage from foreign spot and futures flows.</small><small class="module-comment">KRX previous-business-day flow is collected and accumulated automatically each day.</small><small class="live-dot">* DAILY</small></a>
       </div>
     </section>
   </main>
@@ -76,7 +76,7 @@
     </div>
     <span>© 2026</span>
   </footer>
-  <script src="../ticker.js?v=i18n-20260718"></script>
+  <script src="../ticker.js?v=intraday-20260721"></script>
   <script src="../home.js?v=en-home-20260718"></script>
 </body>
 </html>

@@ -863,6 +863,21 @@ h3 {
 .flow-commentary small,
 .flow-table-note { color: var(--muted); font-size: 10px; }
 
+.flow-data-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  border-top: 1px solid var(--line-soft);
+  margin: 12px 0 0;
+  padding-top: 10px;
+  font-size: 10px;
+}
+
+.flow-data-line strong { color: var(--green); }
+.flow-data-line span { color: var(--muted); }
+.flow-data-line a { color: var(--green); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+
 .flow-actions { display: flex; gap: 7px; }
 .quiet-button,
 .add-button {
@@ -900,6 +915,7 @@ h3 {
 }
 
 .flow-table th small { display: block; font-size: 9px; font-weight: 400; }
+.flow-table .flow-number { font-variant-numeric: tabular-nums; font-weight: 700; }
 .flow-table input {
   width: 100%;
   min-width: 112px;

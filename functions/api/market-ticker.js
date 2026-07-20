@@ -5,8 +5,8 @@ const TICKERS = [
   { id: "usdk", label: "USD/KRW", symbol: "KRW=X", digits: 2 },
 ];
 
-function yahooDailyUrl(symbol) {
-  return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=10d`;
+function yahooIntradayUrl(symbol) {
+  return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1m&range=1d`;
 }
 
 function json(data, init = {}) {
@@ -14,85 +14,76 @@ function json(data, init = {}) {
     ...init,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "cache-control": "no-store",
+      "cache-control": "public, max-age=30, s-maxage=30",
       ...init.headers,
     },
   });
 }
 
-function toDateKey(seconds) {
-  return new Date(seconds * 1000).toISOString().slice(0, 10);
-}
-
-async function fetchLatestClose(ticker) {
-  const response = await fetch(yahooDailyUrl(ticker.symbol), {
+async function fetchLatestQuote(ticker) {
+  const response = await fetch(yahooIntradayUrl(ticker.symbol), {
     headers: {
-      "user-agent": "wiplabs-market-ticker/1.0",
+      "user-agent": "wiplabs-market-ticker/2.0",
       accept: "application/json",
     },
-    cf: {
-      cacheTtl: 300,
-      cacheEverything: false,
-    },
+    cf: { cacheTtl: 30, cacheEverything: true },
   });
 
-  if (!response.ok) {
-    throw new Error(`${ticker.symbol} daily close request failed with ${response.status}`);
-  }
+  if (!response.ok) throw new Error(`${ticker.symbol} intraday quote request failed with ${response.status}`);
 
   const data = await response.json();
   const result = data?.chart?.result?.[0];
-  const timestamps = result?.timestamp || [];
+  const meta = result?.meta;
   const closes = result?.indicators?.quote?.[0]?.close || [];
-  const valid = [];
+  const timestamps = result?.timestamp || [];
+  let lastBar = null;
 
-  for (let index = timestamps.length - 1; index >= 0; index -= 1) {
-    const close = closes[index];
-    if (Number.isFinite(close)) {
-      valid.push({ close, date: toDateKey(timestamps[index]) });
-      if (valid.length === 2) break;
+  for (let index = closes.length - 1; index >= 0; index -= 1) {
+    if (Number.isFinite(closes[index])) {
+      lastBar = { price: closes[index], time: timestamps[index] ? timestamps[index] * 1000 : null };
+      break;
     }
   }
 
-  if (valid.length >= 1) {
-    const latest = valid[0];
-    const previous = valid[1] || null;
-    const change = previous ? latest.close - previous.close : null;
-    const changePct = previous && previous.close !== 0 ? change / previous.close : null;
+  const price = Number.isFinite(meta?.regularMarketPrice) ? meta.regularMarketPrice : lastBar?.price;
+  const previousClose = Number.isFinite(meta?.chartPreviousClose)
+    ? meta.chartPreviousClose
+    : Number.isFinite(meta?.previousClose)
+      ? meta.previousClose
+      : null;
+  if (!Number.isFinite(price)) throw new Error(`${ticker.symbol} intraday quote is unavailable`);
 
-    return {
-      id: ticker.id,
-      label: ticker.label,
-      symbol: ticker.symbol,
-      close: latest.close,
-      previousClose: previous?.close ?? null,
-      change,
-      changePct,
-      date: latest.date,
-      previousDate: previous?.date ?? null,
-      digits: ticker.digits,
-    };
-  }
-
-  throw new Error(`${ticker.symbol} daily close is unavailable`);
+  const change = Number.isFinite(previousClose) ? price - previousClose : null;
+  return {
+    id: ticker.id,
+    label: ticker.label,
+    symbol: ticker.symbol,
+    close: price,
+    previousClose,
+    change,
+    changePct: Number.isFinite(change) && previousClose !== 0 ? change / previousClose : null,
+    marketTime: meta?.regularMarketTime ? meta.regularMarketTime * 1000 : lastBar?.time,
+    marketState: meta?.marketState || "",
+    exchange: meta?.fullExchangeName || meta?.exchangeName || "",
+    delayMinutes: Number.isFinite(meta?.exchangeDataDelayedBy) ? meta.exchangeDataDelayedBy : null,
+    digits: ticker.digits,
+  };
 }
 
 export async function onRequestGet() {
   try {
-    const items = await Promise.all(TICKERS.map(fetchLatestClose));
-
+    const items = await Promise.all(TICKERS.map(fetchLatestQuote));
     return json({
       ok: true,
       items,
       fetchedAt: Date.now(),
+      provider: "Yahoo Finance",
+      quoteType: "free delayed intraday",
     });
   } catch (error) {
     return json(
-      {
-        ok: false,
-        message: error.message || "Failed to fetch market ticker",
-      },
-      { status: 502 },
+      { ok: false, message: error.message || "Failed to fetch market ticker" },
+      { status: 502, headers: { "cache-control": "no-store" } },
     );
   }
 }

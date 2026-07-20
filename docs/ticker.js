@@ -13,6 +13,14 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+  const timeFormat = new Intl.DateTimeFormat(isEn ? "en-US" : "ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 
   function formatChangePct(value) {
     if (!Number.isFinite(value)) return "";
@@ -28,19 +36,21 @@
       data.items.forEach((item) => {
         const element = tickerEls[item.id];
         if (!element) return;
-
         const changeText = formatChangePct(item.changePct);
         const changeClass = item.changePct > 0 ? "positive" : item.changePct < 0 ? "negative" : "neutral";
         element.innerHTML = `${tickerNumber.format(item.close)}${changeText ? ` <em class="${changeClass}">${changeText}</em>` : ""}`;
-        const title = isEn
-          ? `${item.label} latest close: ${item.date}${item.previousDate ? ` · previous date: ${item.previousDate}` : ""}`
-          : `${item.label} 최근 종가 기준: ${item.date}${item.previousDate ? ` · 직전 기준일: ${item.previousDate}` : ""}`;
-        element.closest("span").title = title;
+
+        const quoteTime = item.marketTime ? timeFormat.format(new Date(item.marketTime)) : (isEn ? "time unavailable" : "시각 미확인");
+        const delay = Number.isFinite(item.delayMinutes) && item.delayMinutes > 0
+          ? (isEn ? ` · about ${item.delayMinutes} min delayed` : ` · 약 ${item.delayMinutes}분 지연`)
+          : (isEn ? " · free delayed quote" : " · 무료 지연 시세");
+        element.closest("span").title = `${item.label} · ${quoteTime} KST${delay} · ${data.provider || "Yahoo Finance"}`;
       });
     } catch {
-      // Keep placeholders if the ticker endpoint is temporarily unavailable.
+      // Keep the last displayed quote if a refresh temporarily fails.
     }
   }
 
   loadMarketTicker();
+  window.setInterval(loadMarketTicker, 60_000);
 })();

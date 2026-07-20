@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "generatedAt": "2026-07-21T04:02:12+09:00",
+  "lastDataDate": "2026-07-20",
+  "unit": "KRW trillion",
+  "isSample": false,
+  "source": {
+    "name": "KRX Data Marketplace — previous-business-day investor trading trend",
+    "url": "https://data.krx.co.kr/contents/MDC/MAIN/main/index.cmd",
+    "spot": "KOSPI foreign-investor net trading value",
+    "futures": "KOSPI 200 futures foreign-investor net trading value",
+    "note": "KRX source values are converted from KRW billions to KRW trillions."
+  },
+  "rows": [
+    {
+      "date": "2026-07-20",
+      "spot": 0.52,
+      "futures": 1.011
+    }
+  ]
+}
