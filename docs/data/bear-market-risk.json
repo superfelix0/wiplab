@@ -1,8 +1,8 @@
 {
   "ok": true,
   "sample": false,
-  "generatedAt": "2026-07-19T14:32:00+09:00",
-  "lastUpdated": "2026-07-19",
+  "generatedAt": "2026-07-21T02:45:52+09:00",
+  "lastUpdated": "2026-07-21",
   "operatorNote": {
     "ko": "기존 사이트 수집 데이터와 공개 데이터 대용치를 이용해 자동 산출합니다.",
     "en": "Automatically calculated from existing site datasets and public-data proxies."
@@ -118,25 +118,25 @@
           "name": "FRED M2SL",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/M2SL",
-          "checkedAt": "2026-07-18T18:21:49+09:00"
+          "checkedAt": "2026-07-20T19:23:51+09:00"
         },
         {
           "name": "FRED WRESBAL",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/WRESBAL",
-          "checkedAt": "2026-07-18T18:21:49+09:00"
+          "checkedAt": "2026-07-20T19:23:51+09:00"
         },
         {
           "name": "FRED RRPONTSYD",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/RRPONTSYD",
-          "checkedAt": "2026-07-18T18:21:49+09:00"
+          "checkedAt": "2026-07-20T19:23:51+09:00"
         },
         {
           "name": "FRED WTREGEN",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/WTREGEN",
-          "checkedAt": "2026-07-18T18:21:49+09:00"
+          "checkedAt": "2026-07-20T19:23:51+09:00"
         },
         {
           "name": "KRX investor flow via pykrx",
@@ -146,10 +146,10 @@
         }
       ],
       "historyKo": [
-        "2026-07-19 자동 산출"
+        "2026-07-21 자동 산출"
       ],
       "historyEn": [
-        "2026-07-19 auto-calculated"
+        "2026-07-21 auto-calculated"
       ]
     },
     {
@@ -181,10 +181,10 @@
         }
       ],
       "historyKo": [
-        "2026-07-19 자동 산출"
+        "2026-07-21 자동 산출"
       ],
       "historyEn": [
-        "2026-07-19 auto-calculated"
+        "2026-07-21 auto-calculated"
       ]
     },
     {
@@ -216,10 +216,10 @@
         }
       ],
       "historyKo": [
-        "2026-07-19 자동 산출"
+        "2026-07-21 자동 산출"
       ],
       "historyEn": [
-        "2026-07-19 auto-calculated"
+        "2026-07-21 auto-calculated"
       ]
     },
     {
@@ -247,7 +247,7 @@
           "name": "SEC IPO Statistics",
           "type": "official public statistics",
           "url": "https://www.sec.gov/data-research/statistics-data-visualizations/initial-public-offerings-ipos",
-          "checkedAt": "2026-07-19",
+          "checkedAt": "2026-07-21",
           "note": "Quarterly IPO counts/proceeds and issuer-type breakdown; downloadable workbook through 2026:Q1."
         },
         {
@@ -266,10 +266,10 @@
         }
       ],
       "historyKo": [
-        "2026-07-19 자동 산출"
+        "2026-07-21 자동 산출"
       ],
       "historyEn": [
-        "2026-07-19 auto-calculated"
+        "2026-07-21 auto-calculated"
       ],
       "computedData": {
         "latestPeriod": "2026:Q1",
@@ -369,14 +369,14 @@
           "name": "KRX KOSPI PER data",
           "type": "public/user-provided market data",
           "url": "https://data.krx.co.kr/",
-          "checkedAt": "2026-07-18T21:43:53+09:00"
+          "checkedAt": "2026-07-21T01:10:56+09:00"
         }
       ],
       "historyKo": [
-        "2026-07-19 자동 산출"
+        "2026-07-21 자동 산출"
       ],
       "historyEn": [
-        "2026-07-19 auto-calculated"
+        "2026-07-21 auto-calculated"
       ]
     }
   ],
@@ -483,6 +483,16 @@
     },
     {
       "date": "2026-07-19",
+      "totalScore": 4.0,
+      "changesKo": [
+        "자동 산출 데이터 갱신"
+      ],
+      "changesEn": [
+        "Auto-calculated data update"
+      ]
+    },
+    {
+      "date": "2026-07-21",
       "totalScore": 4.0,
       "changesKo": [
         "자동 산출 데이터 갱신"
