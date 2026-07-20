@@ -11,10 +11,10 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="WIP Labs는 KOSPI PER, 수급 심리, 하이퍼스케일러 CAPEX, 메모리 영업이익, 미국 유동성, ADR 괴리율 같은 재무지표를 작게 실험하고 확장하는 시장 데이터 실험실입니다.">
+  <meta name="description" content="WIP Labs는 KOSPI PER, 수급 심리, 외국인 현물·선물 수급, 하이퍼스케일러 CAPEX, 메모리 영업이익, 미국 유동성 같은 재무지표를 실험하는 시장 데이터 연구실입니다.">
   <meta name="theme-color" content="#f5f1e8">
   <meta property="og:title" content="WIP Labs — 재무지표 실험실">
-  <meta property="og:description" content="KOSPI PER, 수급 심리, 하이퍼스케일러 CAPEX, 메모리 영업이익, 미국 유동성, ADR 괴리율을 가볍게 확인하는 재무지표 실험실입니다.">
+  <meta property="og:description" content="KOSPI PER, 수급 심리, 외국인 현물·선물 수급, AI CAPEX, 메모리 실적과 미국 유동성을 가볍게 확인합니다.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://wiplabs.pages.dev/">
   <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
@@ -41,7 +41,7 @@
       <span>WIP</span>
       <strong>WIP Labs</strong>
     </a>
-    <nav class="service-tabs" aria-label="Main menu"><a href="./" aria-current="page">HOME</a><a href="wip-1/">F1</a><a href="wip-2/">F2</a><a href="wip-3/">F3</a><a href="wip-4/">F4</a><a href="wip-5/">F5</a><a href="wip-6/">F6</a><a href="wip-7/">F7</a><a class="lang-switch" href="./" aria-current="true">KO</a><a class="lang-switch" href="en/">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav>
+    <nav class="service-tabs" aria-label="Main menu"><a href="./" aria-current="page">HOME</a><a href="wip-1/">F1</a><a href="wip-2/">F2</a><a href="wip-3/">F3</a><a href="wip-4/">F4</a><a href="wip-5/">F5</a><a href="wip-6/">F6</a><a href="wip-7/">F7</a><a href="wip-8/">F8</a><a class="lang-switch" href="./" aria-current="true">KO</a><a class="lang-switch" href="en/">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav>
   </header>
   <div class="ticker-strip" aria-label="시장 티커">
     <span>KOSPI <b id="tickerKospi">--</b></span>
@@ -74,6 +74,7 @@
         <a href="wip-5/" data-category="finance"><span>F5</span><strong>US Liquidity Monitor</strong><small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small><small class="metric">M2/RRP/TGA</small><small class="module-note">M2, 지급준비금, RRP, TGA로 미국 유동성 방향을 봅니다.</small><small class="module-comment" id="commentF5">Loading liquidity comment.</small><small class="live-dot">* AD HOC</small></a>
         <a href="wip-6/" data-category="finance"><span>F6</span><strong>SK Hynix ADR 가격 비교</strong><small class="cmd"><b>$</b> ./sk-hynix-adr <em>--compare</em></small><small class="metric">ADR/KRW</small><small class="module-note">ADR 환산 가격과 국내 본주 가격의 차이를 확인합니다.</small><small class="module-comment" id="commentF6">Checking spread</small><small class="live-dot">* DAILY</small></a>
         <a href="wip-7/" data-category="finance"><span>F7</span><strong>Bear Market Risk</strong><small class="cmd"><b>$</b> ./bear-risk <em>--dashboard</em></small><small class="metric">RISK/10</small><small class="module-note">시장 폭, 주도주, 전방 수요, IPO, EPS 전망으로 약세장 전환 위험을 점수화합니다.</small><small class="module-comment" id="commentF7">위험 점수 확인 중</small><small class="live-dot">* WEEKLY</small></a>
+        <a href="wip-8/" data-category="finance"><span>F8</span><strong>Foreign Flow Pulse</strong><small class="cmd"><b>$</b> ./foreign-flow <em>--pulse</em></small><small class="metric">SPOT/FUTURES</small><small class="module-note">외국인 현물·선물 순매수 조합으로 최근 5거래일 시장 상태를 판정합니다.</small><small class="module-comment">입력값은 이 기기에 저장되며 즉시 다시 계산됩니다.</small><small class="live-dot">* MANUAL</small></a>
       </div>
     </section>
   </main>
