@@ -1852,9 +1852,8 @@ h3 {
 .risk-chart-wrap {
   position: relative;
   min-height: 260px;
-  border: 1px dashed var(--line-dash);
-  background:
-    repeating-linear-gradient(45deg, #fffaf0, #fffaf0 9px, #f0eadf 9px, #f0eadf 18px);
+  border: 1px solid var(--line);
+  background: var(--panel);
   overflow: hidden;
 }
 
@@ -1863,15 +1862,7 @@ h3 {
 .liquidity-chart-wrap::before,
 .sentiment-chart-wrap::before,
 .risk-chart-wrap::before {
-  content: "▚ DATA VISUAL SLOT ▚";
-  position: absolute;
-  top: 10px;
-  left: 12px;
-  color: rgba(169, 112, 21, 0.45);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  pointer-events: none;
+  content: none;
 }
 
 .chart-wrap svg,

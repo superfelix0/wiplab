@@ -301,7 +301,7 @@ function updateForeignFlowComment(data) {
   return { rows, spotTotal, futuresTotal, stageIndex, label, provisional: rows.length < 5 };
 }
 
-function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earnings, bearRisk, flowSummary) {
+function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk, flowSummary) {
   const kospi = per?.markets?.kospi200;
   const currentPer = Number(kospi?.per);
   const averagePer = Number(kospi?.historicalAveragePer);
@@ -330,8 +330,6 @@ function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earning
     .filter(Number.isFinite);
   const avgMemoryGrowth = averageFinite(memoryGrowthRows);
 
-  const liquidityTone = liquidity?.summary?.tone;
-  const liquidityChange = Number(liquidity?.summary?.marketLiquidity?.change);
   const riskScore = Number(bearRisk?.summary?.totalScore);
   const risk = riskStage(riskScore, bearRisk?.scoreScale || []);
   const riskLabel = risk ? (IS_EN ? risk.labelEn : risk.labelKo) : ht("확인 필요", "Needs data");
@@ -341,8 +339,6 @@ function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earning
   if (capexLabel === ht("여유 있음", "Comfortable")) score += 0.5;
   else if (capexLabel === ht("부담 확대", "Burden rising")) score -= 0.5;
   if (Number.isFinite(avgMemoryGrowth)) score += avgMemoryGrowth > 0.1 ? 1 : avgMemoryGrowth < -0.1 ? -1 : 0;
-  if (liquidityTone === "positive") score += 1;
-  else if (liquidityTone === "negative") score -= 1;
   if (Number.isFinite(riskScore)) score += riskScore <= 4 ? 0.25 : riskScore >= 6.5 ? -1 : -0.5;
   if (flowSummary) {
     const flowScores = [-1, -0.5, 0, 0.5, 1];
@@ -375,10 +371,23 @@ function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earning
   }
 
   const sentences = [lead];
-  if (Number.isFinite(valuationGap) && Number.isFinite(riskScore)) {
+  if (Number.isFinite(valuationGap)) {
     sentences.push(ht(
-      `KOSPI 현행 PER ${homeNumber.format(currentPer)}배는 역사적 평균 ${homeNumber.format(averagePer)}배보다 ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "높고" : "낮으며"}, 약세장 위험은 ${homeNumber.format(riskScore)}/10 ${riskLabel} 단계입니다.`,
-      `The KOSPI current PER of ${homeNumber.format(currentPer)}x is ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "above" : "below"} its ${homeNumber.format(averagePer)}x historical average, while bear-market risk is ${homeNumber.format(riskScore)}/10 (${riskLabel}).`
+      `KOSPI 현행 PER ${homeNumber.format(currentPer)}배는 역사적 평균 ${homeNumber.format(averagePer)}배보다 ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "높지만" : "낮고"}, Forward PER ${homeNumber.format(HOME_FORWARD_PER)}배는 예상이익 기준 저평가 가능성과 이익 전망의 실현 여부를 함께 확인해야 한다는 신호입니다.`,
+      `The KOSPI current PER of ${homeNumber.format(currentPer)}x is ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "above" : "below"} its ${homeNumber.format(averagePer)}x historical average; the ${homeNumber.format(HOME_FORWARD_PER)}x forward PER may imply undervaluation on forecast earnings, but also requires confidence that those earnings will materialize.`
+    ));
+  }
+  if (Number.isFinite(riskScore)) {
+    const riskIndicators = (bearRisk?.indicators || []).slice().sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
+    const mainDrivers = riskIndicators.slice(0, 2);
+    const lowRiskItems = riskIndicators.filter((item) => Number(item.score) <= 0.5).slice(0, 2);
+    const driverKo = mainDrivers.map((item) => `${item.titleKo} ${homeNumber.format(Number(item.score))}/2`).join("과 ");
+    const driverEn = mainDrivers.map((item) => `${item.titleEn} ${homeNumber.format(Number(item.score))}/2`).join(" and ");
+    const offsetKo = lowRiskItems.map((item) => item.titleKo).join("·");
+    const offsetEn = lowRiskItems.map((item) => item.titleEn).join(" and ");
+    sentences.push(ht(
+      `약세장 위험 ${homeNumber.format(riskScore)}/10은 즉각적인 위험보다 관찰이 필요한 수준으로, ${driverKo || "일부 위험 지표"}가 점수를 높였지만 ${offsetKo || "다른 지표"}는 아직 낮은 위험을 가리킵니다.`,
+      `Bear-market risk at ${homeNumber.format(riskScore)}/10 is a watch level rather than an immediate danger signal: ${driverEn || "some risk indicators"} lift the score, while ${offsetEn || "other indicators"} still point to low risk.`
     ));
   }
   if (flowSummary) {
@@ -387,10 +396,9 @@ function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earning
       `Retail flow reads ${retailView.label}, while foreign spot/futures flow is ${flowSummary.label}${flowSummary.provisional ? " (provisional)" : ""}, so persistence still needs confirmation.`
     ));
   }
-  const liquidityLabel = liquidityTone === "positive" ? ht("우호적", "supportive") : liquidityTone === "negative" ? ht("비우호적", "restrictive") : ht("혼재", "mixed");
   sentences.push(ht(
-    `미국 유동성은 ${liquidityLabel}${Number.isFinite(liquidityChange) ? `이고 실질 유동성 보조값은 최근 3개월 ${liquidityChange >= 0 ? "+" : ""}${homeNumber.format(liquidityChange)}십억 달러 변했으며` : "이며"}, 메모리 영업이익 흐름과 하이퍼스케일러 CAPEX 부담(${capexLabel})을 함께 볼 필요가 있습니다.`,
-    `U.S. liquidity is ${liquidityLabel}${Number.isFinite(liquidityChange) ? `, with the real-liquidity proxy changing ${liquidityChange >= 0 ? "+" : ""}${homeNumber.format(liquidityChange)}B USD over three months` : ""}; this should be read alongside memory operating-profit trends and hyperscaler CAPEX pressure (${capexLabel}).`
+    `메모리 업체 평균 영업이익은 최근 분기 전분기 대비 ${pctText(avgMemoryGrowth)} 변했고, 하이퍼스케일러 CAPEX 부담은 ${capexLabel}로 나타나 반도체 실적 흐름과 AI 투자 부담이 엇갈립니다.`,
+    `Average memory-company operating profit changed ${pctText(avgMemoryGrowth)} quarter on quarter, while hyperscaler CAPEX pressure is ${capexLabel}, leaving semiconductor earnings and AI investment pressure in tension.`
   ));
   if (homeEls.marketSentimentLabel) {
     homeEls.marketSentimentLabel.textContent = label;
@@ -435,7 +443,7 @@ async function loadHomeRead() {
     updateAdrComment(adr);
     updateBearRiskComment(bearRisk);
     const flowSummary = updateForeignFlowComment(foreignFlow);
-    updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earnings, bearRisk, flowSummary);
+    updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk, flowSummary);
 
     const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
     if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${formatHomeUpdatedAt(timestamps.sort().at(-1))}` : ht("업데이트 정보 없음", "No update information");
