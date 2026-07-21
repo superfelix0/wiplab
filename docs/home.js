@@ -310,6 +310,13 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
     : null;
   const retailPoint = latestSentiment(sentimentRows);
   const retailView = sentimentView(retailPoint);
+  const vkospi = Number(sentiment?.kospi200Volatility?.value);
+  const vkospiDailyMove = Number.isFinite(vkospi) ? vkospi / Math.sqrt(252) : null;
+  const dualValuationSignal = Number.isFinite(currentPer)
+    && Number.isFinite(averagePer)
+    && currentPer > averagePer
+    && HOME_FORWARD_PER < currentPer
+    && HOME_FORWARD_PER < averagePer;
 
   const hyperscalerRows = (earnings?.companies || [])
     .filter((company) => company.group === "Hyperscaler")
@@ -336,10 +343,12 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
 
   let score = 0;
   if (Number.isFinite(valuationGap)) score += valuationGap > 0.1 ? -1 : valuationGap < -0.1 ? 0.75 : 0;
+  if (dualValuationSignal) score += 0.5;
   if (capexLabel === ht("여유 있음", "Comfortable")) score += 0.5;
   else if (capexLabel === ht("부담 확대", "Burden rising")) score -= 0.5;
   if (Number.isFinite(avgMemoryGrowth)) score += avgMemoryGrowth > 0.1 ? 1 : avgMemoryGrowth < -0.1 ? -1 : 0;
   if (Number.isFinite(riskScore)) score += riskScore <= 4 ? 0.25 : riskScore >= 6.5 ? -1 : -0.5;
+  if (Number.isFinite(vkospi)) score += vkospi >= 40 ? -1 : vkospi >= 25 ? -0.5 : 0;
   if (flowSummary) {
     const flowScores = [-1, -0.5, 0, 0.5, 1];
     score += flowScores[flowSummary.stageIndex] * (flowSummary.provisional ? 0.5 : 1);
@@ -348,7 +357,11 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
   let label;
   let tone;
   let lead;
-  if (score >= 2) {
+  if (dualValuationSignal && vkospi >= 40) {
+    label = ht("방향성 혼재·고변동성", "Mixed direction/high volatility");
+    tone = "neutral";
+    lead = ht("한국 주식시장은 상방과 하방 재료가 동시에 존재하고, 예상 변동 폭도 큰 구간입니다.", "Korean equities have both upside and downside catalysts while expected volatility remains elevated.");
+  } else if (score >= 2) {
     label = ht("긍정 우세", "Positive");
     tone = "positive";
     lead = ht("한국 주식시장 센티멘트는 긍정 신호가 우세합니다.", "Korean equity sentiment is tilted positive.");
@@ -373,8 +386,14 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
   const sentences = [lead];
   if (Number.isFinite(valuationGap)) {
     sentences.push(ht(
-      `KOSPI 현행 PER ${homeNumber.format(currentPer)}배는 역사적 평균 ${homeNumber.format(averagePer)}배보다 ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "높지만" : "낮고"}, Forward PER ${homeNumber.format(HOME_FORWARD_PER)}배는 예상이익 기준 저평가 가능성과 이익 전망의 실현 여부를 함께 확인해야 한다는 신호입니다.`,
-      `The KOSPI current PER of ${homeNumber.format(currentPer)}x is ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "above" : "below"} its ${homeNumber.format(averagePer)}x historical average; the ${homeNumber.format(HOME_FORWARD_PER)}x forward PER may imply undervaluation on forecast earnings, but also requires confidence that those earnings will materialize.`
+      `KOSPI 현행 PER ${homeNumber.format(currentPer)}배는 역사적 평균 ${homeNumber.format(averagePer)}배보다 ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "높아 현재 이익 기준 하방 부담이 있지만" : "낮아 현재 이익 기준 부담이 완화되어 있고"}, Forward PER ${homeNumber.format(HOME_FORWARD_PER)}배는 예상이익이 실현될 경우 상당한 상방 여지를 시사합니다.`,
+      `The KOSPI current PER of ${homeNumber.format(currentPer)}x is ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "above" : "below"} its ${homeNumber.format(averagePer)}x historical average, ${valuationGap >= 0 ? "implying downside valuation pressure on current earnings" : "reducing valuation pressure on current earnings"}; the ${homeNumber.format(HOME_FORWARD_PER)}x forward PER implies substantial upside if forecast earnings materialize.`
+    ));
+  }
+  if (Number.isFinite(vkospiDailyMove)) {
+    sentences.push(ht(
+      `반대로 예상이익에 대한 신뢰가 약해지면 낮은 Forward PER가 할인 이유가 될 수 있고, VKOSPI ${homeNumber.format(vkospi)}는 거래일 기준 일간 약 ±${vkospiDailyMove.toFixed(1)}% 변동 가능성을 반영해 방향보다 변동 폭 확대를 경고합니다.`,
+      `If confidence in forecast earnings weakens, the low forward PER may instead reflect a discount; VKOSPI at ${homeNumber.format(vkospi)} translates to roughly ±${vkospiDailyMove.toFixed(1)}% expected daily movement, warning about magnitude rather than direction.`
     ));
   }
   if (Number.isFinite(riskScore)) {
@@ -392,14 +411,10 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
   }
   if (flowSummary) {
     sentences.push(ht(
-      `개인 수급은 ${retailView.label}, 외국인 현물·선물 수급은 ${flowSummary.label}${flowSummary.provisional ? "(잠정)" : ""} 단계여서 수급 회복의 지속성을 더 확인해야 합니다.`,
-      `Retail flow reads ${retailView.label}, while foreign spot/futures flow is ${flowSummary.label}${flowSummary.provisional ? " (provisional)" : ""}, so persistence still needs confirmation.`
+      `개인 수급은 ${retailView.label}, 외국인 현물·선물 수급은 ${flowSummary.label}${flowSummary.provisional ? "(잠정)" : ""} 단계이며, 메모리 영업이익 흐름과 하이퍼스케일러 CAPEX 부담(${capexLabel})까지 함께 보면 아직 한 방향으로 확신하기 어렵습니다.`,
+      `Retail flow reads ${retailView.label}, foreign spot/futures flow is ${flowSummary.label}${flowSummary.provisional ? " (provisional)" : ""}, and memory earnings versus hyperscaler CAPEX pressure (${capexLabel}) still do not support a one-way conclusion.`
     ));
   }
-  sentences.push(ht(
-    `메모리 업체 평균 영업이익은 최근 분기 전분기 대비 ${pctText(avgMemoryGrowth)} 변했고, 하이퍼스케일러 CAPEX 부담은 ${capexLabel}로 나타나 반도체 실적 흐름과 AI 투자 부담이 엇갈립니다.`,
-    `Average memory-company operating profit changed ${pctText(avgMemoryGrowth)} quarter on quarter, while hyperscaler CAPEX pressure is ${capexLabel}, leaving semiconductor earnings and AI investment pressure in tension.`
-  ));
   if (homeEls.marketSentimentLabel) {
     homeEls.marketSentimentLabel.textContent = label;
     homeEls.marketSentimentLabel.dataset.tone = tone;
