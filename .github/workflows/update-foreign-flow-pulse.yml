@@ -9,8 +9,9 @@ on:
       - "scripts/update_foreign_flow_pulse.py"
   schedule:
     # KRX publishes end-of-day investor data after the market close.
-    # 10:15 UTC = 19:15 KST every day; holidays safely deduplicate by trading date.
-    - cron: "15 10 * * *"
+    # Retry hourly from 19:15 through 22:15 KST on weekdays. Rows are
+    # deduplicated by KRX trading date, so repeated runs are safe.
+    - cron: "15 10-13 * * 1-5"
   workflow_dispatch:
 
 permissions:
