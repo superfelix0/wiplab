@@ -238,7 +238,7 @@ function updateLiquidityComment(data) {
   const changeText = Number.isFinite(change)
     ? ht(`실질 유동성 보조값은 최근 3개월 ${change >= 0 ? "+" : ""}${homeNumber.format(change)}십억 달러`, `the real-liquidity proxy changed ${change >= 0 ? "+" : ""}${homeNumber.format(change)}B USD over three months`)
     : ht("실질 유동성 변화는 확인 필요", "the real-liquidity change needs confirmation");
-  setComment("f5", `${label}. ${countText}, ${changeText}.`);
+  setComment("f5", `${label}. ${countText}${ht("이며 ", "; ")}${changeText}.`);
 }
 
 function updateAdrComment(data) {
@@ -301,7 +301,7 @@ function updateForeignFlowComment(data) {
   return { rows, spotTotal, futuresTotal, stageIndex, label, provisional: rows.length < 5 };
 }
 
-function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earnings, adr, bearRisk, flowSummary) {
+function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earnings, bearRisk, flowSummary) {
   const kospi = per?.markets?.kospi200;
   const currentPer = Number(kospi?.per);
   const averagePer = Number(kospi?.historicalAveragePer);
@@ -335,7 +335,6 @@ function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earning
   const riskScore = Number(bearRisk?.summary?.totalScore);
   const risk = riskStage(riskScore, bearRisk?.scoreScale || []);
   const riskLabel = risk ? (IS_EN ? risk.labelEn : risk.labelKo) : ht("확인 필요", "Needs data");
-  const adrPremium = Number(adr?.result?.premium);
 
   let score = 0;
   if (Number.isFinite(valuationGap)) score += valuationGap > 0.1 ? -1 : valuationGap < -0.1 ? 0.75 : 0;
@@ -349,7 +348,6 @@ function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earning
     const flowScores = [-1, -0.5, 0, 0.5, 1];
     score += flowScores[flowSummary.stageIndex] * (flowSummary.provisional ? 0.5 : 1);
   }
-  if (Number.isFinite(adrPremium)) score += adrPremium > 0.03 ? 0.25 : adrPremium < -0.03 ? -0.25 : 0;
 
   let label;
   let tone;
@@ -385,7 +383,7 @@ function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earning
   }
   if (flowSummary) {
     sentences.push(ht(
-      `개인 수급은 ${retailView.label}, 외국인 현물·선물 수급은 ${flowSummary.label}${flowSummary.provisional ? "(잠정)" : ""}으로 수급 회복의 지속성을 더 확인해야 합니다.`,
+      `개인 수급은 ${retailView.label}, 외국인 현물·선물 수급은 ${flowSummary.label}${flowSummary.provisional ? "(잠정)" : ""} 단계여서 수급 회복의 지속성을 더 확인해야 합니다.`,
       `Retail flow reads ${retailView.label}, while foreign spot/futures flow is ${flowSummary.label}${flowSummary.provisional ? " (provisional)" : ""}, so persistence still needs confirmation.`
     ));
   }
@@ -394,13 +392,6 @@ function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earning
     `미국 유동성은 ${liquidityLabel}${Number.isFinite(liquidityChange) ? `이고 실질 유동성 보조값은 최근 3개월 ${liquidityChange >= 0 ? "+" : ""}${homeNumber.format(liquidityChange)}십억 달러 변했으며` : "이며"}, 메모리 영업이익 흐름과 하이퍼스케일러 CAPEX 부담(${capexLabel})을 함께 볼 필요가 있습니다.`,
     `U.S. liquidity is ${liquidityLabel}${Number.isFinite(liquidityChange) ? `, with the real-liquidity proxy changing ${liquidityChange >= 0 ? "+" : ""}${homeNumber.format(liquidityChange)}B USD over three months` : ""}; this should be read alongside memory operating-profit trends and hyperscaler CAPEX pressure (${capexLabel}).`
   ));
-  if (Number.isFinite(adrPremium) && Math.abs(adrPremium) >= 0.01) {
-    sentences.push(ht(
-      `SK Hynix ADR 괴리율 ${pctText(adrPremium)}는 반도체 투자심리의 보조 신호로만 참고합니다.`,
-      `The SK Hynix ADR spread of ${pctText(adrPremium)} is used only as a secondary semiconductor-sentiment signal.`
-    ));
-  }
-
   if (homeEls.marketSentimentLabel) {
     homeEls.marketSentimentLabel.textContent = label;
     homeEls.marketSentimentLabel.dataset.tone = tone;
@@ -444,7 +435,7 @@ async function loadHomeRead() {
     updateAdrComment(adr);
     updateBearRiskComment(bearRisk);
     const flowSummary = updateForeignFlowComment(foreignFlow);
-    updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earnings, adr, bearRisk, flowSummary);
+    updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earnings, bearRisk, flowSummary);
 
     const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
     if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${formatHomeUpdatedAt(timestamps.sort().at(-1))}` : ht("업데이트 정보 없음", "No update information");
