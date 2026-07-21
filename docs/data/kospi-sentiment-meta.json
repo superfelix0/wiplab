@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-21T01:10:47+09:00",
+  "generatedAt": "2026-07-21T21:24:10+09:00",
   "timezone": "Asia/Seoul",
-  "source": "Yahoo Finance ^KS11 + pykrx KRX investor flow",
+  "source": "pykrx KRX KOSPI index + investor flow (Yahoo Finance ^KS11 index fallback)",
   "startDate": "2024-11-05",
-  "lastDataDate": "2026-07-16",
-  "rowCount": 413,
+  "lastDataDate": "2026-07-21",
+  "rowCount": 415,
   "kospi200Volatility": {
     "name": "KOSPI 200 Volatility Index (VKOSPI)",
     "ticker": "KRDRVFUVKI",
