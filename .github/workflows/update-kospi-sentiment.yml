@@ -32,6 +32,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          # A queued push-triggered run may start after an earlier data writer
+          # has advanced main. Always build on the latest accumulated data.
+          ref: main
           fetch-depth: 0
 
       - name: Set up Python
