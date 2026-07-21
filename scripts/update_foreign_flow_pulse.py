@@ -107,12 +107,18 @@ def main() -> None:
         for item in existing.get("rows", [])
         if isinstance(item, dict) and item.get("date")
     }
+    previous_row = indexed.get(row["date"])
+    row_changed = previous_row != row
     indexed[row["date"]] = row
     rows = sorted(indexed.values(), key=lambda item: item["date"])[-max(5, args.keep) :]
 
     payload = {
         "ok": True,
-        "generatedAt": dt.datetime.now(KST).isoformat(timespec="seconds"),
+        "generatedAt": (
+            dt.datetime.now(KST).isoformat(timespec="seconds")
+            if row_changed
+            else existing.get("generatedAt", dt.datetime.now(KST).isoformat(timespec="seconds"))
+        ),
         "lastDataDate": row["date"],
         "unit": "KRW trillion",
         "isSample": False,
