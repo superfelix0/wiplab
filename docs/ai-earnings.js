@@ -2,6 +2,7 @@ const earningsEls = {
   status: document.querySelector("#earningsStatus"),
   summary: document.querySelector("#earningsSummary"),
   takeaways: document.querySelector("#earningsTakeaways"),
+  releaseHighlights: document.querySelector("#earningsReleaseHighlights"),
   capexRanking: document.querySelector("#capexRanking"),
   profitRanking: document.querySelector("#profitRanking"),
   fcfRanking: document.querySelector("#fcfRanking"),
@@ -63,6 +64,18 @@ function hyperscalers(data) {
 
 function rowsWithLatest(data) {
   return hyperscalers(data).map((company) => ({ company, latest: latestQuarter(company) })).filter((item) => item.latest);
+}
+
+function renderReleaseHighlights(data) {
+  if (!earningsEls.releaseHighlights) return;
+  const rows = rowsWithLatest(data)
+    .filter(({ company }) => company.latestHighlight)
+    .sort((a, b) => String(b.latest.date).localeCompare(String(a.latest.date)))
+    .slice(0, 5);
+  earningsEls.releaseHighlights.innerHTML = rows.length ? rows.map(({ company, latest }) => {
+    const highlight = IS_EN ? company.latestHighlight.en : company.latestHighlight.ko;
+    return `<article><div><strong>${company.name}</strong><span>${latest.date}</span></div><p>${highlight || t("핵심 변화를 계산하는 중입니다.", "Calculating the key change.")}</p></article>`;
+  }).join("") : `<p class="empty-note">${t("표시할 최근 결산 데이터가 없습니다.", "No recent reported data to display.")}</p>`;
 }
 
 function capexOcf(latest) {
@@ -200,6 +213,7 @@ function renderSources(data) {
 
 function render(data) {
   renderSummary(data);
+  renderReleaseHighlights(data);
   renderTakeaways(data);
   renderRankings(data);
   renderCards(data);

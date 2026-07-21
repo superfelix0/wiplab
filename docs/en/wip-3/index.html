@@ -38,6 +38,7 @@
       <div class="section-title"><div><h2>Hyperscaler CAPEX pressure</h2><p class="section-copy">Only Microsoft, Amazon, Alphabet, Meta, and Oracle are compared.</p></div></div>
       <div class="status" id="earningsStatus">Loading AI earnings data.</div>
       <div class="earnings-insight-grid" id="earningsSummary"></div>
+      <section class="earnings-release-panel"><div class="panel-head"><h3>Latest reported highlights</h3><p>Important changes in CAPEX pressure update automatically when a new quarter is detected.</p></div><div class="earnings-release-grid" id="earningsReleaseHighlights"></div></section>
       <section class="earnings-takeaway-panel"><div class="panel-head"><h3>Takeaways</h3><p>Summarizes whether CAPEX is manageable within OCF and net income.</p></div><div class="earnings-takeaway-grid" id="earningsTakeaways"></div></section>
       <div class="earnings-chart-tabs" role="tablist"><button type="button" class="is-active" data-earnings-tab="cashflow">CAPEX/OCF</button><button type="button" data-earnings-tab="profit">CAPEX/net income</button><button type="button" data-earnings-tab="fcf">FCF size</button></div>
       <div class="earnings-compare-layout"><section class="earnings-panel" data-earnings-panel="cashflow"><div class="panel-head"><h3>CAPEX/OCF comparison</h3><p>Lower means more cash-flow room.</p></div><div class="rank-list" id="capexRanking"></div></section><section class="earnings-panel" data-earnings-panel="profit" hidden><div class="panel-head"><h3>CAPEX/net income comparison</h3><p>Lower means less burden relative to profit.</p></div><div class="rank-list" id="profitRanking"></div></section><section class="earnings-panel" data-earnings-panel="fcf" hidden><div class="panel-head"><h3>FCF comparison</h3><p>Free cash flow left after investment.</p></div><div class="rank-list" id="fcfRanking"></div></section></div>
@@ -48,6 +49,6 @@
   </main>
   <footer><div><strong>F3</strong><p>Hyperscaler AI CAPEX pressure experiment.</p></div><span>© 2026</span></footer>
   <script src="../../ticker.js?v=intraday-20260721"></script>
-  <script src="../../ai-earnings.js?v=readable-date-20260721"></script>
+  <script src="../../ai-earnings.js?v=daily-release-highlights-20260721"></script>
 </body>
 </html>

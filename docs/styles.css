@@ -1857,6 +1857,42 @@ h3 {
   overflow: hidden;
 }
 
+.earnings-release-panel {
+  margin: 14px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.earnings-release-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.earnings-release-grid article {
+  padding: 12px;
+  border-left: 3px solid var(--green);
+  background: var(--panel-2);
+}
+
+.earnings-release-grid article div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.earnings-release-grid article span,
+.earnings-release-grid article p {
+  color: var(--muted);
+}
+
+.earnings-release-grid article p {
+  margin: 8px 0 0;
+  line-height: 1.45;
+}
+
 .chart-wrap::before,
 .market-chart-wrap::before,
 .liquidity-chart-wrap::before,

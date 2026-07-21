@@ -1,6 +1,7 @@
 const memoryEls = {
   status: document.querySelector("#memoryStatus"),
   summary: document.querySelector("#memorySummary"),
+  releaseHighlights: document.querySelector("#memoryReleaseHighlights"),
   chart: document.querySelector("#memoryOpChart"),
   legend: document.querySelector("#memoryLegend"),
   table: document.querySelector("#memoryTable"),
@@ -87,6 +88,19 @@ function enrichedCompany(company) {
 
 function chartRows(companies) {
   return companies.map(enrichedCompany).filter((company) => company.quarters.some((q) => Number.isFinite(q.opGrowth)));
+}
+
+function renderMemoryReleaseHighlights(companies) {
+  if (!memoryEls.releaseHighlights) return;
+  const rows = companies
+    .filter((company) => company.latestHighlight && company.quarters?.length)
+    .sort((a, b) => String(b.quarters.at(-1)?.date).localeCompare(String(a.quarters.at(-1)?.date)))
+    .slice(0, 5);
+  memoryEls.releaseHighlights.innerHTML = rows.length ? rows.map((company) => {
+    const latest = company.quarters.at(-1);
+    const highlight = MEMORY_IS_EN ? company.latestHighlight.en : company.latestHighlight.ko;
+    return `<article><div><strong>${escapeHtml(company.name)}</strong><span>${escapeHtml(latest.date)}</span></div><p>${escapeHtml(highlight || mt("핵심 변화를 계산하는 중입니다.", "Calculating the key change."))}</p></article>`;
+  }).join("") : `<p class="empty-note">${mt("표시할 최근 결산 데이터가 없습니다.", "No recent reported data to display.")}</p>`;
 }
 
 function renderMemorySummary(companies) {
@@ -298,6 +312,7 @@ async function loadMemoryEarnings() {
     if (!response.ok || !data?.ok) throw new Error(mt("메모리 실적 데이터를 불러오지 못했습니다.", "Could not load memory earnings data."));
     const companies = memoryCompanies(data);
     renderMemorySummary(companies);
+    renderMemoryReleaseHighlights(companies);
     renderMemoryChart(companies);
     renderMemoryTimeline(companies);
     renderMemoryTable(companies);

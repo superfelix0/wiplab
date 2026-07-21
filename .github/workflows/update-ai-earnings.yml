@@ -8,8 +8,8 @@ on:
       - ".github/workflows/update-ai-earnings.yml"
       - "scripts/update_ai_earnings.py"
   schedule:
-    # F3 hyperscaler CAPEX and F4 memory earnings: Monday 08:00 KST. GitHub Actions cron uses UTC.
-    - cron: "0 23 * * 0"
+    # Check after the Korean close and after the U.S. close every day. GitHub Actions cron uses UTC.
+    - cron: "30 10,23 * * *"
   workflow_dispatch:
 
 permissions:
@@ -27,6 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Set up Python
