@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-21T21:28:28+09:00",
+  "generatedAt": "2026-07-22T03:52:20+09:00",
   "timezone": "Asia/Seoul",
   "source": "pykrx KRX KOSPI index + investor flow (Yahoo Finance ^KS11 index fallback)",
   "startDate": "2024-11-05",
@@ -8,8 +8,8 @@
   "kospi200Volatility": {
     "name": "KOSPI 200 Volatility Index (VKOSPI)",
     "ticker": "KRDRVFUVKI",
-    "date": "2026-07-20",
-    "value": 86.87,
+    "date": "2026-07-21",
+    "value": 84.89,
     "source": "pykrx KRX V-KOSPI futures table",
     "history": [
       {
@@ -495,6 +495,10 @@
       {
         "date": "2026-07-20",
         "value": 86.87
+      },
+      {
+        "date": "2026-07-21",
+        "value": 84.89
       }
     ]
   }
