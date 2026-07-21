@@ -11,7 +11,6 @@ const flowEls = {
   jointDays: document.querySelector("#flowJointDays"),
   window: document.querySelector("#flowWindow"),
   commentary: document.querySelector("#flowCommentary"),
-  tableBody: document.querySelector("#flowTableBody"),
   updated: document.querySelector("#flowUpdated"),
   dataStatus: document.querySelector("#flowDataStatus"),
   source: document.querySelector("#flowSource"),
@@ -103,19 +102,6 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-function renderFlowTable() {
-  const sorted = flowRows.slice().sort((a, b) => b.date.localeCompare(a.date));
-  flowEls.tableBody.innerHTML = sorted.map((row) => {
-    const pattern = classifyFlow(row.spot, row.futures);
-    return `<tr>
-      <td data-label="${FLOW_IS_EN ? "Date" : "거래일"}">${escapeHtml(row.date)}</td>
-      <td data-label="${FLOW_IS_EN ? "Spot" : "현물"}" class="flow-number">${formatFlowTrillion(row.spot)}</td>
-      <td data-label="${FLOW_IS_EN ? "Futures" : "선물"}" class="flow-number">${formatFlowTrillion(row.futures)}</td>
-      <td data-label="${FLOW_IS_EN ? "Classification" : "자동 분류"}"><span class="flow-pattern" data-pattern="${pattern.key}">${escapeHtml(pattern.label)}</span></td>
-    </tr>`;
-  }).join("");
-}
-
 function renderFlow() {
   const summary = summarizeFlow(flowRows);
   const provisionalLabel = summary.window.length > 0 && summary.window.length < 5
@@ -136,7 +122,6 @@ function renderFlow() {
   flowEls.jointDays.textContent = FLOW_IS_EN ? `${summary.jointBuyDays} day(s)` : `${summary.jointBuyDays}일`;
   flowEls.window.textContent = FLOW_IS_EN ? `${summary.window.length}/5 sessions` : `${summary.window.length}/5거래일`;
   flowEls.commentary.textContent = flowCommentary(summary);
-  renderFlowTable();
 }
 
 async function loadFlowData() {
