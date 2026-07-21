@@ -1,4 +1,19 @@
 (() => {
+  const tabTitles = {
+    F1: "KOSPI PER Monitor",
+    F2: "KOSPI Fear/Greed",
+    F3: "Hyperscaler AI CAPEX",
+    F4: "Memory Operating Profit",
+    F5: "US Liquidity Monitor",
+    F6: "SK Hynix ADR Monitor",
+    F7: "Bear Market Risk Dashboard",
+    F8: "Foreign Flow Pulse",
+  };
+  document.querySelectorAll(".service-tabs a").forEach((link) => {
+    const label = link.textContent.trim();
+    if (tabTitles[label]) link.title = tabTitles[label];
+  });
+
   const tickerEls = {
     kospi: document.querySelector("#tickerKospi"),
     nasdaq: document.querySelector("#tickerNasdaq"),

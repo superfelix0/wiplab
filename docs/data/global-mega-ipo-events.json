@@ -7,7 +7,7 @@
   "events": [
     {
       "id": "cxmt-star-market-2026",
-      "active": true,
+      "active": false,
       "companyKo": "창신메모리(CXMT)",
       "companyEn": "ChangXin Memory Technologies (CXMT)",
       "countryKo": "중국",
@@ -24,7 +24,7 @@
       "noteKo": "미국 시장의 직접적인 유동성 흡수보다 메모리 업종의 공급 확대와 경쟁 심화 가능성을 함께 보는 보정 사건입니다.",
       "noteEn": "This is treated less as direct U.S. liquidity absorption and more as a memory-sector capacity and competition risk event.",
       "memorySectorImpact": {
-        "displayOnF4": true,
+        "displayOnF4": false,
         "levelKo": "공급·경쟁 리스크",
         "levelEn": "Supply & competition risk",
         "headlineKo": "대규모 IPO 자금이 DRAM 증설과 기술개발로 이어질 가능성",
