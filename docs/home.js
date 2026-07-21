@@ -1,5 +1,7 @@
 const homeEls = {
   updatedAt: document.querySelector("#homeUpdatedAt"),
+  marketSentimentLabel: document.querySelector("#marketSentimentLabel"),
+  marketSentimentSummary: document.querySelector("#marketSentimentSummary"),
   comments: {
     f1: document.querySelector("#commentF1"),
     f2: document.querySelector("#commentF2"),
@@ -224,11 +226,19 @@ function updateMemoryComment(data) {
 function updateLiquidityComment(data) {
   const summary = data?.summary;
   const change = summary?.marketLiquidity?.change;
-  if (Number.isFinite(change)) {
-    setComment("f5", ht(`최근 3개월 실질 유동성 보조값 ${change >= 0 ? "+" : ""}${homeNumber.format(change)}B USD.`, `Real-liquidity proxy changed ${change >= 0 ? "+" : ""}${homeNumber.format(change)}B USD over 3 months.`));
-    return;
-  }
-  setComment("f5", ht("미국 유동성 방향을 확인합니다.", "Checks U.S. liquidity direction."));
+  if (!summary) return setComment("f5", ht("미국 유동성 방향을 확인합니다.", "Checks U.S. liquidity direction."));
+  const label = summary.tone === "positive"
+    ? ht("우호적", "Supportive")
+    : summary.tone === "negative"
+      ? ht("비우호적", "Restrictive")
+      : ht("중립·혼재", "Neutral/mixed");
+  const countText = Number.isFinite(summary.positives) && Number.isFinite(summary.total)
+    ? ht(`${summary.total}개 중 ${summary.positives}개 지표가 우호 방향`, `${summary.positives} of ${summary.total} indicators are supportive`)
+    : ht("세부 지표 방향이 혼재", "the component signals are mixed");
+  const changeText = Number.isFinite(change)
+    ? ht(`실질 유동성 보조값은 최근 3개월 ${change >= 0 ? "+" : ""}${homeNumber.format(change)}십억 달러`, `the real-liquidity proxy changed ${change >= 0 ? "+" : ""}${homeNumber.format(change)}B USD over three months`)
+    : ht("실질 유동성 변화는 확인 필요", "the real-liquidity change needs confirmation");
+  setComment("f5", `${label}. ${countText}, ${changeText}.`);
 }
 
 function updateAdrComment(data) {
@@ -258,7 +268,10 @@ function updateForeignFlowComment(data) {
   const rows = Array.isArray(data?.rows)
     ? data.rows.filter((row) => row?.date).slice().sort((a, b) => String(a.date).localeCompare(String(b.date))).slice(-5)
     : [];
-  if (!rows.length) return setComment("f8", ht("수급 판정 데이터 확인 중.", "Checking flow-stage data."));
+  if (!rows.length) {
+    setComment("f8", ht("수급 판정 데이터 확인 중.", "Checking flow-stage data."));
+    return null;
+  }
 
   const spotTotal = rows.reduce((sum, row) => sum + Number(row.spot || 0), 0);
   const futuresTotal = rows.reduce((sum, row) => sum + Number(row.futures || 0), 0);
@@ -285,6 +298,121 @@ function updateForeignFlowComment(data) {
     `${safeDate(data.lastDataDate || rows.at(-1).date)} · ${label}${provisional}. 현물 ${signed(spotTotal)}조원, 선물 ${signed(futuresTotal)}조원 (${rows.length}/5일).`,
     `${safeDate(data.lastDataDate || rows.at(-1).date)} · ${label}${provisional}. Spot ${signed(spotTotal)}T KRW, futures ${signed(futuresTotal)}T KRW (${rows.length}/5 sessions).`
   ));
+  return { rows, spotTotal, futuresTotal, stageIndex, label, provisional: rows.length < 5 };
+}
+
+function updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earnings, adr, bearRisk, flowSummary) {
+  const kospi = per?.markets?.kospi200;
+  const currentPer = Number(kospi?.per);
+  const averagePer = Number(kospi?.historicalAveragePer);
+  const valuationGap = Number.isFinite(currentPer) && Number.isFinite(averagePer) && averagePer !== 0
+    ? currentPer / averagePer - 1
+    : null;
+  const retailPoint = latestSentiment(sentimentRows);
+  const retailView = sentimentView(retailPoint);
+
+  const hyperscalerRows = (earnings?.companies || [])
+    .filter((company) => company.group === "Hyperscaler")
+    .map((company) => company.quarters?.at(-1))
+    .filter(Boolean);
+  const avgCapexOcf = averageFinite(hyperscalerRows.map(capexOcf));
+  const avgCapexNi = averageFinite(hyperscalerRows.map(capexNi));
+  const capexLabel = capexBurdenLabel(avgCapexOcf, avgCapexNi);
+
+  const memoryGrowthRows = (earnings?.companies || [])
+    .filter((company) => company.group !== "Hyperscaler" && company.name !== "Kioxia")
+    .map((company) => {
+      const quarters = (company.quarters || []).filter((quarter) => Number.isFinite(quarter.quarterlyOperatingIncome));
+      const latest = quarters.at(-1);
+      const previous = quarters.at(-2);
+      return latest && previous ? qoq(latest.quarterlyOperatingIncome, previous.quarterlyOperatingIncome) : null;
+    })
+    .filter(Number.isFinite);
+  const avgMemoryGrowth = averageFinite(memoryGrowthRows);
+
+  const liquidityTone = liquidity?.summary?.tone;
+  const liquidityChange = Number(liquidity?.summary?.marketLiquidity?.change);
+  const riskScore = Number(bearRisk?.summary?.totalScore);
+  const risk = riskStage(riskScore, bearRisk?.scoreScale || []);
+  const riskLabel = risk ? (IS_EN ? risk.labelEn : risk.labelKo) : ht("확인 필요", "Needs data");
+  const adrPremium = Number(adr?.result?.premium);
+
+  let score = 0;
+  if (Number.isFinite(valuationGap)) score += valuationGap > 0.1 ? -1 : valuationGap < -0.1 ? 0.75 : 0;
+  if (capexLabel === ht("여유 있음", "Comfortable")) score += 0.5;
+  else if (capexLabel === ht("부담 확대", "Burden rising")) score -= 0.5;
+  if (Number.isFinite(avgMemoryGrowth)) score += avgMemoryGrowth > 0.1 ? 1 : avgMemoryGrowth < -0.1 ? -1 : 0;
+  if (liquidityTone === "positive") score += 1;
+  else if (liquidityTone === "negative") score -= 1;
+  if (Number.isFinite(riskScore)) score += riskScore <= 4 ? 0.25 : riskScore >= 6.5 ? -1 : -0.5;
+  if (flowSummary) {
+    const flowScores = [-1, -0.5, 0, 0.5, 1];
+    score += flowScores[flowSummary.stageIndex] * (flowSummary.provisional ? 0.5 : 1);
+  }
+  if (Number.isFinite(adrPremium)) score += adrPremium > 0.03 ? 0.25 : adrPremium < -0.03 ? -0.25 : 0;
+
+  let label;
+  let tone;
+  let lead;
+  if (score >= 2) {
+    label = ht("긍정 우세", "Positive");
+    tone = "positive";
+    lead = ht("한국 주식시장 센티멘트는 긍정 신호가 우세합니다.", "Korean equity sentiment is tilted positive.");
+  } else if (score >= 0.5) {
+    label = ht("중립 속 개선", "Neutral, improving");
+    tone = "positive";
+    lead = ht("한국 주식시장 센티멘트는 중립권에서 개선을 시도하는 모습입니다.", "Korean equity sentiment is attempting to improve from neutral territory.");
+  } else if (score > -0.5) {
+    label = ht("중립", "Neutral");
+    tone = "neutral";
+    lead = ht("한국 주식시장 센티멘트는 긍정과 경계 신호가 맞서는 중립 구간입니다.", "Korean equity sentiment is neutral, with supportive and cautionary signals offsetting each other.");
+  } else if (score > -2) {
+    label = ht("신중", "Cautious");
+    tone = "negative";
+    lead = ht("한국 주식시장 센티멘트는 반등 가능성보다 확인이 더 필요한 신중 구간입니다.", "Korean equity sentiment remains cautious and needs more confirmation before a rebound can be trusted.");
+  } else {
+    label = ht("위험 회피", "Risk-off");
+    tone = "negative";
+    lead = ht("한국 주식시장 센티멘트는 위험 회피 신호가 우세합니다.", "Korean equity sentiment is dominated by risk-off signals.");
+  }
+
+  const sentences = [lead];
+  if (Number.isFinite(valuationGap) && Number.isFinite(riskScore)) {
+    sentences.push(ht(
+      `KOSPI 현행 PER ${homeNumber.format(currentPer)}배는 역사적 평균 ${homeNumber.format(averagePer)}배보다 ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "높고" : "낮으며"}, 약세장 위험은 ${homeNumber.format(riskScore)}/10 ${riskLabel} 단계입니다.`,
+      `The KOSPI current PER of ${homeNumber.format(currentPer)}x is ${Math.abs(valuationGap * 100).toFixed(1)}% ${valuationGap >= 0 ? "above" : "below"} its ${homeNumber.format(averagePer)}x historical average, while bear-market risk is ${homeNumber.format(riskScore)}/10 (${riskLabel}).`
+    ));
+  }
+  if (flowSummary) {
+    sentences.push(ht(
+      `개인 수급은 ${retailView.label}, 외국인 현물·선물 수급은 ${flowSummary.label}${flowSummary.provisional ? "(잠정)" : ""}으로 수급 회복의 지속성을 더 확인해야 합니다.`,
+      `Retail flow reads ${retailView.label}, while foreign spot/futures flow is ${flowSummary.label}${flowSummary.provisional ? " (provisional)" : ""}, so persistence still needs confirmation.`
+    ));
+  }
+  const liquidityLabel = liquidityTone === "positive" ? ht("우호적", "supportive") : liquidityTone === "negative" ? ht("비우호적", "restrictive") : ht("혼재", "mixed");
+  sentences.push(ht(
+    `미국 유동성은 ${liquidityLabel}${Number.isFinite(liquidityChange) ? `이고 실질 유동성 보조값은 최근 3개월 ${liquidityChange >= 0 ? "+" : ""}${homeNumber.format(liquidityChange)}십억 달러 변했으며` : "이며"}, 메모리 영업이익 흐름과 하이퍼스케일러 CAPEX 부담(${capexLabel})을 함께 볼 필요가 있습니다.`,
+    `U.S. liquidity is ${liquidityLabel}${Number.isFinite(liquidityChange) ? `, with the real-liquidity proxy changing ${liquidityChange >= 0 ? "+" : ""}${homeNumber.format(liquidityChange)}B USD over three months` : ""}; this should be read alongside memory operating-profit trends and hyperscaler CAPEX pressure (${capexLabel}).`
+  ));
+  if (Number.isFinite(adrPremium) && Math.abs(adrPremium) >= 0.01) {
+    sentences.push(ht(
+      `SK Hynix ADR 괴리율 ${pctText(adrPremium)}는 반도체 투자심리의 보조 신호로만 참고합니다.`,
+      `The SK Hynix ADR spread of ${pctText(adrPremium)} is used only as a secondary semiconductor-sentiment signal.`
+    ));
+  }
+
+  if (homeEls.marketSentimentLabel) {
+    homeEls.marketSentimentLabel.textContent = label;
+    homeEls.marketSentimentLabel.dataset.tone = tone;
+  }
+  if (homeEls.marketSentimentSummary) {
+    const paragraphs = sentences.slice(0, 5).map((sentence) => {
+      const paragraph = document.createElement("p");
+      paragraph.textContent = sentence;
+      return paragraph;
+    });
+    homeEls.marketSentimentSummary.replaceChildren(...paragraphs);
+  }
 }
 
 async function loadHomeRead() {
@@ -315,7 +443,8 @@ async function loadHomeRead() {
     updateLiquidityComment(liquidity);
     updateAdrComment(adr);
     updateBearRiskComment(bearRisk);
-    updateForeignFlowComment(foreignFlow);
+    const flowSummary = updateForeignFlowComment(foreignFlow);
+    updateMarketSentiment(per, sentiment, sentimentRows, liquidity, earnings, adr, bearRisk, flowSummary);
 
     const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
     if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${formatHomeUpdatedAt(timestamps.sort().at(-1))}` : ht("업데이트 정보 없음", "No update information");
