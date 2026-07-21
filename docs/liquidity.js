@@ -87,7 +87,12 @@ function formatUsdBillions(value) {
   if (abs >= 1000) {
     return IS_EN ? `${liquidityNumber.format(value / 1000)}T USD` : `${liquidityNumber.format(value / 1000)}조 달러`;
   }
-  return IS_EN ? `${liquidityNumber.format(value)}B USD` : `${liquidityNumber.format(value)}십억 달러`;
+  const decimals = abs > 0 && abs < 0.1 ? 2 : 1;
+  const formatted = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+  return IS_EN ? `${formatted}B USD` : `${formatted}십억 달러`;
 }
 
 function formatPercent(value) {

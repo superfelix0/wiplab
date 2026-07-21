@@ -8,6 +8,7 @@ const homeEls = {
     f5: document.querySelector("#commentF5"),
     f6: document.querySelector("#commentF6"),
     f7: document.querySelector("#commentF7"),
+    f8: document.querySelector("#commentF8"),
   },
 };
 
@@ -22,6 +23,20 @@ function ht(ko, en) {
 function safeDate(value) {
   if (!value) return "";
   return String(value).slice(0, 10);
+}
+
+function formatHomeUpdatedAt(value) {
+  const date = new Date(value);
+  if (!value || Number.isNaN(date.getTime())) return String(value || "");
+  return new Intl.DateTimeFormat(IS_EN ? "en-US" : "ko-KR", {
+    year: "numeric",
+    month: IS_EN ? "short" : "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: IS_EN,
+    timeZone: "Asia/Seoul",
+  }).format(date);
 }
 
 function pctText(value) {
@@ -239,9 +254,42 @@ function updateBearRiskComment(data) {
   setComment("f7", ht(`현재 ${scoreTextHome(score)}, ${label} 단계입니다. (${sample})`, `Current score ${scoreTextHome(score)}, ${label} stage. (${sample})`));
 }
 
+function updateForeignFlowComment(data) {
+  const rows = Array.isArray(data?.rows)
+    ? data.rows.filter((row) => row?.date).slice().sort((a, b) => String(a.date).localeCompare(String(b.date))).slice(-5)
+    : [];
+  if (!rows.length) return setComment("f8", ht("수급 판정 데이터 확인 중.", "Checking flow-stage data."));
+
+  const spotTotal = rows.reduce((sum, row) => sum + Number(row.spot || 0), 0);
+  const futuresTotal = rows.reduce((sum, row) => sum + Number(row.futures || 0), 0);
+  const spotBuyDays = rows.filter((row) => Number(row.spot) > 0).length;
+  const futuresBuyDays = rows.filter((row) => Number(row.futures) > 0).length;
+  const jointBuyDays = rows.filter((row) => Number(row.spot) > 0 && Number(row.futures) > 0).length;
+  const riskOffDays = rows.filter((row) => Number(row.spot) <= 0 && Number(row.futures) <= 0).length;
+  const recentJointDays = rows.slice(-3).filter((row) => Number(row.spot) > 0 && Number(row.futures) > 0).length;
+
+  let stageIndex;
+  if (rows.length >= 5 && spotTotal > 0 && futuresTotal > 0 && jointBuyDays >= 4 && spotBuyDays >= 4 && futuresBuyDays >= 4 && recentJointDays === 3) stageIndex = 4;
+  else if (rows.length >= 3 && spotTotal > 0 && futuresTotal > 0 && jointBuyDays >= 3 && recentJointDays >= 2) stageIndex = 3;
+  else if (futuresTotal > 0 && (spotTotal > 0 || spotBuyDays >= 2)) stageIndex = 2;
+  else if (futuresTotal > 0 && spotTotal <= 0) stageIndex = 1;
+  else if ((spotTotal < 0 && futuresTotal < 0) || riskOffDays >= Math.max(2, Math.ceil(rows.length * 0.6))) stageIndex = 0;
+  else stageIndex = 2;
+
+  const labelsKo = ["하락 우세", "단기 반등", "바닥 다지기", "매집 전환", "상승 추세 강화"];
+  const labelsEn = ["Decline dominant", "Short-term rebound", "Bottom building", "Accumulation turn", "Uptrend strengthening"];
+  const label = (IS_EN ? labelsEn : labelsKo)[stageIndex];
+  const provisional = rows.length < 5 ? ht(" · 잠정", " · provisional") : "";
+  const signed = (value) => `${value >= 0 ? "+" : ""}${value.toFixed(2)}`;
+  setComment("f8", ht(
+    `${safeDate(data.lastDataDate || rows.at(-1).date)} · ${label}${provisional}. 현물 ${signed(spotTotal)}조원, 선물 ${signed(futuresTotal)}조원 (${rows.length}/5일).`,
+    `${safeDate(data.lastDataDate || rows.at(-1).date)} · ${label}${provisional}. Spot ${signed(spotTotal)}T KRW, futures ${signed(futuresTotal)}T KRW (${rows.length}/5 sessions).`
+  ));
+}
+
 async function loadHomeRead() {
   try {
-    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult, adrResult, bearRiskResult] = await Promise.allSettled([
+    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult, adrResult, bearRiskResult, foreignFlowResult] = await Promise.allSettled([
       readJson("/data/market-per.json"),
       readJson("/data/kospi-sentiment-meta.json"),
       readText("/data/kospi-sentiment.csv"),
@@ -249,6 +297,7 @@ async function loadHomeRead() {
       readJson("/data/ai-earnings.json"),
       readJson("/api/quotes"),
       readJson("/data/bear-market-risk.json"),
+      readJson("/data/foreign-flow-pulse.json"),
     ]);
     const per = perResult.status === "fulfilled" ? perResult.value : null;
     const sentiment = sentimentResult.status === "fulfilled" ? sentimentResult.value : null;
@@ -257,6 +306,7 @@ async function loadHomeRead() {
     const earnings = earningsResult.status === "fulfilled" ? earningsResult.value : null;
     const adr = adrResult.status === "fulfilled" ? adrResult.value : null;
     const bearRisk = bearRiskResult.status === "fulfilled" ? bearRiskResult.value : null;
+    const foreignFlow = foreignFlowResult.status === "fulfilled" ? foreignFlowResult.value : null;
 
     updatePerComment(per);
     updateSentimentComment(sentiment, sentimentRows);
@@ -265,9 +315,10 @@ async function loadHomeRead() {
     updateLiquidityComment(liquidity);
     updateAdrComment(adr);
     updateBearRiskComment(bearRisk);
+    updateForeignFlowComment(foreignFlow);
 
-    const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt, bearRisk?.generatedAt].filter(Boolean);
-    if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${timestamps.sort().at(-1)}` : ht("업데이트 정보 없음", "No update information");
+    const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
+    if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${formatHomeUpdatedAt(timestamps.sort().at(-1))}` : ht("업데이트 정보 없음", "No update information");
   } catch {
     setComment("f1", ht("요약 데이터를 불러오지 못했습니다. 각 페이지에서 개별 지표를 확인해 주세요.", "Could not load the summary. Please open each module page."));
     if (homeEls.updatedAt) homeEls.updatedAt.textContent = ht("데이터 확인 실패", "Data check failed");

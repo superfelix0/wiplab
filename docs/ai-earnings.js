@@ -18,6 +18,21 @@ function t(ko, en) {
   return IS_EN ? en : ko;
 }
 
+function formatEarningsUpdatedAt(value) {
+  if (!value) return t("확인 필요", "Needs data");
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return new Intl.DateTimeFormat(IS_EN ? "en-US" : "ko-KR", {
+    year: "numeric",
+    month: IS_EN ? "short" : "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: IS_EN,
+    timeZone: "Asia/Seoul",
+  }).format(date);
+}
+
 function setEarningsStatus(message, state = "neutral") {
   earningsEls.status.textContent = message;
   earningsEls.status.dataset.state = state;
@@ -199,7 +214,7 @@ async function loadEarnings() {
     const data = await response.json().catch(() => null);
     if (!response.ok || !data?.ok) throw new Error(t("하이퍼스케일러 실적 데이터를 불러오지 못했습니다.", "Could not load hyperscaler earnings data."));
     render(data);
-    setEarningsStatus(t(`업데이트 완료: ${data.generatedAt}`, `Updated: ${data.generatedAt}`), "ok");
+    setEarningsStatus(t(`업데이트: ${formatEarningsUpdatedAt(data.generatedAt)}`, `Updated: ${formatEarningsUpdatedAt(data.generatedAt)}`), "ok");
   } catch (error) {
     setEarningsStatus(error.message || t("하이퍼스케일러 실적 데이터를 불러오지 못했습니다.", "Could not load hyperscaler earnings data."), "error");
   }

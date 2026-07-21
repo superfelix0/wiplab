@@ -302,7 +302,19 @@ async function loadMemoryEarnings() {
     renderMemoryTimeline(companies);
     renderMemoryTable(companies);
     renderMemorySources(data);
-    setMemoryStatus(mt(`데이터 불러오기 성공: ${data.generatedAt}`, `Data loaded: ${data.generatedAt}`), "ok");
+    const updatedAt = new Date(data.generatedAt);
+    const readableUpdatedAt = Number.isNaN(updatedAt.getTime())
+      ? data.generatedAt
+      : new Intl.DateTimeFormat(MEMORY_IS_EN ? "en-US" : "ko-KR", {
+        year: "numeric",
+        month: MEMORY_IS_EN ? "short" : "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: MEMORY_IS_EN,
+        timeZone: "Asia/Seoul",
+      }).format(updatedAt);
+    setMemoryStatus(mt(`업데이트: ${readableUpdatedAt}`, `Updated: ${readableUpdatedAt}`), "ok");
   } catch (error) {
     setMemoryStatus(error.message || mt("메모리 실적 데이터를 불러오지 못했습니다.", "Could not load memory earnings data."), "error");
   }
