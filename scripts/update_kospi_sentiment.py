@@ -28,7 +28,7 @@ from pykrx.website.krx.future import core as krx_future_core
 KST = dt.timezone(dt.timedelta(hours=9))
 VKOSPI_SEED_CSV = Path("docs/data/vkospi-history.csv")
 DEFAULT_HISTORY_DAYS = 620
-DEFAULT_INCREMENTAL_LOOKBACK_DAYS = 14
+DEFAULT_INCREMENTAL_LOOKBACK_DAYS = 0
 MIN_SENTIMENT_ROWS = 120
 
 
@@ -53,7 +53,7 @@ def parse_args() -> argparse.Namespace:
         "--lookback-days",
         type=int,
         default=DEFAULT_INCREMENTAL_LOOKBACK_DAYS,
-        help="When --start is omitted and an existing CSV is present, refetch this many calendar days before the last saved date.",
+        help="When --start is omitted, refetch this many days before the last saved date. The default only overlaps the last saved date.",
     )
     parser.add_argument(
         "--full-refresh",
@@ -366,7 +366,7 @@ def fetch_vkospi_spot_from_futures_table(end: str) -> dict | None:
     return None
 
 
-def fetch_vkospi_history_from_futures_table(end: str, days: int = 100) -> list[dict]:
+def fetch_vkospi_history_from_futures_table(end: str, start: str | None = None, days: int = 100) -> list[dict]:
     fetcher = get_krx_future_fetcher("dbms/MDC/STAT/standard/MDCSTAT12501")
     if fetcher is None:
         print("V-KOSPI history fetcher unavailable.")
@@ -374,14 +374,21 @@ def fetch_vkospi_history_from_futures_table(end: str, days: int = 100) -> list[d
 
     rows = []
     end_date = parse_ymd(end)
-    for offset in range(days, -1, -1):
-        date_str = ymd(end_date - dt.timedelta(days=offset))
+    start_date = parse_ymd(start) if start else end_date - dt.timedelta(days=days)
+    if start_date > end_date:
+        return []
+
+    current_date = start_date
+    while current_date <= end_date:
+        date_str = ymd(current_date)
         try:
             df = fetcher.fetch(date_str, "KRDRVFUVKI")
         except Exception:
+            current_date += dt.timedelta(days=1)
             continue
 
         if df.empty or "SPOT_PRC" not in df.columns:
+            current_date += dt.timedelta(days=1)
             continue
 
         for _, row in df.iterrows():
@@ -392,6 +399,7 @@ def fetch_vkospi_history_from_futures_table(end: str, days: int = 100) -> list[d
                     "value": result["value"],
                 })
                 break
+        current_date += dt.timedelta(days=1)
 
     deduped = {row["date"]: row for row in rows}
     history = [deduped[key] for key in sorted(deduped)]
@@ -653,8 +661,15 @@ def main() -> None:
 
     df.to_csv(out, index=False, encoding="utf-8")
     kospi200_volatility = fetch_kospi200_volatility(args.end)
-    vkospi_history = fetch_vkospi_history_from_futures_table(args.end)
     existing_vkospi_history = load_existing_vkospi_history(meta_out)
+    if existing_vkospi_history:
+        last_vkospi_date = parse_ymd(existing_vkospi_history[-1]["date"].replace("-", ""))
+        vkospi_start = ymd(last_vkospi_date + dt.timedelta(days=1))
+        print(f"Incremental V-KOSPI collection range: {vkospi_start} ~ {args.end}")
+    else:
+        vkospi_start = None
+        print("No V-KOSPI history found. Collecting the initial history window.")
+    vkospi_history = fetch_vkospi_history_from_futures_table(args.end, start=vkospi_start)
     seed_vkospi_history = parse_seed_vkospi_history()
     merged_vkospi_history = merge_vkospi_history(
         seed_vkospi_history,
