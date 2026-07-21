@@ -73,6 +73,15 @@ function formatFlowTrillion(value) {
   return `${rounded > 0 ? "+" : ""}${rounded.toFixed(2)}${FLOW_IS_EN ? "T KRW" : "조원"}`;
 }
 
+function formatCoverage(rows) {
+  const dates = rows.map((row) => row.date).filter(Boolean).sort();
+  if (!dates.length) return "--";
+  const compact = (value) => value.replace(/-/g, ".").slice(2);
+  const start = compact(dates[0]);
+  const end = compact(dates[dates.length - 1]);
+  return start === end ? start : `${start}–${end}`;
+}
+
 function flowCommentary(summary) {
   if (!summary.window.length) return FLOW_IS_EN ? "No automatic data is available yet." : "아직 자동 수집된 데이터가 없습니다.";
   const notesKo = [
@@ -120,7 +129,7 @@ function renderFlow() {
   flowEls.spotDays.textContent = FLOW_IS_EN ? `Bought ${summary.spotBuyDays}/${summary.window.length} days` : `순매수 ${summary.spotBuyDays}/${summary.window.length}일`;
   flowEls.futuresDays.textContent = FLOW_IS_EN ? `Bought ${summary.futuresBuyDays}/${summary.window.length} days` : `순매수 ${summary.futuresBuyDays}/${summary.window.length}일`;
   flowEls.jointDays.textContent = FLOW_IS_EN ? `${summary.jointBuyDays} day(s)` : `${summary.jointBuyDays}일`;
-  flowEls.window.textContent = FLOW_IS_EN ? `${summary.window.length}/5 sessions` : `${summary.window.length}/5거래일`;
+  flowEls.window.textContent = formatCoverage(flowRows);
   flowEls.commentary.textContent = flowCommentary(summary);
 }
 
