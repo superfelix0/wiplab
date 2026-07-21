@@ -117,6 +117,30 @@ def merge_sentiment_rows(existing: pd.DataFrame, latest: pd.DataFrame) -> pd.Dat
     return merged[["date", "close", "indiv_krw"]].reset_index(drop=True)
 
 
+def fetch_kospi_close_from_krx(start: str, end: str) -> pd.DataFrame:
+    """Fetch KOSPI closes from the same KRX source used for investor flow.
+
+    ``name_display=False`` is intentional. Some pykrx/KRX combinations return
+    the OHLCV rows correctly but fail while looking up the display name for
+    ticker 1001, which used to make the whole collection fail with a KeyError.
+    """
+    df = stock.get_index_ohlcv_by_date(start, end, "1001", name_display=False)
+    if df.empty:
+        raise RuntimeError("KOSPI index data is empty. KRX returned no ticker 1001 rows.")
+    if "종가" not in df.columns:
+        raise RuntimeError(f"KOSPI index data does not include 종가: {list(df.columns)}")
+
+    close = df[["종가"]].rename(columns={"종가": "close"}).copy()
+    close.index = pd.to_datetime(close.index)
+    close["close"] = pd.to_numeric(close["close"], errors="coerce")
+    close = close.dropna(subset=["close"]).sort_index()
+    if close.empty:
+        raise RuntimeError("KOSPI index data is empty after normalizing KRX close values.")
+
+    close.attrs["source"] = "pykrx KRX index ticker 1001"
+    return close
+
+
 def fetch_kospi_close_from_yahoo(start: str, end: str) -> pd.DataFrame:
     start_date = parse_ymd(start)
     end_date = parse_ymd(end)
@@ -161,7 +185,17 @@ def fetch_kospi_close_from_yahoo(start: str, end: str) -> pd.DataFrame:
         raise RuntimeError("KOSPI index data is empty. Yahoo Finance returned only empty close values.")
 
     df["date"] = pd.to_datetime(df["date"])
-    return df.set_index("date").sort_index()
+    df = df.set_index("date").sort_index()
+    df.attrs["source"] = "Yahoo Finance ^KS11 fallback"
+    return df
+
+
+def fetch_kospi_close(start: str, end: str) -> pd.DataFrame:
+    try:
+        return fetch_kospi_close_from_krx(start, end)
+    except Exception as error:
+        print(f"KRX KOSPI close fetch failed; trying Yahoo fallback: {error}")
+        return fetch_kospi_close_from_yahoo(start, end)
 
 
 def date_chunks(start: str, end: str, chunk_days: int = 180):
@@ -546,8 +580,8 @@ def collect(start: str, end: str) -> pd.DataFrame:
     print(f"KRX_ID configured: {bool(os.getenv('KRX_ID'))}")
     print(f"KRX_PW configured: {bool(os.getenv('KRX_PW'))}")
 
-    index_df = fetch_kospi_close_from_yahoo(start, end)
-    print(f"KOSPI index rows: {len(index_df)}")
+    index_df = fetch_kospi_close(start, end)
+    print(f"KOSPI index rows: {len(index_df)} ({index_df.attrs.get('source', 'unknown source')})")
 
     flow_df = fetch_investor_flow_chunked(start, end)
     if flow_df.empty:
@@ -573,6 +607,19 @@ def collect(start: str, end: str) -> pd.DataFrame:
     merged["close"] = pd.to_numeric(merged["close"], errors="coerce")
     merged["indiv_krw"] = pd.to_numeric(merged["indiv_krw"], errors="coerce").round().astype("Int64")
     merged = merged[["date", "close", "indiv_krw"]].dropna()
+
+    index_latest = pd.to_datetime(index_df.index).max().date()
+    flow_latest = pd.to_datetime(flow_df.index).max().date()
+    merged_latest = pd.to_datetime(merged["date"]).max().date() if not merged.empty else None
+    print(f"Latest source dates - index: {index_latest}, investor flow: {flow_latest}, joined: {merged_latest}")
+
+    # Do not report a successful refresh when one source has newer trading-day
+    # data that was silently discarded by the inner join.
+    if merged_latest is None or merged_latest < flow_latest:
+        raise RuntimeError(
+            "KOSPI sentiment data did not reach the latest investor-flow date: "
+            f"index={index_latest}, flow={flow_latest}, joined={merged_latest}."
+        )
 
     if len(merged) < MIN_SENTIMENT_ROWS:
         print(f"Collected only {len(merged)} rows in this run. The existing CSV will be used to keep enough history.")
@@ -622,7 +669,7 @@ def main() -> None:
     meta = {
         "generatedAt": now_kst.isoformat(timespec="seconds"),
         "timezone": "Asia/Seoul",
-        "source": "Yahoo Finance ^KS11 + pykrx KRX investor flow",
+        "source": "pykrx KRX KOSPI index + investor flow (Yahoo Finance ^KS11 index fallback)",
         "startDate": str(df.iloc[0]["date"]),
         "lastDataDate": str(df.iloc[-1]["date"]),
         "rowCount": int(len(df)),
