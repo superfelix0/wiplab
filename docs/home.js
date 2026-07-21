@@ -397,16 +397,9 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
     ));
   }
   if (Number.isFinite(riskScore)) {
-    const riskIndicators = (bearRisk?.indicators || []).slice().sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
-    const mainDrivers = riskIndicators.slice(0, 2);
-    const lowRiskItems = riskIndicators.filter((item) => Number(item.score) <= 0.5).slice(0, 2);
-    const driverKo = mainDrivers.map((item) => `${item.titleKo} ${homeNumber.format(Number(item.score))}/2`).join("과 ");
-    const driverEn = mainDrivers.map((item) => `${item.titleEn} ${homeNumber.format(Number(item.score))}/2`).join(" and ");
-    const offsetKo = lowRiskItems.map((item) => item.titleKo).join("·");
-    const offsetEn = lowRiskItems.map((item) => item.titleEn).join(" and ");
     sentences.push(ht(
-      `약세장 위험 ${homeNumber.format(riskScore)}/10은 즉각적인 위험보다 관찰이 필요한 수준으로, ${driverKo || "일부 위험 지표"}가 점수를 높였지만 ${offsetKo || "다른 지표"}는 아직 낮은 위험을 가리킵니다.`,
-      `Bear-market risk at ${homeNumber.format(riskScore)}/10 is a watch level rather than an immediate danger signal: ${driverEn || "some risk indicators"} lift the score, while ${offsetEn || "other indicators"} still point to low risk.`
+      "약세장으로의 전환 위험은 아직 즉각적이지 않으며, 주요 트리거 요소들의 변화를 계속 관찰해야 하는 상황입니다.",
+      "The risk of a bear-market transition is not immediate, but the main trigger conditions still warrant continued monitoring."
     ));
   }
   if (flowSummary) {
