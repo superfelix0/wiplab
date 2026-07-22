@@ -16,7 +16,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat(IS_EN ? "en-US" : "ko-KR", {
   timeZone: "Asia/Seoul",
 });
 
-const FORWARD_PER_CONSENSUS = {
+let FORWARD_PER_CONSENSUS = {
   value: 6.35,
   date: "2026-07-09",
   sourceTitle: IS_EN
@@ -28,8 +28,74 @@ const FORWARD_PER_CONSENSUS = {
     : "기사에서 블룸버그 보고서를 인용해 2026년 7월 9일 기준 KOSPI 12개월 선행 PER이 6.35배라고 언급한 값을 Forward PER 참고치로 사용합니다.",
 };
 
+function parseCsvLine(line) {
+  const values = [];
+  let value = "";
+  let quoted = false;
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index];
+    if (char === '"' && line[index + 1] === '"') {
+      value += '"';
+      index += 1;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (char === "," && !quoted) {
+      values.push(value);
+      value = "";
+    } else {
+      value += char;
+    }
+  }
+  values.push(value);
+  return values;
+}
+
+function parseForwardPerHistory(text) {
+  const lines = text.trim().split(/\r?\n/).filter(Boolean);
+  if (lines.length < 2) return [];
+  const headers = parseCsvLine(lines[0]).map((header) => header.trim());
+  return lines.slice(1).map((line) => {
+    const cells = parseCsvLine(line);
+    const row = Object.fromEntries(headers.map((header, index) => [header, cells[index]?.trim() || ""]));
+    return {
+      date: row.date,
+      value: Number(row.value),
+      sourceTitle: row.source_title,
+      sourceUrl: row.source_url,
+      sourceName: row.source_name,
+      note: row.note,
+    };
+  }).filter((row) => row.date && Number.isFinite(row.value)).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+async function fetchForwardPerHistory() {
+  const response = await fetch(`/data/kospi-forward-per-history.csv?ts=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) throw new Error("Forward PER history unavailable");
+  return parseForwardPerHistory(await response.text());
+}
+
+function useLatestForwardPer(history) {
+  const latest = history.at(-1);
+  if (!latest) return;
+  FORWARD_PER_CONSENSUS = {
+    value: latest.value,
+    date: latest.date,
+    sourceTitle: latest.sourceTitle || FORWARD_PER_CONSENSUS.sourceTitle,
+    sourceUrl: latest.sourceUrl || FORWARD_PER_CONSENSUS.sourceUrl,
+    note: latest.note || FORWARD_PER_CONSENSUS.note,
+  };
+}
+
 function t(ko, en) {
   return IS_EN ? en : ko;
+}
+
+function escapeMarketHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function setStatus(message, state = "") {
@@ -291,15 +357,44 @@ function renderSources(perData) {
     .join("");
 }
 
+function renderForwardPerComparison(history) {
+  if (!sourceList) return;
+  const oldPanel = document.querySelector("#forwardPerComparisonPanel");
+  oldPanel?.remove();
+  const rows = history.slice(-2).reverse();
+  if (!rows.length) return;
+  const panel = document.createElement("section");
+  panel.id = "forwardPerComparisonPanel";
+  panel.className = "source-panel forward-per-comparison";
+  const heading = t("Forward PER 최신 비교", "Latest Forward PER comparison");
+  const intro = t("최신 참고치와 직전 참고치만 표시합니다. 전체 이력은 CSV로 누적 관리합니다.", "Only the latest reference and its immediate predecessor are shown. The complete history is kept in CSV.");
+  panel.innerHTML = `<h2>${heading}</h2><p>${intro}</p><ul></ul>`;
+  const list = panel.querySelector("ul");
+  list.innerHTML = rows.map((row, index) => {
+    const label = index === 0 ? t("최신", "Latest") : t("직전", "Previous");
+    const sourceLabel = escapeMarketHtml(row.sourceTitle || row.sourceName || t("출처", "Source"));
+    const source = row.sourceUrl
+      ? `<a href="${escapeMarketHtml(row.sourceUrl)}" target="_blank" rel="noopener noreferrer">${sourceLabel}</a>`
+      : sourceLabel;
+    return `<li><strong>${label} ${formatPer(row.value)}</strong><span>${escapeMarketHtml(row.date)} · ${source}</span></li>`;
+  }).join("");
+  sourceList.closest(".source-panel")?.before(panel);
+}
+
 async function loadMarketDashboard() {
   if (refreshButton) refreshButton.disabled = true;
   setStatus(t("KRX PER 데이터를 불러오는 중입니다.", "Loading KRX PER data."));
 
   try {
-    const perData = await fetchMarketPerData();
+    const [perData, forwardHistory] = await Promise.all([
+      fetchMarketPerData(),
+      fetchForwardPerHistory().catch(() => []),
+    ]);
+    useLatestForwardPer(forwardHistory);
     renderCards(perData);
     renderMarketPerChart(perData);
     renderSources(perData);
+    renderForwardPerComparison(forwardHistory);
     setStatus(
       t(
         `업데이트 완료: ${formatDateTime(perData.generatedAt)} · 투자 권유가 아닌 참고용 실험 화면입니다.`,

@@ -16,7 +16,7 @@ const homeEls = {
 
 const IS_EN = document.documentElement.lang?.toLowerCase().startsWith("en");
 const homeNumber = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", { maximumFractionDigits: 2 });
-const HOME_FORWARD_PER = 6.35;
+let HOME_FORWARD_PER = 6.35;
 
 function ht(ko, en) {
   return IS_EN ? en : ko;
@@ -204,6 +204,34 @@ function updateSentimentComment(meta, rows = []) {
   );
   const target = homeEls.comments.f2;
   if (target) target.innerHTML = lines.map((line) => `<span>${line}</span>`).join("");
+}
+
+function parseHomeCsvLine(line) {
+  const cells = [];
+  let cell = "";
+  let quoted = false;
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index];
+    if (char === '"' && line[index + 1] === '"') { cell += '"'; index += 1; }
+    else if (char === '"') quoted = !quoted;
+    else if (char === "," && !quoted) { cells.push(cell); cell = ""; }
+    else cell += char;
+  }
+  cells.push(cell);
+  return cells;
+}
+
+function latestHomeForwardPer(text) {
+  const lines = text.trim().split(/\r?\n/).filter(Boolean);
+  if (lines.length < 2) return null;
+  const headers = parseHomeCsvLine(lines[0]);
+  const dateIndex = headers.indexOf("date");
+  const valueIndex = headers.indexOf("value");
+  if (dateIndex < 0 || valueIndex < 0) return null;
+  return lines.slice(1).map((line) => {
+    const cells = parseHomeCsvLine(line);
+    return { date: cells[dateIndex], value: Number(cells[valueIndex]) };
+  }).filter((row) => row.date && Number.isFinite(row.value)).sort((a, b) => a.date.localeCompare(b.date)).at(-1) || null;
 }
 
 function capexOcf(latest) {
@@ -474,13 +502,14 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
 
 async function loadHomeRead() {
   try {
-    const [perResult, sentimentResult, sentimentRowsResult, earningsResult, bearRiskResult, foreignFlowResult] = await Promise.allSettled([
+    const [perResult, sentimentResult, sentimentRowsResult, earningsResult, bearRiskResult, foreignFlowResult, forwardPerResult] = await Promise.allSettled([
       readJson("/data/market-per.json"),
       readJson("/data/kospi-sentiment-meta.json"),
       readText("/data/kospi-sentiment.csv"),
       readJson("/data/ai-earnings.json"),
       readJson("/data/bear-market-risk.json"),
       readJson("/data/foreign-flow-pulse.json"),
+      readText("/data/kospi-forward-per-history.csv"),
     ]);
     const per = perResult.status === "fulfilled" ? perResult.value : null;
     const sentiment = sentimentResult.status === "fulfilled" ? sentimentResult.value : null;
@@ -488,6 +517,8 @@ async function loadHomeRead() {
     const earnings = earningsResult.status === "fulfilled" ? earningsResult.value : null;
     const bearRisk = bearRiskResult.status === "fulfilled" ? bearRiskResult.value : null;
     const foreignFlow = foreignFlowResult.status === "fulfilled" ? foreignFlowResult.value : null;
+    const latestForwardPer = forwardPerResult.status === "fulfilled" ? latestHomeForwardPer(forwardPerResult.value) : null;
+    if (latestForwardPer) HOME_FORWARD_PER = latestForwardPer.value;
 
     updatePerComment(per, sentimentRows);
     updateSentimentComment(sentiment, sentimentRows);

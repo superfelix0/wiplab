@@ -18,8 +18,8 @@ SENTIMENT_META = Path("docs/data/kospi-sentiment-meta.json")
 LIQUIDITY_JSON = Path("docs/data/us-liquidity.json")
 EARNINGS_JSON = Path("docs/data/ai-earnings.json")
 MARKET_PER_JSON = Path("docs/data/market-per.json")
+FORWARD_PER_CSV = Path("docs/data/kospi-forward-per-history.csv")
 GLOBAL_MEGA_IPO_JSON = Path("docs/data/global-mega-ipo-events.json")
-FORWARD_PER_REFERENCE = 6.35
 SEC_IPO_XLSX_URL = "https://www.sec.gov/files/sec-stats-ipos-20260630.xlsx"
 SEC_IPO_PAGE_URL = "https://www.sec.gov/data-research/statistics-data-visualizations/initial-public-offerings-ipos"
 
@@ -546,11 +546,24 @@ def build_ipo(previous: dict) -> dict:
         return item
 
 
+def latest_forward_per_reference() -> float:
+    """Use the latest explicitly sourced forward-PER CSV observation."""
+    try:
+        with FORWARD_PER_CSV.open(encoding="utf-8", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        valid = [row for row in rows if finite(float(row.get("value", "")))]
+        if valid:
+            return float(valid[-1]["value"])
+    except (OSError, ValueError, KeyError):
+        pass
+    return 6.35
+
+
 def build_eps(market: dict) -> dict:
     kospi = market.get("markets", {}).get("kospi200", {})
     current = kospi.get("per")
     average = kospi.get("historicalAveragePer")
-    forward = FORWARD_PER_REFERENCE
+    forward = latest_forward_per_reference()
     implied_growth = (current / forward - 1) if finite(current) and forward else None
     valuation_gap = (current / average - 1) if finite(current) and finite(average) and average else None
     score = 0.5
