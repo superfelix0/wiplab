@@ -1,91 +1,21 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag("js", new Date());
-    gtag("config", "G-GD6K8FB589");
-  </script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="index, follow">
-  <meta name="description" content="WIP Labs is a financial-metric lab for KOSPI PER, retail sentiment, foreign spot and futures flows, hyperscaler CAPEX, memory earnings, and U.S. liquidity.">
-  <meta name="theme-color" content="#f5f1e8">
-  <meta property="og:title" content="WIP Labs - Financial Metric Lab">
-  <meta property="og:description" content="Small experiments for reading KOSPI valuation, investor flow, AI CAPEX, memory earnings, and U.S. liquidity.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://wiplabs.pages.dev/en/">
-  <meta property="og:image" content="https://wiplabs.pages.dev/favicon.svg">
-  <link rel="canonical" href="https://wiplabs.pages.dev/en/">
-  <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/">
-  <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/">
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../styles.css?v=sentiment-regular-20260722">
-  <title>WIP Labs - Financial Metric Lab</title>
+  <meta charset="UTF-8"><script async src="https://www.googletagmanager.com/gtag/js?id=G-GD6K8FB589"></script><script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag("js", new Date()); gtag("config", "G-GD6K8FB589");</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index, follow"><meta name="description" content="A research terminal for reading today's Korean market through valuation, flows, AI and semiconductor signals, and risk."><meta name="theme-color" content="#f5f1e8">
+  <meta property="og:title" content="WIP Labs | A light daily market research terminal"><meta property="og:description" content="Read what changed in the market today before diving into the data."><meta property="og:type" content="website"><meta property="og:url" content="https://wiplabs.pages.dev/en/"><link rel="canonical" href="https://wiplabs.pages.dev/en/"><link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/"><link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/"><link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../styles.css?v=today-hub-20260723"><title>WIP Labs | A light daily market research terminal</title>
 </head>
 <body data-lang="en">
-  <header class="site-header">
-    <a class="brand" href="./" aria-label="Go to English home">
-      <span>WIP</span>
-      <strong>WIP Labs</strong>
-    </a>
-    <nav class="service-tabs" aria-label="Main menu"><a href="./" aria-current="page">HOME</a><a href="./wip-1/">F1</a><a href="./wip-2/">F2</a><a href="./wip-3/">F3</a><a href="./wip-4/">F4</a><a href="./wip-5/">F5</a><a href="./wip-6/">F6</a><a href="./wip-7/">F7</a><a href="./wip-8/">F8</a><a class="lang-switch" href="../">KO</a><a class="lang-switch" href="./" aria-current="true">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav>
-  </header>
-  <div class="ticker-strip" aria-label="Market ticker">
-    <span>KOSPI <b id="tickerKospi">-</b></span>
-    <span>NASDAQ <b id="tickerNasdaq">-</b></span>
-    <span>S&amp;P500 <b id="tickerSp500">-</b></span>
-    <span>USD/KRW <b id="tickerUsdKrw">-</b></span>
-  </div>
-
+  <header class="site-header"><a class="brand" href="./" aria-label="English home"><span>WIP</span><strong>WIP Labs</strong></a><nav class="service-tabs" aria-label="Main menu"><a href="./" aria-current="page">TODAY</a><a href="#korea">KOREA</a><a href="#ai">AI/SEMI</a><a href="#macro">MACRO/RISK</a><a class="lang-switch" href="../">KO</a><a class="lang-switch" href="./" aria-current="true">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav></header>
+  <div class="ticker-strip" aria-label="Market ticker"><span>KOSPI <b id="tickerKospi">--</b></span><span>NASDAQ <b id="tickerNasdaq">--</b></span><span>S&amp;P500 <b id="tickerSp500">--</b></span><span>USD/KRW <b id="tickerUsdKrw">--</b></span></div>
   <main>
-    <section class="hero home-hero research-hero">
-      <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./metrics <span class="flag">--experiment</span></p>
-      <h1>A lab for small financial-metric experiments</h1>
-      <p class="hero-copy">WIP Labs builds small tools for the numbers investors often check: PER, flows, CAPEX, operating profit, liquidity, and price spreads.</p>
-    </section>
-
-    <section class="market-sentiment-panel" aria-labelledby="market-sentiment-title">
-      <div class="market-sentiment-head">
-        <div><p class="eyebrow">MARKET SENTIMENT</p><h2 id="market-sentiment-title">Korean equity market summary</h2></div>
-        <strong id="marketSentimentLabel" data-tone="neutral">Calculating</strong>
-      </div>
-      <div id="marketSentimentSummary" class="market-sentiment-copy" role="status" aria-live="polite"><p>Combining the latest indicators.</p></div>
-      <small>An experimental reading distilled from the F1–F8 signals that are relevant to market direction.</small>
-    </section>
-
-    <section class="wip-list" aria-labelledby="wip-list-title">
-      <div class="section-title">
-        <div>
-          <p class="eyebrow">FINANCIAL METRIC LABS</p>
-          <h2 id="wip-list-title">Current experiments</h2>
-          <p class="section-copy">Each page focuses on one practical market-data question. The lab grows one metric at a time.</p>
-        </div>
-        <small id="homeUpdatedAt">Loading data</small>
-      </div>
-      <div class="wip-index research-index">
-        <a href="wip-1/" data-category="finance"><span>F1</span><strong>KOSPI PER Monitor</strong><small class="cmd"><b>$</b> ./kospi-per <em>--krx</em></small><small class="metric">KRX/PER</small><small class="module-note">Compares current PER, historical average PER, and a forward PER reference.</small><small class="module-comment" id="commentF1">Loading PER comment.</small><small class="live-dot">* DAILY</small></a>
-        <a href="wip-2/" data-category="finance"><span>F2</span><strong>KOSPI Fear/Greed</strong><small class="cmd"><b>$</b> ./sentiment <em>--kospi</em></small><small class="metric">FLOW/SIGNAL</small><small class="module-note">Checks how far retail flow moves away from its usual pattern.</small><small class="module-comment" id="commentF2">Loading sentiment comment.</small><small class="live-dot">* DAILY</small></a>
-        <a href="wip-3/" data-category="finance"><span>F3</span><strong>Hyperscaler AI CAPEX</strong><small class="cmd"><b>$</b> ./hyperscaler-capex <em>--coverage</em></small><small class="metric">CAPEX/OCF</small><small class="module-note">Reads hyperscaler AI CAPEX pressure against cash flow and net income.</small><small class="module-comment" id="commentF3">Loading CAPEX comment.</small><small class="live-dot">* QUARTERLY</small></a>
-        <a href="wip-4/" data-category="finance"><span>F4</span><strong>Memory Operating Profit</strong><small class="cmd"><b>$</b> ./memory-op <em>--trend</em></small><small class="metric">OP/QOQ</small><small class="module-note">Compares memory-company operating-profit growth, revenue growth, and margins.</small><small class="module-comment" id="commentF4">Loading memory comment.</small><small class="live-dot">* QUARTERLY</small></a>
-        <a href="wip-5/" data-category="finance"><span>F5</span><strong>US Liquidity Monitor</strong><small class="cmd"><b>$</b> ./us-liquidity <em>--fred</em></small><small class="metric">M2/RRP/TGA</small><small class="module-note">Combines M2, reserves, RRP, and TGA to read U.S. liquidity direction.</small><small class="module-comment" id="commentF5">Loading liquidity comment.</small><small class="live-dot">* AD HOC</small></a>
-        <a href="wip-6/" data-category="finance"><span>F6</span><strong>Global AI / Semiconductor Prices</strong><small class="cmd"><b>$</b> ./ai-semiconductor-stocks <em>--compare</em></small><small class="metric">PRICE/TREND</small><small class="module-note">Compares hyperscaler and major memory-manufacturer share-price trends rebased to 100.</small><small class="module-comment" id="commentF6">Checking share-price trend.</small><small class="live-dot">* DAILY</small></a>
-        <a href="wip-7/" data-category="finance"><span>F7</span><strong>Bear Market Risk</strong><small class="cmd"><b>$</b> ./bear-risk <em>--dashboard</em></small><small class="metric">RISK/10</small><small class="module-note">Scores market breadth, leadership, end demand, IPO activity, and EPS revisions.</small><small class="module-comment" id="commentF7">Loading risk comment.</small><small class="live-dot">* WEEKLY</small></a>
-        <a href="wip-8/" data-category="finance"><span>F8</span><strong>Foreign Flow Pulse</strong><small class="cmd"><b>$</b> ./foreign-flow <em>--pulse</em></small><small class="metric">SPOT/FUTURES</small><small class="module-note">Reads the latest five-session market stage from foreign spot and futures flows.</small><small class="module-comment" id="commentF8">Reading the current flow stage.</small><small class="live-dot">* DAILY</small></a>
-      </div>
-    </section>
+    <section class="hero home-hero today-hero"><p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./today <span class="flag">--market-read</span></p><p class="eyebrow">TODAY'S MARKET READ</p><h1>A light daily market research terminal</h1><p class="hero-copy">Start with what changed today and what to watch next, not with a wall of numbers.</p><div class="update-line"><span id="homeUpdatedAt">Loading data.</span><span>Korea close 19:00 KST · U.S. close 06:00 KST</span></div></section>
+    <section class="market-sentiment-panel today-read" aria-labelledby="market-sentiment-title"><div class="market-sentiment-head"><div><p class="eyebrow">KOREA MARKET PULSE</p><h2 id="market-sentiment-title">Today's Korean market read</h2></div><strong id="marketSentimentLabel" data-tone="neutral">Calculating</strong></div><div id="marketSentimentSummary" class="market-sentiment-copy" role="status" aria-live="polite"><p>Combining the latest indicators.</p></div><div class="today-actions"><a href="#korea">View Korea signals <span>↓</span></a><a href="wip-7/">Explore bear-market risk <span>→</span></a></div></section>
+    <section class="signal-section" aria-labelledby="changes-title"><div class="section-title"><div><p class="eyebrow">WHAT TO CHECK NOW</p><h2 id="changes-title">Signals to check now</h2><p class="section-copy">Start with the three signals most directly connected to today's market read.</p></div></div><div class="today-signal-grid"><a class="today-signal" href="wip-1/"><span class="signal-code">KOREA · VALUATION</span><strong>KOSPI valuation</strong><p id="commentF1">Loading PER data.</p><small>F1 PER Monitor <b>→</b></small></a><a class="today-signal" href="wip-2/"><span class="signal-code">KOREA · SENTIMENT</span><strong>Retail sentiment &amp; volatility</strong><p id="commentF2">Loading flow signals.</p><small>F2 Fear / Greed <b>→</b></small></a><a class="today-signal" href="wip-8/"><span class="signal-code">KOREA · FOREIGN FLOW</span><strong>Foreign spot &amp; futures flow</strong><p id="commentF8">Loading foreign flow.</p><small>F8 Flow Pulse <b>→</b></small></a></div></section>
+    <section class="theme-section" aria-labelledby="themes-title"><div class="section-title"><div><p class="eyebrow">EXPLORE BY THEME</p><h2 id="themes-title">Continue by theme</h2><p class="section-copy">The detailed data is grouped by purpose. One theme is enough for a first visit.</p></div></div><div class="theme-grid"><article class="theme-card" id="korea"><span>01 / KOREA</span><h3>Korean market</h3><p>Read Korea through current and forward PER, retail sentiment, and foreign spot/futures flow.</p><div><a href="wip-1/">Valuation F1</a><a href="wip-2/">Sentiment F2</a><a href="wip-8/">Flow F8</a></div></article><article class="theme-card" id="ai"><span>02 / AI &amp; SEMICONDUCTOR</span><h3>AI &amp; semiconductor cycle</h3><p>Compare hyperscaler investment capacity, memory earnings, and relevant global share prices.</p><div><a href="wip-3/">AI CAPEX F3</a><a href="wip-4/">Memory earnings F4</a><a href="wip-6/">Prices F6</a></div></article><article class="theme-card" id="macro"><span>03 / MACRO &amp; RISK</span><h3>Liquidity &amp; risk</h3><p>Review the direction of U.S. liquidity and bear-market transition conditions as monitoring tools, not trading signals.</p><div><a href="wip-5/">U.S. liquidity F5</a><a href="wip-7/">Bear-market risk F7</a></div></article></div></section>
+    <section class="details-section" aria-labelledby="details-title"><div class="section-title"><div><p class="eyebrow">ALL METRICS</p><h2 id="details-title">All metrics</h2><p class="section-copy">Calculation rules and source notes are available on each detailed page.</p></div></div><div class="metric-directory" aria-label="All metrics"><a href="wip-1/"><b>F1</b><span>KOSPI PER Monitor</span><small>Daily</small></a><a href="wip-2/"><b>F2</b><span>KOSPI Fear / Greed</span><small>Daily</small></a><a href="wip-3/"><b>F3</b><span>Hyperscaler AI CAPEX</span><small>Quarterly</small></a><a href="wip-4/"><b>F4</b><span>Memory Operating Profit</span><small>Quarterly</small></a><a href="wip-5/"><b>F5</b><span>US Liquidity Monitor</span><small>Periodic</small></a><a href="wip-6/"><b>F6</b><span>AI / Semiconductor Prices</span><small>Daily</small></a><a href="wip-7/"><b>F7</b><span>Bear Market Risk</span><small>Weekly</small></a><a href="wip-8/"><b>F8</b><span>Foreign Flow Pulse</span><small>Daily</small></a></div></section>
   </main>
-
-  <footer>
-    <div>
-      <strong>WIP Labs</strong>
-      <p>Growing one financial metric experiment at a time.</p>
-    </div>
-    <span>© 2026</span>
-  </footer>
-  <script src="../ticker.js?v=tab-titles-20260722"></script>
-  <script src="../home.js?v=stock-sentiment-20260722"></script>
+  <footer><div><strong>WIP Labs</strong><p>Making market numbers a little easier to read for independent judgment.</p></div><span>© 2026</span></footer>
+  <script src="../ticker.js?v=today-hub-20260723"></script><script src="../home.js?v=today-hub-20260723"></script>
 </body>
 </html>

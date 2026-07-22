@@ -464,7 +464,7 @@ async function loadHomeRead() {
     const flowSummary = updateForeignFlowComment(foreignFlow);
     updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk, flowSummary);
 
-    const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, adr?.fetchedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
+    const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
     if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${formatHomeUpdatedAt(timestamps.sort().at(-1))}` : ht("업데이트 정보 없음", "No update information");
   } catch {
     setComment("f1", ht("요약 데이터를 불러오지 못했습니다. 각 페이지에서 개별 지표를 확인해 주세요.", "Could not load the summary. Please open each module page."));
