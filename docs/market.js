@@ -2,6 +2,7 @@ const marketStatus = document.querySelector("#marketStatus");
 const marketCards = document.querySelector("#marketCards");
 const marketPerChart = document.querySelector("#marketPerChart");
 const marketPerLegend = document.querySelector("#marketPerLegend");
+let perBacktest = document.querySelector("#perBacktest");
 const sourceList = document.querySelector("#sourceList");
 const refreshButton = document.querySelector("#marketRefresh");
 
@@ -72,6 +73,23 @@ async function fetchForwardPerHistory() {
   const response = await fetch(`/data/kospi-forward-per-history.csv?ts=${Date.now()}`, { cache: "no-store" });
   if (!response.ok) throw new Error("Forward PER history unavailable");
   return parseForwardPerHistory(await response.text());
+}
+
+function parseKospiPerHistory(text) {
+  const lines = text.trim().split(/\r?\n/).filter(Boolean);
+  if (lines.length < 2) return [];
+  const headers = parseCsvLine(lines[0]).map((header) => header.trim());
+  return lines.slice(1).map((line) => {
+    const cells = parseCsvLine(line);
+    const row = Object.fromEntries(headers.map((header, index) => [header, cells[index]?.trim() || ""]));
+    return { date: row.date, per: Number(row.per), close: Number(row.close) };
+  }).filter((row) => row.date && Number.isFinite(row.per) && Number.isFinite(row.close));
+}
+
+async function fetchKospiPerHistory() {
+  const response = await fetch(`/data/kospi-per-history.csv?ts=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) throw new Error("KOSPI PER history unavailable");
+  return parseKospiPerHistory(await response.text());
 }
 
 function useLatestForwardPer(history) {
@@ -289,6 +307,94 @@ function renderMarketPerChart(perData) {
   });
 }
 
+function percentile(values, ratio) {
+  const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
+  if (!sorted.length) return null;
+  const position = (sorted.length - 1) * ratio;
+  const lower = Math.floor(position);
+  const upper = Math.ceil(position);
+  return sorted[lower] + ((sorted[upper] - sorted[lower]) * (position - lower));
+}
+
+function futureIndex(history, index, days) {
+  const start = new Date(`${history[index].date}T00:00:00Z`);
+  const target = start.getTime() + (days * 24 * 60 * 60 * 1000);
+  for (let cursor = index + 1; cursor < history.length; cursor += 1) {
+    if (new Date(`${history[cursor].date}T00:00:00Z`).getTime() >= target) return cursor;
+  }
+  return -1;
+}
+
+function formatPct(value) {
+  if (!Number.isFinite(value)) return "--";
+  return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%`;
+}
+
+function renderPerBacktest(perData, perHistory = []) {
+  if (!perBacktest) {
+    const chartPanel = document.querySelector(".market-per-chart-panel");
+    if (!chartPanel) return;
+    perBacktest = document.createElement("section");
+    perBacktest.id = "perBacktest";
+    perBacktest.className = "per-backtest-panel";
+    perBacktest.setAttribute("aria-live", "polite");
+    chartPanel.after(perBacktest);
+  }
+  const history = perHistory
+    .map((row) => ({ ...row, per: Number(row.per), close: Number(row.close) }))
+    .filter((row) => row.date && Number.isFinite(row.per) && Number.isFinite(row.close));
+  const currentPer = Number(perData?.markets?.kospi200?.per);
+  if (!history.length || !Number.isFinite(currentPer)) {
+    perBacktest.hidden = true;
+    return;
+  }
+
+  const band = 0.1;
+  const lower = currentPer * (1 - band);
+  const upper = currentPer * (1 + band);
+  const horizons = [
+    { days: 91, ko: "3개월", en: "3 months" },
+    { days: 182, ko: "6개월", en: "6 months" },
+    { days: 365, ko: "12개월", en: "12 months" },
+  ];
+  const samples = [];
+  let lastSample = -90;
+  history.forEach((row, index) => {
+    if (row.per < lower || row.per > upper || index - lastSample < 60) return;
+    const returns = horizons.map((horizon) => {
+      const later = futureIndex(history, index, horizon.days);
+      return later > 0 ? (history[later].close / row.close) - 1 : null;
+    });
+    if (returns.every((value) => !Number.isFinite(value))) return;
+    samples.push({ date: row.date, returns });
+    lastSample = index;
+  });
+
+  const stats = horizons.map((horizon, index) => {
+    const values = samples.map((sample) => sample.returns[index]).filter(Number.isFinite);
+    return {
+      ...horizon,
+      count: values.length,
+      low: percentile(values, 0.25),
+      median: percentile(values, 0.5),
+      high: percentile(values, 0.75),
+    };
+  });
+  const latestSample = samples.at(-1)?.date || "--";
+  perBacktest.hidden = false;
+  perBacktest.innerHTML = `
+    <div class="panel-head"><div><h2>${t("현재 PER 구간의 과거 사례", "What happened after similar PER levels")}</h2><p>${t("2010년 이후 KOSPI 일별 PER 기준", "KOSPI daily PER since 2010")}</p></div><strong>${formatPer(currentPer)}</strong></div>
+    <p class="backtest-intro">${t(
+      `현재 ${formatPer(currentPer)}의 ±10% 범위(${formatPer(lower)}~${formatPer(upper)})에 들어온 날을 최소 60거래일 간격으로 추렸습니다. 가장 최근 비교 사례는 ${latestSample}입니다.`,
+      `We sample days within ±10% of the current ${formatPer(currentPer)} (${formatPer(lower)}–${formatPer(upper)}) at least 60 trading days apart. The latest comparable entry was ${latestSample}.`
+    )}</p>
+    <div class="backtest-grid">${stats.map((stat) => `
+      <article><span>${IS_EN ? stat.en : stat.ko}</span><strong>${formatPct(stat.median)}</strong><small>${t(`중앙값 · ${stat.count}개 사례`, `Median · ${stat.count} samples`)}</small><p>${t("중간 50% 범위", "Middle 50% range")} ${formatPct(stat.low)} ~ ${formatPct(stat.high)}</p></article>
+    `).join("")}</div>
+    <p class="backtest-note">${t("과거 분포는 미래 수익률을 보장하지 않습니다. PER 구간은 금리·이익 전망·시장 구조가 달랐던 시기를 함께 포함합니다.", "Historical distributions do not predict or guarantee future returns. Comparable PER levels can occur under very different rates, earnings expectations, and market structures.")}</p>
+  `;
+}
+
 async function fetchMarketPerData() {
   const response = await fetch(`/data/market-per.json?ts=${Date.now()}`, { cache: "no-store" });
   const data = await response.json().catch(() => null);
@@ -386,13 +492,15 @@ async function loadMarketDashboard() {
   setStatus(t("KRX PER 데이터를 불러오는 중입니다.", "Loading KRX PER data."));
 
   try {
-    const [perData, forwardHistory] = await Promise.all([
+    const [perData, forwardHistory, perHistory] = await Promise.all([
       fetchMarketPerData(),
       fetchForwardPerHistory().catch(() => []),
+      fetchKospiPerHistory().catch(() => []),
     ]);
     useLatestForwardPer(forwardHistory);
     renderCards(perData);
     renderMarketPerChart(perData);
+    renderPerBacktest(perData, perHistory);
     renderSources(perData);
     renderForwardPerComparison(forwardHistory);
     setStatus(

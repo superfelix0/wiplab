@@ -262,6 +262,37 @@ footer {
   color: var(--muted);
 }
 
+.per-backtest-panel {
+  margin: 24px auto;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.per-backtest-panel .panel-head { margin-bottom: 10px; }
+.per-backtest-panel .panel-head strong { color: var(--green); font-size: 20px; }
+.backtest-intro, .backtest-note { color: var(--muted); font-size: 12px; line-height: 1.65; }
+
+.backtest-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0 12px;
+}
+
+.backtest-grid article {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--line-soft);
+  background: var(--panel-2);
+}
+
+.backtest-grid span, .backtest-grid small, .backtest-grid p { display: block; }
+.backtest-grid span { color: var(--faint); font-size: 10px; text-transform: uppercase; }
+.backtest-grid strong { display: block; margin: 6px 0 2px; color: var(--title); font-size: 20px; }
+.backtest-grid small { color: var(--green); font-size: 10px; }
+.backtest-grid p { margin: 10px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+
 .footer-glossary {
   color: var(--faint);
   font-size: 10px;
@@ -2581,7 +2612,8 @@ footer p {
   .mobile-bottom-nav a[aria-current="page"] { color: var(--green); background: var(--panel-3); }
   .today-signal-grid,
   .theme-grid,
-  .metric-directory { grid-template-columns: 1fr; }
+  .metric-directory,
+  .backtest-grid { grid-template-columns: 1fr; }
   .today-signal,
   .theme-card { min-height: 0; }
   .metric-directory a,
