@@ -1,7 +1,7 @@
 {
   "ok": true,
   "sample": false,
-  "generatedAt": "2026-07-22T05:09:00+09:00",
+  "generatedAt": "2026-07-22T20:24:13+09:00",
   "lastUpdated": "2026-07-22",
   "operatorNote": {
     "ko": "기존 사이트 수집 데이터와 공개 데이터 대용치를 이용해 자동 산출합니다.",
@@ -101,8 +101,8 @@
       "titleKo": "시장 폭·유동성 다이버전스",
       "titleEn": "Market breadth & liquidity divergence",
       "anchor": "#breadth-liquidity",
-      "observationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -3.47조원, z=-0.79. 실질 유동성 보조값 3개월 변화 +9.0B USD.",
-      "observationEn": "Latest weekly retail net buying is -3.47T KRW versus its usual pattern, z=-0.79. 3-month real-liquidity proxy change +9.0B USD.",
+      "observationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -3.47조원, z=-0.79. 실질 유동성 보조값 3개월 변화 +8.5B USD.",
+      "observationEn": "Latest weekly retail net buying is -3.47T KRW versus its usual pattern, z=-0.79. 3-month real-liquidity proxy change +8.5B USD.",
       "recentChangeKo": "자동 산출",
       "recentChangeEn": "Auto-calculated",
       "judgmentKo": "개인 수급의 비정상적 위축과 미국 유동성 악화를 함께 봅니다.",
@@ -111,32 +111,32 @@
       "dataEn": "Retail-flow residuals, KOSPI weekly returns, and FRED liquidity proxy.",
       "criteriaKo": "개인 수급이 평소 패턴보다 크게 약하거나 유동성 방향이 악화되면 점수를 높입니다.",
       "criteriaEn": "Score rises when retail flow is unusually weak or liquidity direction deteriorates.",
-      "interpretationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -3.47조원, z=-0.79. 실질 유동성 보조값 3개월 변화 +9.0B USD.",
-      "interpretationEn": "Latest weekly retail net buying is -3.47T KRW versus its usual pattern, z=-0.79. 3-month real-liquidity proxy change +9.0B USD.",
+      "interpretationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -3.47조원, z=-0.79. 실질 유동성 보조값 3개월 변화 +8.5B USD.",
+      "interpretationEn": "Latest weekly retail net buying is -3.47T KRW versus its usual pattern, z=-0.79. 3-month real-liquidity proxy change +8.5B USD.",
       "sources": [
         {
           "name": "FRED M2SL",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/M2SL",
-          "checkedAt": "2026-07-21T16:56:19+09:00"
+          "checkedAt": "2026-07-22T16:56:29+09:00"
         },
         {
           "name": "FRED WRESBAL",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/WRESBAL",
-          "checkedAt": "2026-07-21T16:56:19+09:00"
+          "checkedAt": "2026-07-22T16:56:29+09:00"
         },
         {
           "name": "FRED RRPONTSYD",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/RRPONTSYD",
-          "checkedAt": "2026-07-21T16:56:19+09:00"
+          "checkedAt": "2026-07-22T16:56:29+09:00"
         },
         {
           "name": "FRED WTREGEN",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/WTREGEN",
-          "checkedAt": "2026-07-21T16:56:19+09:00"
+          "checkedAt": "2026-07-22T16:56:29+09:00"
         },
         {
           "name": "KRX investor flow via pykrx",
@@ -177,7 +177,7 @@
           "name": "Yahoo Finance fundamentals time-series",
           "type": "public endpoint",
           "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT",
-          "checkedAt": "2026-07-21T02:45:38+09:00"
+          "checkedAt": "2026-07-22T20:23:21+09:00"
         }
       ],
       "historyKo": [
@@ -212,7 +212,7 @@
           "name": "Yahoo Finance fundamentals time-series",
           "type": "public endpoint",
           "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MU",
-          "checkedAt": "2026-07-21T02:45:38+09:00"
+          "checkedAt": "2026-07-22T20:23:21+09:00"
         }
       ],
       "historyKo": [
@@ -313,16 +313,6 @@
     }
   ],
   "history": [
-    {
-      "date": "2026-05-17",
-      "totalScore": 2.5,
-      "changesKo": [
-        "전방 수요 관찰 점수 상향"
-      ],
-      "changesEn": [
-        "End-demand watch score raised"
-      ]
-    },
     {
       "date": "2026-05-24",
       "totalScore": 3.0,
