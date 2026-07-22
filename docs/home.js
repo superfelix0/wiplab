@@ -261,7 +261,11 @@ function updateHyperscalerComment(data) {
   if (!rows.length) return setComment("f3", ht("하이퍼스케일러 CAPEX 부담 확인 중.", "Checking hyperscaler CAPEX burden."));
   const alphabet = (data?.companies || []).find((company) => company.id === "alphabet");
   const homeCapex = document.querySelector('.theme-card a[href="ai-capex/"]')?.closest(".theme-card")?.querySelector("p");
-  if (homeCapex && alphabet?.latestHighlight) homeCapex.textContent = IS_EN ? alphabet.latestHighlight.en : alphabet.latestHighlight.ko;
+  if (homeCapex && alphabet?.latestHighlight) {
+    homeCapex.textContent = IS_EN
+      ? "Alphabet: Q2 earnings update published Jul 23."
+      : "구글, 7/23 2분기 실적 발표 업데이트 완료.";
+  }
   const avgOcf = averageFinite(rows.map(capexOcf));
   const avgNi = averageFinite(rows.map(capexNi));
   setComment("f3", ht(`CAPEX 부담: ${capexBurdenLabel(avgOcf, avgNi)}. 평균 CAPEX/OCF ${pctText(avgOcf)}, CAPEX/순이익 ${pctText(avgNi)}.`, `CAPEX burden: ${capexBurdenLabel(avgOcf, avgNi)}. Avg CAPEX/OCF ${pctText(avgOcf)}, CAPEX/net income ${pctText(avgNi)}.`));
