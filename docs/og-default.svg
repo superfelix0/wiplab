@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">WIP Labs</title><desc id="desc">A light daily market research terminal for Korean market signals.</desc>
+  <rect width="1200" height="630" fill="#f5f1e8"/>
+  <rect x="52" y="52" width="1096" height="526" rx="6" fill="#fcfaf5" stroke="#cfd5c8"/>
+  <text x="104" y="144" font-family="Arial, sans-serif" font-size="25" font-weight="700" letter-spacing="7" fill="#55705c">WIP LABS</text>
+  <line x1="104" y1="181" x2="1096" y2="181" stroke="#cfd5c8"/>
+  <text x="104" y="285" font-family="Arial, sans-serif" font-size="60" font-weight="700" fill="#223126">가볍게 보는 오늘의 시장</text>
+  <text x="104" y="358" font-family="Arial, sans-serif" font-size="60" font-weight="700" fill="#223126">리서치 터미널</text>
+  <text x="104" y="449" font-family="Arial, sans-serif" font-size="25" fill="#607064">KOSPI valuation · market sentiment · AI CAPEX · memory cycle · investor flow</text>
+  <rect x="104" y="500" width="153" height="10" rx="5" fill="#55705c"/><rect x="271" y="500" width="93" height="10" rx="5" fill="#c49345"/><rect x="378" y="500" width="212" height="10" rx="5" fill="#81958a"/>
+</svg>

@@ -11,6 +11,7 @@ from datetime import date
 from html import escape
 from pathlib import Path
 import re
+import json
 
 SOURCE = Path("glossary-content.md")
 OUT = Path("docs/glossary")
@@ -133,7 +134,17 @@ def build_item(item: dict) -> None:
     relative = f"/glossary/{slug}/"
     sections = f'''<section class="hero service-hero"><p class="eyebrow">GLOSSARY</p><h1>{inline(item['name'])}</h1><p class="hero-copy">{inline(item['description'])}</p></section>
 <nav class="glossary-breadcrumb" aria-label="Breadcrumb"><a href="/">WIP Labs</a> <span>›</span> <a href="/glossary/">Glossary</a> <span>›</span> <span>{inline(item['name'])}</span></nav><article class="glossary-article"><section><h2>한 줄 정의</h2>{rich(item['definition'])}</section><section><h2>어떻게 읽나</h2>{rich(item['reading'])}</section><section><h2>한계와 오해</h2>{rich(item['limits'])}</section><section><h2>함께 보기</h2>{rich(item['related'])}</section></article>'''
-    schema = '{"@context":"https://schema.org","@type":"DefinedTerm","name":' + repr(item["name"]).replace("'", '"') + ',"description":' + repr(item["description"]).replace("'", '"') + '}'
+    schema = json.dumps({
+        "@context": "https://schema.org",
+        "@graph": [
+            {"@type": "DefinedTerm", "name": item["name"], "description": item["description"], "url": f"{BASE}{relative}"},
+            {"@type": "BreadcrumbList", "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "WIP Labs", "item": BASE + "/"},
+                {"@type": "ListItem", "position": 2, "name": "Glossary", "item": BASE + "/glossary/"},
+                {"@type": "ListItem", "position": 3, "name": item["name"], "item": f"{BASE}{relative}"},
+            ]},
+        ],
+    }, ensure_ascii=False)
     target = OUT / slug / "index.html"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(layout(item["title"], item["description"], sections, relative, schema), encoding="utf-8")
@@ -153,7 +164,12 @@ def build_hub(items: list[dict]) -> None:
             cards.append(f"<a class=\"theme-card\" href=\"{slug}/\"><span>GLOSSARY</span><h3>{inline(item['name'])}</h3><p>{inline(definition)}</p><div>읽는 법 <b>→</b></div></a>")
         cards.append("</div></section>")
     body = "<section class=\"hero service-hero\"><p class=\"eyebrow\">WIP LABS GLOSSARY</p><h1>용어·읽는 법</h1><p class=\"hero-copy\">숫자 자체보다 그 숫자를 어떻게 읽는지가 더 중요합니다. 사이트에서 쓰는 지표의 정의와 해석, 주의할 점을 정리합니다.</p></section>" + "".join(cards)
-    schema = '{"@context":"https://schema.org","@type":"CollectionPage","name":"WIP Labs 용어·읽는 법"}'
+    schema = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "WIP Labs 용어·읽는 법",
+        "hasPart": [{"@type": "DefinedTerm", "name": item["name"], "url": f"{BASE}/glossary/{item['slug'].strip('/').split('/')[-1]}/"} for item in items],
+    }, ensure_ascii=False)
     (OUT / "index.html").write_text(layout("용어·읽는 법 | WIP Labs", "WIP Labs에서 사용하는 시장 지표의 정의, 읽는 법, 한계와 오해를 정리합니다.", body, "/glossary/", schema), encoding="utf-8")
 
 

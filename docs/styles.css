@@ -300,6 +300,26 @@ footer {
   text-transform: uppercase;
 }
 
+.glossary-deep-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin: 20px 0;
+  color: var(--faint);
+  font-size: 11px;
+}
+
+.glossary-deep-links > span { margin-right: 3px; font-weight: 700; }
+.glossary-deep-links a {
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  color: var(--green);
+  background: var(--panel);
+  text-decoration: none;
+}
+.glossary-deep-links a:hover { border-color: var(--green); background: var(--panel-3); }
+
 .glossary-group {
   margin: 0 auto 28px;
   max-width: 1120px;
