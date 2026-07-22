@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-23T03:39:44+09:00",
+  "generatedAt": "2026-07-23T03:41:34+09:00",
   "snapshots": [
     {
       "date": "2026-07-16",
@@ -7,7 +7,7 @@
       "labelEn": "Mixed direction/high volatility",
       "tone": "neutral",
       "riskScore": 4.0,
-      "vkospi": 84.89,
+      "vkospi": 82.79,
       "currentPer": 18.54,
       "historicalAveragePer": 15.64,
       "foreignFlowDate": "2026-07-22"
