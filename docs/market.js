@@ -385,11 +385,11 @@ function renderPerBacktest(perData, perHistory = []) {
   perBacktest.innerHTML = `
     <div class="panel-head"><div><h2>${t("현재 PER 구간의 과거 사례", "What happened after similar PER levels")}</h2><p>${t("2010년 이후 KOSPI 일별 PER 기준", "KOSPI daily PER since 2010")}</p></div><strong>${formatPer(currentPer)}</strong></div>
     <p class="backtest-intro">${t(
-      `현재 ${formatPer(currentPer)}의 ±10% 범위(${formatPer(lower)}~${formatPer(upper)})에 들어온 날을 최소 60거래일 간격으로 추렸습니다. 가장 최근 비교 사례는 ${latestSample}입니다.`,
-      `We sample days within ±10% of the current ${formatPer(currentPer)} (${formatPer(lower)}–${formatPer(upper)}) at least 60 trading days apart. The latest comparable entry was ${latestSample}.`
+      `현재 ${formatPer(currentPer)}의 ±10% 범위(${formatPer(lower)}~${formatPer(upper)})에 들어온 날을 최소 60거래일 간격으로 추렸습니다. 아래 퍼센티지는 그 진입일 이후의 KOSPI 지수 수익률이며, PER의 변화율이 아닙니다. 가장 최근 비교 사례는 ${latestSample}입니다.`,
+      `We sample days within ±10% of the current ${formatPer(currentPer)} (${formatPer(lower)}–${formatPer(upper)}) at least 60 trading days apart. The percentages below are subsequent KOSPI index returns, not changes in PER. The latest comparable entry was ${latestSample}.`
     )}</p>
     <div class="backtest-grid">${stats.map((stat) => `
-      <article><span>${IS_EN ? stat.en : stat.ko}</span><strong>${formatPct(stat.median)}</strong><small>${t(`중앙값 · ${stat.count}개 사례`, `Median · ${stat.count} samples`)}</small><p>${t("중간 50% 범위", "Middle 50% range")} ${formatPct(stat.low)} ~ ${formatPct(stat.high)}</p></article>
+      <article><span>${t(`${stat.ko} 후 KOSPI 지수 수익률`, `KOSPI return after ${stat.en}`)}</span><strong>${formatPct(stat.median)}</strong><small>${t(`KOSPI 수익률 중앙값 · ${stat.count}개 사례`, `Median KOSPI return · ${stat.count} samples`)}</small><p>${t("KOSPI 수익률의 중간 50% 범위", "Middle 50% range of KOSPI returns")} ${formatPct(stat.low)} ~ ${formatPct(stat.high)}</p></article>
     `).join("")}</div>
     <p class="backtest-note">${t("과거 분포는 미래 수익률을 보장하지 않습니다. PER 구간은 금리·이익 전망·시장 구조가 달랐던 시기를 함께 포함합니다.", "Historical distributions do not predict or guarantee future returns. Comparable PER levels can occur under very different rates, earnings expectations, and market structures.")}</p>
   `;
