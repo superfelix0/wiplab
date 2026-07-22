@@ -1,4 +1,10 @@
 (() => {
+  const path = window.location.pathname.replace(/\/+$/, "");
+  if (path !== "" && path !== "/en") {
+    document.querySelector(".ticker-strip")?.remove();
+    return;
+  }
+
   const tickerEls = {
     kospi: document.querySelector("#tickerKospi"),
     nasdaq: document.querySelector("#tickerNasdaq"),
@@ -32,7 +38,15 @@
     const delayed = Number.isFinite(item.delayMinutes) && item.delayMinutes > 0;
     const latency = delayed
       ? (isEn ? `~${item.delayMinutes} min delayed` : `약 ${item.delayMinutes}분 지연`)
-      : (isEn ? "real-time quote" : "실시간 시세");
+      : (isEn ? "free quote · delay not confirmed" : "무료 시세 · 지연시간 미확인");
+    const kstParts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Seoul", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+    }).formatToParts(new Date()).filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+    const kstMinutes = Number(kstParts.hour) * 60 + Number(kstParts.minute);
+    const koreaRegular = ["Mon", "Tue", "Wed", "Thu", "Fri"].includes(kstParts.weekday) && kstMinutes >= 540 && kstMinutes < 930;
+    if (item.id === "kospi" && (!koreaRegular || state === "CLOSED")) {
+      return isEn ? `Korea market closed · ${quoteTime} KST close` : `한국 장마감 · ${quoteTime} KST 종가`;
+    }
     if (state === "CLOSED") return isEn ? `Market closed · ${quoteTime} KST close` : `장마감 · ${quoteTime} KST 종가`;
     if (state === "PRE" || state === "POST") return isEn ? `Extended hours · ${latency}` : `시간외 · ${latency}`;
     if (state === "REGULAR") return isEn ? `Market open · ${latency}` : `장중 · ${latency}`;
