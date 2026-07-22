@@ -1,7 +1,7 @@
 {
   "ok": true,
   "sample": false,
-  "generatedAt": "2026-07-23T03:12:00+09:00",
+  "generatedAt": "2026-07-23T04:33:48+09:00",
   "lastUpdated": "2026-07-23",
   "operatorNote": {
     "ko": "기존 사이트 수집 데이터와 공개 데이터 대용치를 이용해 자동 산출합니다.",
@@ -301,7 +301,7 @@
           "name": "KRX KOSPI PER data",
           "type": "public/user-provided market data",
           "url": "https://data.krx.co.kr/",
-          "checkedAt": "2026-07-22T20:48:55+09:00"
+          "checkedAt": "2026-07-23T03:51:02+09:00"
         }
       ],
       "historyKo": [
@@ -313,16 +313,6 @@
     }
   ],
   "history": [
-    {
-      "date": "2026-05-24",
-      "totalScore": 3.0,
-      "changesKo": [
-        "시장 폭 둔화 반영"
-      ],
-      "changesEn": [
-        "Breadth deterioration reflected"
-      ]
-    },
     {
       "date": "2026-05-31",
       "totalScore": 3.0,
