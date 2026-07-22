@@ -259,6 +259,9 @@ function capexBurdenLabel(capexToOcf, capexToNi) {
 function updateHyperscalerComment(data) {
   const rows = (data?.companies || []).filter((company) => company.group === "Hyperscaler").map((company) => company.quarters?.at(-1)).filter(Boolean);
   if (!rows.length) return setComment("f3", ht("하이퍼스케일러 CAPEX 부담 확인 중.", "Checking hyperscaler CAPEX burden."));
+  const alphabet = (data?.companies || []).find((company) => company.id === "alphabet");
+  const homeCapex = document.querySelector('.theme-card a[href="ai-capex/"]')?.closest(".theme-card")?.querySelector("p");
+  if (homeCapex && alphabet?.latestHighlight) homeCapex.textContent = IS_EN ? alphabet.latestHighlight.en : alphabet.latestHighlight.ko;
   const avgOcf = averageFinite(rows.map(capexOcf));
   const avgNi = averageFinite(rows.map(capexNi));
   setComment("f3", ht(`CAPEX 부담: ${capexBurdenLabel(avgOcf, avgNi)}. 평균 CAPEX/OCF ${pctText(avgOcf)}, CAPEX/순이익 ${pctText(avgNi)}.`, `CAPEX burden: ${capexBurdenLabel(avgOcf, avgNi)}. Avg CAPEX/OCF ${pctText(avgOcf)}, CAPEX/net income ${pctText(avgNi)}.`));

@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generatedAt": "2026-07-22T20:47:53+09:00",
+  "generatedAt": "2026-07-23T05:10:06+09:00",
   "source": "Yahoo Finance fundamentals time-series public endpoint",
   "companies": [
     {
@@ -5164,26 +5164,6 @@
       "message": "",
       "quarters": [
         {
-          "date": "2025-03-31",
-          "quarterlyEBITDA": 46310000000.0,
-          "quarterlyNetIncome": 34540000000.0,
-          "quarterlyOperatingExpense": 23267000000.0,
-          "quarterlyCapitalExpenditure": -17197000000.0,
-          "quarterlyNormalizedEBITDA": 36456000000.0,
-          "quarterlyFreeCashFlow": 18953000000.0,
-          "quarterlyOperatingIncome": 30606000000.0,
-          "quarterlyTotalRevenue": 90234000000.0,
-          "quarterlyOperatingCashFlow": 36150000000.0,
-          "profit": 34540000000.0,
-          "profitMetric": "Net income",
-          "profitGrowthQoQ": null,
-          "capex": -17197000000.0,
-          "operatingCashFlow": 36150000000.0,
-          "freeCashFlow": 18953000000.0,
-          "operatingExpense": 23267000000.0,
-          "ebitda": 46310000000.0
-        },
-        {
           "date": "2025-06-30",
           "quarterlyEBITDA": 39192000000.0,
           "quarterlyNetIncome": 28196000000.0,
@@ -5262,13 +5242,31 @@
           "freeCashFlow": 10116000000.0,
           "operatingExpense": 28929000000.0,
           "ebitda": 84427000000.0
+        },
+        {
+          "date": "2026-06-30",
+          "quarterlyTotalRevenue": 119796000000,
+          "quarterlyOperatingIncome": 40770000000,
+          "quarterlyNetIncome": 112193000000,
+          "quarterlyOperatingCashFlow": 39069000000,
+          "quarterlyCapitalExpenditure": -44924000000,
+          "quarterlyFreeCashFlow": -5855000000,
+          "quarterlyEBITDA": 47874000000,
+          "quarterlyNormalizedEBITDA": 47874000000,
+          "profit": 112193000000,
+          "profitMetric": "Net income (includes equity gain)",
+          "profitGrowthQoQ": 0.7928505225478604,
+          "capex": -44924000000,
+          "operatingCashFlow": 39069000000,
+          "freeCashFlow": -5855000000,
+          "officialNote": "Q2 net income includes a $77.1B after-tax unrealized equity gain."
         }
       ],
-      "latestQuarterDate": "2026-03-31",
+      "latestQuarterDate": "2026-06-30",
       "latestHighlight": {
-        "quarterDate": "2026-03-31",
-        "ko": "CAPEX/OCF 77.9%, CAPEX/순이익 57.0%로 투자 부담은 관리 가능한 범위입니다.",
-        "en": "CAPEX/OCF is 77.9% and CAPEX/net income is 57.0%. The investment burden remains manageable."
+        "quarterDate": "2026-06-30",
+        "ko": "Q2 업데이트: 매출 $119.8B(+24% YoY), Google Cloud $24.8B(+82%). CAPEX $44.9B가 OCF $39.1B를 넘어 FCF는 -$5.9B입니다. 순이익에는 지분증권 이익이 포함됩니다.",
+        "en": "Q2 update: revenue was $119.8B (+24% YoY) and Google Cloud reached $24.8B (+82%). $44.9B CAPEX exceeded $39.1B OCF, taking FCF to -$5.9B. Net income includes a large equity gain."
       },
       "priceHistory": [
         {
@@ -7160,12 +7158,28 @@
       "total": 11
     }
   },
-  "releaseHistory": [],
+  "releaseHistory": [
+    {
+      "companyId": "alphabet",
+      "companyName": "Alphabet",
+      "group": "Hyperscaler",
+      "previousQuarterDate": "2026-03-31",
+      "quarterDate": "2026-06-30",
+      "detectedAt": "2026-07-23T05:10:06+09:00",
+      "highlightKo": "Q2 업데이트: 매출 $119.8B(+24% YoY), Google Cloud $24.8B(+82%). CAPEX $44.9B가 OCF $39.1B를 넘어 FCF는 -$5.9B입니다. 순이익에는 지분증권 이익이 포함됩니다.",
+      "highlightEn": "Q2 update: revenue was $119.8B (+24% YoY) and Google Cloud reached $24.8B (+82%). $44.9B CAPEX exceeded $39.1B OCF, taking FCF to -$5.9B. Net income includes a large equity gain."
+    }
+  ],
   "sources": [
     {
       "title": "Yahoo Finance fundamentals time-series",
       "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT",
       "note": "분기 손익계산서와 현금흐름 항목을 가져옵니다. 종목별 공개 범위와 회계 기준은 다를 수 있습니다."
+    },
+    {
+      "title": "Alphabet Q2 2026 earnings release (official)",
+      "url": "https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf",
+      "note": "Official release dated July 22, 2026. Q2 figures are in USD millions; CAPEX is purchases of property and equipment."
     }
   ]
 }

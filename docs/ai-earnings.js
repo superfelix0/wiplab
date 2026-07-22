@@ -212,6 +212,11 @@ function renderSources(data) {
   earningsEls.sources.innerHTML = (data.sources || []).map((source) => `<li><a href="${source.url}" target="_blank" rel="noopener noreferrer">${source.title}</a><span>${IS_EN ? "Yahoo Finance public fundamentals time-series. Coverage can vary by ticker." : "Yahoo Finance 공개 fundamentals time-series. 종목별 공개 범위는 다를 수 있습니다."}</span></li>`).join("");
 }
 
+function renderSources(data) {
+  const fallback = "Public financial data. Coverage and accounting classifications can vary by company.";
+  earningsEls.sources.innerHTML = (data.sources || []).map((source) => `<li><a href="${source.url}" target="_blank" rel="noopener noreferrer">${source.title}</a><span>${source.note || fallback}</span></li>`).join("");
+}
+
 function render(data) {
   renderSummary(data);
   renderReleaseHighlights(data);

@@ -227,6 +227,11 @@ def build_company(company: dict, cached: dict | None = None) -> dict:
         quarters = cached.get("quarters", [])
         status = "cached" if quarters else "error"
         message = f"Live fetch failed; retained the latest saved data. {error}" if quarters else str(error)
+    official_quarter = next((row for row in cached.get("quarters", []) if row.get("officialNote")), None)
+    if official_quarter:
+        quarters = [row for row in quarters if row.get("date") != official_quarter.get("date")] + [official_quarter]
+        quarters = sorted(quarters, key=lambda row: row.get("date", ""))[-5:]
+    official_highlight = cached.get("latestHighlight") if official_quarter and quarters and quarters[-1].get("date") == official_quarter.get("date") and cached.get("latestHighlight", {}).get("quarterDate") == official_quarter.get("date") else None
     try:
         price_history = fetch_price_history(company["symbol"])
         if not price_history:
@@ -239,7 +244,7 @@ def build_company(company: dict, cached: dict | None = None) -> dict:
         "message": message,
         "quarters": quarters,
         "latestQuarterDate": quarters[-1].get("date") if quarters else None,
-        "latestHighlight": build_highlight(company, quarters),
+        "latestHighlight": official_highlight or build_highlight(company, quarters),
         "priceHistory": price_history,
         "priceSummary": price_summary(price_history),
         "valuation": {
