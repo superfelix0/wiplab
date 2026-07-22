@@ -6,9 +6,15 @@ class HeadInjector {
   }
 }
 
+class FooterInjector {
+  element(element) {
+    element.append(`<a class="footer-glossary" href="/glossary/">Glossary</a>`, { html: true });
+  }
+}
+
 export const onRequest = async (context) => {
   const response = await context.next();
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("text/html")) return response;
-  return new HTMLRewriter().on("head", new HeadInjector()).transform(response);
+  return new HTMLRewriter().on("head", new HeadInjector()).on("footer", new FooterInjector()).transform(response);
 };
