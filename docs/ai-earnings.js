@@ -180,6 +180,7 @@ function renderRankings(data) {
 }
 
 function renderCards(data) {
+  if (!earningsEls.cards) return;
   const rows = rowsWithLatest(data).sort((a, b) => a.company.name.localeCompare(b.company.name));
   earningsEls.cards.innerHTML = rows.map(({ company, latest }) => `
     <article data-tone="${burdenKey(capexOcf(latest), capexProfit(latest)) === "stretched" ? "negative" : "positive"}">

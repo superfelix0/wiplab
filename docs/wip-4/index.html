@@ -22,7 +22,7 @@
   <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/wip-4/">
   <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/wip-4/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../styles.css?v=memory-op-tabs-20260718">
+  <link rel="stylesheet" href="../styles.css?v=stock-trends-20260722">
   <title>F4 - Memory Operating Profit Monitor</title>
 </head>
 <body>
@@ -76,6 +76,7 @@
       <div class="status" id="memoryStatus">메모리 실적 데이터를 불러오는 중입니다.</div>
       <div class="earnings-insight-grid memory-summary-grid" id="memorySummary"></div>
       <section class="earnings-release-panel"><div class="panel-head"><h3>최근 결산 핵심</h3><p>새 분기 실적이 확인되면 매출·영업이익·마진의 중요한 변화를 자동 반영합니다.</p></div><div class="earnings-release-grid" id="memoryReleaseHighlights"></div></section>
+      <section class="earnings-stock-panel" data-stock-group="memory"><div class="panel-head"><h3>주가 흐름 비교</h3><p>최근 약 3개월 주가를 시작점 100으로 환산해 비교합니다.</p></div><div class="status" data-stock-status>주가 이력을 불러오는 중입니다.</div><p class="stock-market-comment" data-stock-comment></p><div class="chart-legend" data-stock-legend></div><div class="chart-wrap"><svg data-stock-chart viewBox="0 0 900 330" role="img" aria-label="메모리 업체 주가 흐름 비교 그래프"></svg></div><div class="earnings-table-wrap"><table class="earnings-table" data-stock-table></table></div></section>
 
       <div class="earnings-chart-tabs" role="tablist" aria-label="메모리 지표 보기">
         <button class="is-active" type="button" data-memory-tab="margin-bars" aria-selected="true">영업이익 증가율 그래프</button>
@@ -127,5 +128,6 @@
   <footer><div><strong>F4</strong><p>메모리 반도체 수익성 추이 실험.</p></div><span>© 2026</span></footer>
   <script src="../ticker.js?v=tab-titles-20260722"></script>
   <script src="../memory-earnings.js?v=daily-release-highlights-20260721"></script>
+  <script src="../earnings-stock.js?v=stock-trends-20260722"></script>
 </body>
 </html>

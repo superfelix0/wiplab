@@ -1826,13 +1826,11 @@ h3 {
   padding-top: 8px;
 }
 
-.legend-adr,
 .legend-current,
 .legend-regression {
   background: var(--amber) !important;
 }
 
-.legend-kospi,
 .legend-target {
   background: var(--green) !important;
 }
@@ -1888,6 +1886,58 @@ h3 {
   color: var(--muted);
 }
 
+.earnings-stock-panel {
+  margin: 14px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.earnings-stock-panel .chart-wrap {
+  margin-top: 10px;
+}
+
+.earnings-stock-panel svg {
+  width: 100%;
+  min-height: 260px;
+  color: var(--muted);
+}
+
+.stock-chart-grid line {
+  stroke: var(--line-soft);
+  stroke-dasharray: 3 5;
+}
+
+.stock-chart-grid text,
+.earnings-stock-panel svg > text {
+  fill: currentColor;
+  font-size: 11px;
+}
+
+.stock-base-line {
+  stroke: var(--amber);
+  stroke-width: 1;
+  stroke-dasharray: 5 4;
+}
+
+.stock-chart-lines path {
+  fill: none;
+  stroke-width: 2.2;
+  vector-effect: non-scaling-stroke;
+}
+
+.stock-market-comment {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--amber);
+  background: var(--panel-2);
+  color: var(--title);
+  line-height: 1.5;
+}
+
+.earnings-stock-panel[data-tone="favorable"] .stock-market-comment { border-left-color: var(--green); }
+.earnings-stock-panel[data-tone="unfavorable"] .stock-market-comment { border-left-color: var(--red); }
+
 .earnings-release-grid article p {
   margin: 8px 0 0;
   line-height: 1.45;
@@ -1930,18 +1980,15 @@ h3 {
   font-size: 11px;
 }
 
-.chart-line,
 .sentiment-line {
   fill: none;
   stroke-width: 2.5;
 }
 
-.chart-line-adr,
 .sentiment-regression {
   stroke: var(--amber);
 }
 
-.chart-line-kospi,
 .sentiment-line {
   stroke: var(--green);
 }

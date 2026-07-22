@@ -22,7 +22,7 @@
   <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/wip-3/">
   <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/wip-3/">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../styles.css?v=finance-lab-20260718">
+  <link rel="stylesheet" href="../styles.css?v=stock-trends-20260722">
   <title>F3 — Hyperscaler AI CAPEX Monitor</title>
 </head>
 <body>
@@ -66,13 +66,14 @@
         <section class="earnings-panel" data-earnings-panel="profit" hidden><div class="panel-head"><h3>CAPEX/순이익 비교</h3><p>낮을수록 이익 대비 투자 부담이 작습니다.</p></div><div class="rank-list" id="profitRanking"></div></section>
         <section class="earnings-panel" data-earnings-panel="fcf" hidden><div class="panel-head"><h3>FCF 규모 비교</h3><p>투자 후 남는 잉여현금흐름입니다.</p></div><div class="rank-list" id="fcfRanking"></div></section>
       </div>
-      <div class="earnings-card-grid" id="earningsCards"></div>
+      <section class="earnings-stock-panel" data-stock-group="hyperscalers"><div class="panel-head"><h3>주가 흐름 비교</h3><p>최근 약 3개월 주가를 시작점 100으로 환산해 비교합니다.</p></div><div class="status" data-stock-status>주가 이력을 불러오는 중입니다.</div><p class="stock-market-comment" data-stock-comment></p><div class="chart-legend" data-stock-legend></div><div class="chart-wrap"><svg data-stock-chart viewBox="0 0 900 330" role="img" aria-label="하이퍼스케일러 주가 흐름 비교 그래프"></svg></div><div class="earnings-table-wrap"><table class="earnings-table" data-stock-table></table></div></section>
       <div class="chart-panel"><div class="chart-head"><div><h3>상세 비교표</h3><p class="chart-note">최근 분기 기준입니다. 회사별 회계 기준과 통화가 다를 수 있어 비율 중심으로 봅니다.</p></div></div><div class="earnings-table-wrap"><table class="earnings-table" id="earningsTable"></table></div></div>
       <div class="source-panel"><h2>데이터 출처</h2><p>분기 손익계산서와 현금흐름표 항목은 Yahoo Finance 공개 fundamentals time-series를 사용합니다.</p><ul id="earningsSources"></ul></div>
     </section>
   </main>
   <footer><div><strong>F3</strong><p>하이퍼스케일러 AI CAPEX 부담 실험.</p></div><span>© 2026</span></footer>
   <script src="../ticker.js?v=tab-titles-20260722"></script>
-  <script src="../ai-earnings.js?v=daily-release-highlights-20260721"></script>
+  <script src="../ai-earnings.js?v=stock-table-20260722"></script>
+  <script src="../earnings-stock.js?v=stock-trends-20260722"></script>
 </body>
 </html>

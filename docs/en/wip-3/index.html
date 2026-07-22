@@ -22,7 +22,7 @@
   <link rel="alternate" hreflang="ko" href="https://wiplabs.pages.dev/wip-3/">
   <link rel="alternate" hreflang="en" href="https://wiplabs.pages.dev/en/wip-3/">
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../../styles.css?v=finance-lab-20260718">
+  <link rel="stylesheet" href="../../styles.css?v=stock-trends-20260722">
   <title>F3 - Hyperscaler AI CAPEX Monitor</title>
 </head>
 <body>
@@ -42,13 +42,14 @@
       <section class="earnings-takeaway-panel"><div class="panel-head"><h3>Takeaways</h3><p>Summarizes whether CAPEX is manageable within OCF and net income.</p></div><div class="earnings-takeaway-grid" id="earningsTakeaways"></div></section>
       <div class="earnings-chart-tabs" role="tablist"><button type="button" class="is-active" data-earnings-tab="cashflow">CAPEX/OCF</button><button type="button" data-earnings-tab="profit">CAPEX/net income</button><button type="button" data-earnings-tab="fcf">FCF size</button></div>
       <div class="earnings-compare-layout"><section class="earnings-panel" data-earnings-panel="cashflow"><div class="panel-head"><h3>CAPEX/OCF comparison</h3><p>Lower means more cash-flow room.</p></div><div class="rank-list" id="capexRanking"></div></section><section class="earnings-panel" data-earnings-panel="profit" hidden><div class="panel-head"><h3>CAPEX/net income comparison</h3><p>Lower means less burden relative to profit.</p></div><div class="rank-list" id="profitRanking"></div></section><section class="earnings-panel" data-earnings-panel="fcf" hidden><div class="panel-head"><h3>FCF comparison</h3><p>Free cash flow left after investment.</p></div><div class="rank-list" id="fcfRanking"></div></section></div>
-      <div class="earnings-card-grid" id="earningsCards"></div>
+      <section class="earnings-stock-panel" data-stock-group="hyperscalers"><div class="panel-head"><h3>Share-price comparison</h3><p>Compares roughly three months of share-price movement, rebased to 100 at the start.</p></div><div class="status" data-stock-status>Loading share-price history.</div><p class="stock-market-comment" data-stock-comment></p><div class="chart-legend" data-stock-legend></div><div class="chart-wrap"><svg data-stock-chart viewBox="0 0 900 330" role="img" aria-label="Hyperscaler share-price comparison chart"></svg></div><div class="earnings-table-wrap"><table class="earnings-table" data-stock-table></table></div></section>
       <div class="chart-panel"><div class="chart-head"><div><h3>Detail table</h3><p class="chart-note">Latest quarter. Currencies and reporting bases differ, so ratios are more comparable than absolute amounts.</p></div></div><div class="earnings-table-wrap"><table class="earnings-table" id="earningsTable"></table></div></div>
       <div class="source-panel"><h2>Data source</h2><p>Quarterly income-statement and cash-flow items use Yahoo Finance public fundamentals time-series.</p><ul id="earningsSources"></ul></div>
     </section>
   </main>
   <footer><div><strong>F3</strong><p>Hyperscaler AI CAPEX pressure experiment.</p></div><span>© 2026</span></footer>
   <script src="../../ticker.js?v=tab-titles-20260722"></script>
-  <script src="../../ai-earnings.js?v=daily-release-highlights-20260721"></script>
+  <script src="../../ai-earnings.js?v=stock-table-20260722"></script>
+  <script src="../../earnings-stock.js?v=stock-trends-20260722"></script>
 </body>
 </html>

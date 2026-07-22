@@ -197,7 +197,10 @@ function updateHyperscalerComment(data) {
   if (!rows.length) return setComment("f3", ht("하이퍼스케일러 CAPEX 부담 확인 중.", "Checking hyperscaler CAPEX burden."));
   const avgOcf = averageFinite(rows.map(capexOcf));
   const avgNi = averageFinite(rows.map(capexNi));
-  setComment("f3", ht(`CAPEX 부담: ${capexBurdenLabel(avgOcf, avgNi)}. 평균 CAPEX/OCF ${pctText(avgOcf)}, CAPEX/순이익 ${pctText(avgNi)}.`, `CAPEX burden: ${capexBurdenLabel(avgOcf, avgNi)}. Avg CAPEX/OCF ${pctText(avgOcf)}, CAPEX/net income ${pctText(avgNi)}.`));
+  const stock = data?.stockSignals?.hyperscalers;
+  const stockLabel = IS_EN ? stock?.labelEn : stock?.labelKo;
+  const stockText = Number.isFinite(stock?.averageReturn3m) ? ht(` 주가 흐름: ${stockLabel} (${pctText(stock.averageReturn3m)}).`, ` Share-price trend: ${stockLabel} (${pctText(stock.averageReturn3m)}).`) : "";
+  setComment("f3", `${ht(`CAPEX 부담: ${capexBurdenLabel(avgOcf, avgNi)}. 평균 CAPEX/OCF ${pctText(avgOcf)}, CAPEX/순이익 ${pctText(avgNi)}.`, `CAPEX burden: ${capexBurdenLabel(avgOcf, avgNi)}. Avg CAPEX/OCF ${pctText(avgOcf)}, CAPEX/net income ${pctText(avgNi)}.`)}${stockText}`);
 }
 
 function qoq(current, previous) {
@@ -218,8 +221,11 @@ function updateMemoryComment(data) {
   const valid = rows.filter((row) => Number.isFinite(row.growth));
   const avgGrowth = averageFinite(valid.map((row) => row.growth));
   const top = [...valid].sort((a, b) => b.growth - a.growth)[0];
+  const stock = data?.stockSignals?.memory;
+  const stockLabel = IS_EN ? stock?.labelEn : stock?.labelKo;
+  const stockText = Number.isFinite(stock?.averageReturn3m) ? ht(` 주가 흐름: ${stockLabel} (${pctText(stock.averageReturn3m)}).`, ` Share-price trend: ${stockLabel} (${pctText(stock.averageReturn3m)}).`) : "";
   setComment("f4", top
-    ? ht(`평균 영업이익 QoQ ${pctText(avgGrowth)}. 증가율 상위: ${top.company.name} ${pctText(top.growth)}.`, `Avg operating-profit QoQ ${pctText(avgGrowth)}. Top growth: ${top.company.name} ${pctText(top.growth)}.`)
+    ? `${ht(`평균 영업이익 QoQ ${pctText(avgGrowth)}. 증가율 상위: ${top.company.name} ${pctText(top.growth)}.`, `Avg operating-profit QoQ ${pctText(avgGrowth)}. Top growth: ${top.company.name} ${pctText(top.growth)}.`)}${stockText}`
     : ht("메모리 업체 영업이익 추이를 확인합니다.", "Checks memory-company operating-profit trends."));
 }
 
@@ -241,10 +247,11 @@ function updateLiquidityComment(data) {
   setComment("f5", `${label}. ${countText}${ht("이며 ", "; ")}${changeText}.`);
 }
 
-function updateAdrComment(data) {
-  const premium = Number(data?.result?.premium);
-  if (!Number.isFinite(premium)) return setComment("f6", ht("괴리율 확인 중.", "Checking spread."));
-  setComment("f6", ht(`괴리율 ${pctText(premium)}`, `Spread ${pctText(premium)}`));
+function updateMemoryPriceComment(data) {
+  const stock = data?.stockSignals?.memoryAll;
+  const label = IS_EN ? stock?.labelEn : stock?.labelKo;
+  if (!Number.isFinite(stock?.averageReturn3m)) return setComment("f6", ht("메모리 업체 주가 흐름 확인 중.", "Checking memory share-price trend."));
+  setComment("f6", ht(`최근 3개월 평균 ${pctText(stock.averageReturn3m)} · ${label} (${stock.positiveCount}/${stock.total} 상승)`, `Average 3M ${pctText(stock.averageReturn3m)} · ${label} (${stock.positiveCount}/${stock.total} up)`));
 }
 
 function scoreTextHome(value) {
@@ -336,6 +343,8 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
     })
     .filter(Number.isFinite);
   const avgMemoryGrowth = averageFinite(memoryGrowthRows);
+  const hyperscalerStock = earnings?.stockSignals?.hyperscalers;
+  const memoryStock = earnings?.stockSignals?.memory;
 
   const riskScore = Number(bearRisk?.summary?.totalScore);
   const risk = riskStage(riskScore, bearRisk?.scoreScale || []);
@@ -349,6 +358,8 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
   if (Number.isFinite(avgMemoryGrowth)) score += avgMemoryGrowth > 0.1 ? 1 : avgMemoryGrowth < -0.1 ? -1 : 0;
   if (Number.isFinite(riskScore)) score += riskScore <= 4 ? 0.25 : riskScore >= 6.5 ? -1 : -0.5;
   if (Number.isFinite(vkospi)) score += vkospi >= 40 ? -1 : vkospi >= 25 ? -0.5 : 0;
+  if (hyperscalerStock?.status === "favorable" && memoryStock?.status === "favorable") score += 0.5;
+  else if (hyperscalerStock?.status === "unfavorable" || memoryStock?.status === "unfavorable") score -= 0.5;
   if (flowSummary) {
     const flowScores = [-1, -0.5, 0, 0.5, 1];
     score += flowScores[flowSummary.stageIndex] * (flowSummary.provisional ? 0.5 : 1);
@@ -396,6 +407,14 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
       `If confidence in forecast earnings weakens, the low forward PER may instead reflect a discount; VKOSPI at ${homeNumber.format(vkospi)} translates to roughly ±${vkospiDailyMove.toFixed(1)}% expected daily movement, warning about magnitude rather than direction.`
     ));
   }
+  if (hyperscalerStock?.status && memoryStock?.status) {
+    const hyperLabel = IS_EN ? hyperscalerStock.labelEn : hyperscalerStock.labelKo;
+    const memoryLabel = IS_EN ? memoryStock.labelEn : memoryStock.labelKo;
+    sentences.push(ht(
+      `하이퍼스케일러 주가 흐름은 ${hyperLabel}, 메모리 업체 주가 흐름은 ${memoryLabel}입니다. 두 흐름은 AI 투자와 메모리 업황 기대를 통해 한국 기술주 센티멘트의 보조 재료로 반영했습니다.`,
+      `Hyperscaler share-price trends are ${hyperLabel}; memory-company trends are ${memoryLabel}. Both are included as supporting inputs for Korean technology sentiment through AI investment and memory-cycle expectations.`
+    ));
+  }
   if (Number.isFinite(riskScore)) {
     sentences.push(ht(
       "약세장으로의 전환 위험은 아직 즉각적이지 않으며, 주요 트리거 요소들의 변화를 계속 관찰해야 하는 상황입니다.",
@@ -424,13 +443,12 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
 
 async function loadHomeRead() {
   try {
-    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult, adrResult, bearRiskResult, foreignFlowResult] = await Promise.allSettled([
+    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult, bearRiskResult, foreignFlowResult] = await Promise.allSettled([
       readJson("/data/market-per.json"),
       readJson("/data/kospi-sentiment-meta.json"),
       readText("/data/kospi-sentiment.csv"),
       readJson("/data/us-liquidity.json"),
       readJson("/data/ai-earnings.json"),
-      readJson("/api/quotes"),
       readJson("/data/bear-market-risk.json"),
       readJson("/data/foreign-flow-pulse.json"),
     ]);
@@ -439,7 +457,6 @@ async function loadHomeRead() {
     const sentimentRows = sentimentRowsResult.status === "fulfilled" ? parseSentimentCsv(sentimentRowsResult.value) : [];
     const liquidity = liquidityResult.status === "fulfilled" ? liquidityResult.value : null;
     const earnings = earningsResult.status === "fulfilled" ? earningsResult.value : null;
-    const adr = adrResult.status === "fulfilled" ? adrResult.value : null;
     const bearRisk = bearRiskResult.status === "fulfilled" ? bearRiskResult.value : null;
     const foreignFlow = foreignFlowResult.status === "fulfilled" ? foreignFlowResult.value : null;
 
@@ -448,7 +465,7 @@ async function loadHomeRead() {
     updateHyperscalerComment(earnings);
     updateMemoryComment(earnings);
     updateLiquidityComment(liquidity);
-    updateAdrComment(adr);
+    updateMemoryPriceComment(earnings);
     updateBearRiskComment(bearRisk);
     const flowSummary = updateForeignFlowComment(foreignFlow);
     updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk, flowSummary);

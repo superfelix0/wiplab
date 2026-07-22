@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import time
 import urllib.parse
 import urllib.request
@@ -67,6 +68,23 @@ def fetch_fundamentals(symbol: str) -> list[dict]:
                 if date and value is not None:
                     quarters.setdefault(date, {"date": date})[metric] = value
     return [quarters[key] for key in sorted(quarters)][-6:]
+
+
+def fetch_price_history(symbol: str) -> list[dict]:
+    """Daily closes used only for relative share-price trend comparisons."""
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(symbol)}?range=1y&interval=1d"
+    request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 wiplabs-ai-earnings/1.1"})
+    with urllib.request.urlopen(request, timeout=15) as response:
+        result = json.loads(response.read().decode("utf-8")).get("chart", {}).get("result", [])[0]
+    timestamps = result.get("timestamp", []) or []
+    closes = ((result.get("indicators", {}).get("quote", []) or [{}])[0]).get("close", []) or []
+    points = []
+    for timestamp, close in zip(timestamps, closes):
+        if not isinstance(close, (int, float)):
+            continue
+        date = datetime.fromtimestamp(timestamp, tz=timezone.utc).date().isoformat()
+        points.append({"date": date, "close": round(float(close), 6)})
+    return points[-130:]
 
 
 def pct_change(current: float | None, previous: float | None) -> float | None:
@@ -149,6 +167,46 @@ def build_highlight(company: dict, quarters: list[dict]) -> dict | None:
     }
 
 
+def price_return(history: list[dict], sessions: int) -> float | None:
+    if len(history) < 2:
+        return None
+    latest = history[-1].get("close")
+    base = history[max(0, len(history) - 1 - sessions)].get("close")
+    if not isinstance(latest, (int, float)) or not isinstance(base, (int, float)) or base == 0:
+        return None
+    return latest / base - 1
+
+
+def price_summary(history: list[dict]) -> dict:
+    return {
+        "latestDate": history[-1].get("date") if history else None,
+        "latestClose": history[-1].get("close") if history else None,
+        "return1m": price_return(history, 21),
+        "return3m": price_return(history, 63),
+        "return6m": price_return(history, 126),
+    }
+
+
+def stock_signal(companies: list[dict], group: str) -> dict:
+    if group == "hyperscalers":
+        rows = [company for company in companies if company["group"] == "Hyperscaler"]
+    elif group == "memoryAll":
+        rows = [company for company in companies if company["group"] != "Hyperscaler"]
+    else:
+        rows = [company for company in companies if company["group"] != "Hyperscaler" and company["id"] != "kioxia"]
+    returns = [company.get("priceSummary", {}).get("return3m") for company in rows]
+    valid = [value for value in returns if isinstance(value, (int, float))]
+    average = sum(valid) / len(valid) if valid else None
+    positive = sum(value > 0 for value in valid)
+    if average is not None and average >= 0.10 and positive >= max(1, math.ceil(len(valid) * 0.6)):
+        status, ko, en = "favorable", "우호적", "Supportive"
+    elif average is not None and average <= -0.10 and positive <= len(valid) * 0.4:
+        status, ko, en = "unfavorable", "비우호적", "Unfavorable"
+    else:
+        status, ko, en = "neutral", "중립", "Neutral"
+    return {"status": status, "labelKo": ko, "labelEn": en, "averageReturn3m": average, "positiveCount": positive, "total": len(valid)}
+
+
 def load_existing() -> dict:
     if not OUTPUT.exists():
         return {}
@@ -169,6 +227,12 @@ def build_company(company: dict, cached: dict | None = None) -> dict:
         quarters = cached.get("quarters", [])
         status = "cached" if quarters else "error"
         message = f"Live fetch failed; retained the latest saved data. {error}" if quarters else str(error)
+    try:
+        price_history = fetch_price_history(company["symbol"])
+        if not price_history:
+            raise RuntimeError("Yahoo Finance chart endpoint returned no daily closes.")
+    except Exception:
+        price_history = cached.get("priceHistory", [])
     return {
         **company,
         "status": status,
@@ -176,6 +240,8 @@ def build_company(company: dict, cached: dict | None = None) -> dict:
         "quarters": quarters,
         "latestQuarterDate": quarters[-1].get("date") if quarters else None,
         "latestHighlight": build_highlight(company, quarters),
+        "priceHistory": price_history,
+        "priceSummary": price_summary(price_history),
         "valuation": {
             "trailingPE": None, "forwardPE": None, "priceToBook": None,
             "note": "무료 공개 데이터만 사용하며, 밸류에이션 데이터는 별도 원천 연결 전까지 제공하지 않습니다.",
@@ -210,6 +276,11 @@ def main() -> None:
         "generatedAt": now,
         "source": "Yahoo Finance fundamentals time-series public endpoint",
         "companies": companies,
+        "stockSignals": {
+            "hyperscalers": stock_signal(companies, "hyperscalers"),
+            "memory": stock_signal(companies, "memory"),
+            "memoryAll": stock_signal(companies, "memoryAll"),
+        },
         "releaseHistory": release_history[-30:],
         "sources": [{
             "title": "Yahoo Finance fundamentals time-series",
