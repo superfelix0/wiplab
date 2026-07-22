@@ -9,7 +9,7 @@
     const points = rows.slice(-252);
     const values = points.map((row) => row.close).filter(Number.isFinite);
     if (values.length < 2) throw new Error("history unavailable");
-    const width = 900, height = 300, left = 52, right = 20, top = 20, bottom = 38;
+    const width = 900, height = 300, left = 52, right = 48, top = 20, bottom = 38;
     const min = Math.floor(Math.min(...values) / 100) * 100;
     const max = Math.ceil(Math.max(...values) / 100) * 100;
     const x = (i) => left + (i / (points.length - 1)) * (width - left - right);
@@ -17,7 +17,10 @@
     const ticks = [min, (min + max) / 2, max];
     const grid = ticks.map((value) => `<line x1="${left}" x2="${width-right}" y1="${y(value)}" y2="${y(value)}"/><text x="${left - 8}" y="${y(value)+4}" text-anchor="end">${Math.round(value).toLocaleString()}</text>`).join("");
     const path = points.map((row, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(row.close).toFixed(1)}`).join(" ");
-    const labels = [0, Math.floor(points.length / 2), points.length - 1].map((i) => `<text x="${x(i)}" y="${height-12}" text-anchor="middle">${points[i].date.slice(2).replaceAll("-", ".")}</text>`).join("");
+    const labels = [0, Math.floor(points.length / 2), points.length - 1].map((i) => {
+      const anchor = i === 0 ? "start" : i === points.length - 1 ? "end" : "middle";
+      return `<text x="${x(i)}" y="${height-12}" text-anchor="${anchor}">${points[i].date.slice(2).replaceAll("-", ".")}</text>`;
+    }).join("");
     chart.innerHTML = `<g class="stock-chart-grid">${grid}</g><path class="kospi-index-line" d="${path}"/>${labels}`;
     const first = points[0].close, last = points.at(-1).close, change = (last / first - 1) * 100;
     status.textContent = say(`최근 ${points.length}거래일 · ${last.toLocaleString("ko-KR", { maximumFractionDigits: 2 })} (${change >= 0 ? "+" : ""}${change.toFixed(1)}%)`, `Last ${points.length} sessions · ${last.toLocaleString("en-US", { maximumFractionDigits: 2 })} (${change >= 0 ? "+" : ""}${change.toFixed(1)}%)`);
