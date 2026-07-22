@@ -2,6 +2,7 @@
   const nav = document.querySelector(".service-tabs");
   const header = document.querySelector(".site-header");
   if (!nav || !header || document.querySelector(".mobile-bottom-nav")) return;
+  if (!window.matchMedia("(max-width: 760px)").matches) return;
 
   const isEnglish = document.documentElement.lang?.toLowerCase().startsWith("en");
   const links = [...nav.querySelectorAll("a")];
@@ -12,7 +13,7 @@
   const language = document.createElement("div");
   language.className = "mobile-language";
   language.setAttribute("aria-label", isEnglish ? "Language" : "언어 선택");
-  languageLinks.forEach((link) => language.append(link.cloneNode(true)));
+  languageLinks.forEach((link) => language.append(link));
   header.append(language);
 
   const bottom = document.createElement("nav");

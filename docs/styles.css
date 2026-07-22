@@ -2494,7 +2494,7 @@ footer p {
 .metric-directory small { color: var(--faint); font-size: 10px; text-transform: uppercase; }
 
 @media (max-width: 760px) {
-  body { padding-bottom: 62px; }
+  body { padding-bottom: 70px; }
   .site-header { min-height: 46px; padding: 8px 14px; flex-direction: row; align-items: center; }
   .site-header .service-tabs { display: none; }
   .site-header .brand { margin-right: auto; }
@@ -2509,7 +2509,7 @@ footer p {
   .today-read { padding-top: 14px; padding-bottom: 14px; }
   .market-sentiment-head h2 { font-size: 14px; }
   .mobile-bottom-nav { position: fixed; z-index: 30; right: 0; bottom: 0; left: 0; display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 95%, white); padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -6px 18px rgba(20, 28, 24, .08); }
-  .mobile-bottom-nav a { min-width: 0; padding: 10px 2px; color: var(--faint); font-size: 8px; font-weight: 800; letter-spacing: .02em; text-align: center; }
+  .mobile-bottom-nav a { display: grid; place-items: center; min-width: 0; min-height: 44px; padding: 12px 2px; color: var(--faint); font-size: 10px; font-weight: 800; letter-spacing: .02em; line-height: 1.1; text-align: center; }
   .mobile-bottom-nav a[aria-current="page"] { color: var(--green); background: var(--panel-3); }
   .today-signal-grid,
   .theme-grid,
