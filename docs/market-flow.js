@@ -35,6 +35,7 @@
   };
   fetch(`/data/foreign-flow-pulse.json?ts=${Date.now()}`, { cache: "no-store" }).then((r) => r.json()).then((data) => {
     if (!data?.ok || !Array.isArray(data.rows)) throw new Error("unavailable");
-    read(calculate(data.rows)); root.querySelector("[data-flow-status]").textContent = t("KRX 자동 수집 데이터", "Automatic KRX data");
+    root.querySelector("[data-flow-status]").textContent = t("KRX 자동 수집 데이터", "Automatic KRX data");
+    read(calculate(data.rows));
   }).catch(() => { root.querySelector("[data-flow-status]").textContent = t("수급 데이터를 불러오지 못했습니다.", "Could not load flow data."); });
 })();

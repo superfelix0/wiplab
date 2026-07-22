@@ -149,7 +149,7 @@ function sentimentView(point) {
     : { label: ht("탐욕 근접", "Near greed"), detail: ht(`개인 순매수가 추정치보다 ${residual}조원 높습니다.`, `Retail net-buying was ${residual}T KRW above estimate.`) };
 }
 
-function updatePerComment(data) {
+function updatePerComment(data, sentimentRows = []) {
   const kospi = data?.markets?.kospi200;
   if (!kospi) return setComment("f1", ht("KRX PER 데이터 확인 중.", "Checking KRX PER data."));
   const currentPer = Number(kospi.per);
@@ -169,8 +169,18 @@ function updatePerComment(data) {
   if (forward) forward.textContent = formatPerHome(forwardPer);
   const history = (kospi.history || []).filter((row) => Number.isFinite(Number(row.per)));
   const previous = Number(history.at(-2)?.per);
+  const indexHistory = (kospi.indexHistory || kospi.closeHistory || sentimentRows)
+    .filter((row) => Number.isFinite(Number(row.close)) && (!kospi.date || String(row.date) <= String(kospi.date)));
+  const previousClose = Number(indexHistory.at(-2)?.close);
+  const currentClose = Number(kospi.close);
+  const index = document.querySelector("#homeKospiIndex");
+  const indexChange = document.querySelector("#homeKospiChange");
   if (change) change.textContent = Number.isFinite(previous)
     ? ht(`전일 대비 ${currentPer - previous >= 0 ? "+" : ""}${(currentPer - previous).toFixed(2)}배`, `vs prior day ${currentPer - previous >= 0 ? "+" : ""}${(currentPer - previous).toFixed(2)}x`)
+    : ht("전일 대비 확인 중", "Prior-day change pending");
+  if (index) index.textContent = Number.isFinite(currentClose) ? homeNumber.format(currentClose) : "--";
+  if (indexChange) indexChange.textContent = Number.isFinite(previousClose) && Number.isFinite(currentClose)
+    ? ht(`전일 대비 ${currentClose - previousClose >= 0 ? "+" : ""}${homeNumber.format(currentClose - previousClose)}`, `vs prior day ${currentClose - previousClose >= 0 ? "+" : ""}${homeNumber.format(currentClose - previousClose)}`)
     : ht("전일 대비 확인 중", "Prior-day change pending");
 }
 
@@ -185,11 +195,15 @@ function updateSentimentComment(meta, rows = []) {
   const previous = weekly.length > 1 ? latestSentiment(rows.slice(0, -1)) : null;
   const previousView = sentimentView(previous);
   const vkospi = meta?.kospi200Volatility;
-  const vkospiText = Number.isFinite(vkospi?.value) ? ` VKOSPI ${homeNumber.format(vkospi.value)}.` : "";
-  setComment("f2", ht(
-    `${view.label} · 직전 주 ${previousView.label} 대비 ${view.label === previousView.label ? "유지" : "변화"}.${vkospiText}`,
-    `${view.label} · ${view.label === previousView.label ? "unchanged" : `changed from ${previousView.label}`} versus the prior week.${vkospiText}`
-  ));
+  const history = Array.isArray(vkospi?.history) ? vkospi.history : [];
+  const previousValue = Number(history.at(-2)?.value);
+  const vkospiChange = Number(vkospi?.value) - previousValue;
+  const lines = ht(
+    [`개인 심리: ${view.label}`, `직전 주 ${previousView.label} 대비 ${view.label === previousView.label ? "유지" : "변화"}`, Number.isFinite(vkospi?.value) ? `VKOSPI ${homeNumber.format(vkospi.value)}${Number.isFinite(vkospiChange) ? ` · 전일 대비 ${vkospiChange >= 0 ? "+" : ""}${homeNumber.format(vkospiChange)}` : ""}` : "VKOSPI 확인 중"],
+    [`Retail sentiment: ${view.label}`, `${view.label === previousView.label ? "unchanged" : `changed from ${previousView.label}`} versus the prior week`, Number.isFinite(vkospi?.value) ? `VKOSPI ${homeNumber.format(vkospi.value)}${Number.isFinite(vkospiChange) ? ` · vs prior day ${vkospiChange >= 0 ? "+" : ""}${homeNumber.format(vkospiChange)}` : ""}` : "Checking VKOSPI"]
+  );
+  const target = homeEls.comments.f2;
+  if (target) target.innerHTML = lines.map((line) => `<span>${line}</span>`).join("");
 }
 
 function capexOcf(latest) {
@@ -473,7 +487,7 @@ async function loadHomeRead() {
     const bearRisk = bearRiskResult.status === "fulfilled" ? bearRiskResult.value : null;
     const foreignFlow = foreignFlowResult.status === "fulfilled" ? foreignFlowResult.value : null;
 
-    updatePerComment(per);
+    updatePerComment(per, sentimentRows);
     updateSentimentComment(sentiment, sentimentRows);
     updateHyperscalerComment(earnings);
     updateMemoryComment(earnings);

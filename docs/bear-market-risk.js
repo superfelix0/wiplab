@@ -1,3 +1,4 @@
+(() => {
 const bearEls = {
   status: document.querySelector("#bearStatus"),
   score: document.querySelector("#bearScore"),
@@ -188,3 +189,4 @@ async function loadBearRisk() {
 }
 
 loadBearRisk();
+})();

@@ -2429,7 +2429,9 @@ footer p {
 
 .metric-brief b { color: var(--muted); font-size: 10px; font-weight: 700; }
 .metric-brief em { color: var(--title); font-size: 13px; font-style: normal; font-weight: 800; }
-.metric-brief small { grid-column: 1 / -1; color: var(--amber); font-size: 10px; }
+.metric-brief small { grid-column: 2; color: var(--amber); font-size: 10px; text-align: right; }
+.metric-brief .metric-change { color: var(--amber); font-size: 10px; text-align: right; }
+.today-signal p > span { display: block; }
 .today-signal-change { margin: 12px 0 0; color: var(--text); font-size: 12px; }
 .signal-history { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .signal-history span { border: 1px solid var(--line); background: rgba(255,255,255,.55); color: var(--muted); padding: 5px 7px; font-size: 10px; }
