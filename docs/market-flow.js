@@ -37,5 +37,11 @@
     if (!data?.ok || !Array.isArray(data.rows)) throw new Error("unavailable");
     root.querySelector("[data-flow-status]").textContent = t("KRX 자동 수집 데이터", "Automatic KRX data");
     read(calculate(data.rows));
-  }).catch(() => { root.querySelector("[data-flow-status]").textContent = t("수급 데이터를 불러오지 못했습니다.", "Could not load flow data."); });
+  }).catch(() => {
+    const status = root.querySelector("[data-flow-status]");
+    const hasRenderedCards = (root.querySelector("[data-flow-cards]")?.children.length || 0) > 0;
+    if (status) status.textContent = hasRenderedCards
+      ? t("KRX 자동 수집 데이터", "Automatic KRX data")
+      : t("수급 데이터를 불러오지 못했습니다.", "Could not load flow data.");
+  });
 })();
