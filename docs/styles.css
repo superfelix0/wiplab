@@ -216,10 +216,27 @@ footer {
 
 .ticker-strip b {
   display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
   color: var(--green);
   font-weight: 700;
+}
+
+.ticker-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.ticker-status {
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.1;
+  text-transform: none;
+  white-space: nowrap;
 }
 
 .ticker-strip em {
@@ -2484,7 +2501,8 @@ footer p {
   .mobile-language { display: flex !important; gap: 5px; }
   .mobile-language a { border: 1px solid var(--line); color: var(--muted); padding: 4px 6px; font-size: 9px; font-weight: 800; }
   .mobile-language a[aria-current="true"] { border-color: var(--amber); color: var(--amber); }
-  .ticker-strip { min-height: 28px; padding: 5px 14px; font-size: 9px; overflow-x: auto; }
+  .ticker-strip { min-height: 38px; padding: 5px 14px; font-size: 9px; overflow-x: auto; }
+  .ticker-status { font-size: 7px; }
   .today-hero { padding-top: 16px; padding-bottom: 12px; }
   .today-hero .terminal-line, .today-hero .hero-copy { display: none; }
   .today-hero h1 { font-size: 15px; }

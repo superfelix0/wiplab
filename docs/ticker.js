@@ -1,19 +1,4 @@
 (() => {
-  const tabTitles = {
-    F1: "KOSPI PER Monitor",
-    F2: "KOSPI Fear/Greed",
-    F3: "Hyperscaler AI CAPEX",
-    F4: "Memory Operating Profit",
-    F5: "US Liquidity Monitor",
-    F6: "SK Hynix ADR Monitor",
-    F7: "Bear Market Risk Dashboard",
-    F8: "Foreign Flow Pulse",
-  };
-  document.querySelectorAll(".service-tabs a").forEach((link) => {
-    const label = link.textContent.trim();
-    if (tabTitles[label]) link.title = tabTitles[label];
-  });
-
   const tickerEls = {
     kospi: document.querySelector("#tickerKospi"),
     nasdaq: document.querySelector("#tickerNasdaq"),
@@ -42,6 +27,18 @@
     return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(2)}%`;
   }
 
+  function quoteStatus(item, quoteTime) {
+    const state = String(item.marketState || "").toUpperCase();
+    const delayed = Number.isFinite(item.delayMinutes) && item.delayMinutes > 0;
+    const latency = delayed
+      ? (isEn ? `~${item.delayMinutes} min delayed` : `약 ${item.delayMinutes}분 지연`)
+      : (isEn ? "real-time quote" : "실시간 시세");
+    if (state === "CLOSED") return isEn ? `Market closed · ${quoteTime} KST close` : `장마감 · ${quoteTime} KST 종가`;
+    if (state === "PRE" || state === "POST") return isEn ? `Extended hours · ${latency}` : `시간외 · ${latency}`;
+    if (state === "REGULAR") return isEn ? `Market open · ${latency}` : `장중 · ${latency}`;
+    return isEn ? `As of ${quoteTime} KST · ${latency}` : `${quoteTime} KST 기준 · ${latency}`;
+  }
+
   async function loadMarketTicker() {
     try {
       const response = await fetch(`/api/market-ticker?ts=${Date.now()}`, { cache: "no-store" });
@@ -53,13 +50,10 @@
         if (!element) return;
         const changeText = formatChangePct(item.changePct);
         const changeClass = item.changePct > 0 ? "positive" : item.changePct < 0 ? "negative" : "neutral";
-        element.innerHTML = `${tickerNumber.format(item.close)}${changeText ? ` <em class="${changeClass}">${changeText}</em>` : ""}`;
-
-        const quoteTime = item.marketTime ? timeFormat.format(new Date(item.marketTime)) : (isEn ? "time unavailable" : "시각 미확인");
-        const delay = Number.isFinite(item.delayMinutes) && item.delayMinutes > 0
-          ? (isEn ? ` · about ${item.delayMinutes} min delayed` : ` · 약 ${item.delayMinutes}분 지연`)
-          : (isEn ? " · free delayed quote" : " · 무료 지연 시세");
-        element.closest("span").title = `${item.label} · ${quoteTime} KST${delay} · ${data.provider || "Yahoo Finance"}`;
+        const quoteTime = item.marketTime ? timeFormat.format(new Date(item.marketTime)) : (isEn ? "time unavailable" : "시간 미확인");
+        const status = quoteStatus(item, quoteTime);
+        element.innerHTML = `<span class="ticker-price">${tickerNumber.format(item.close)}${changeText ? ` <em class="${changeClass}">${changeText}</em>` : ""}</span><small class="ticker-status">${status}</small>`;
+        element.closest("span").title = `${item.label} · ${status} · ${data.provider || "Yahoo Finance"}`;
       });
     } catch {
       // Keep the last displayed quote if a refresh temporarily fails.
