@@ -454,11 +454,6 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
     `전일 대비: ${retailView.label} · 외국인 수급 ${flowSummary?.label || "확인 중"} · VKOSPI ${Number.isFinite(vkospi) ? homeNumber.format(vkospi) : "--"}`,
     `vs prior day: retail ${retailView.label} · foreign flow ${flowSummary?.label || "checking"} · VKOSPI ${Number.isFinite(vkospi) ? homeNumber.format(vkospi) : "--"}`
   );
-  const history = document.querySelector("#signalHistory");
-  if (history) {
-    const labels = [label, riskLabel, retailView.label, flowSummary?.label || ht("수급 확인", "Flow check"), capexLabel];
-    history.innerHTML = labels.map((item, index) => `<span class="${index === 0 ? "is-current" : ""}">${item}</span>`).join("");
-  }
 }
 
 async function loadHomeRead() {

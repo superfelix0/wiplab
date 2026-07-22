@@ -26,7 +26,8 @@ def main() -> None:
         label_ko, label_en, tone = "신중", "Cautious", "negative"
     else:
         label_ko, label_en, tone = "중립", "Neutral", "neutral"
-    date = str(market.get("date") or meta.get("lastDataDate") or datetime.now(KST).date())[:10]
+    # The snapshot represents the collection date, not a component's stale as-of date.
+    date = datetime.now(KST).date().isoformat()
     rows = load(str(OUT)).get("snapshots", [])
     snapshot = {"date": date, "labelKo": label_ko, "labelEn": label_en, "tone": tone, "riskScore": score, "vkospi": vkospi, "currentPer": current, "historicalAveragePer": average, "foreignFlowDate": flow.get("lastDataDate", "")}
     rows = [row for row in rows if row.get("date") != date] + [snapshot]
