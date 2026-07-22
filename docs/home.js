@@ -197,10 +197,7 @@ function updateHyperscalerComment(data) {
   if (!rows.length) return setComment("f3", ht("하이퍼스케일러 CAPEX 부담 확인 중.", "Checking hyperscaler CAPEX burden."));
   const avgOcf = averageFinite(rows.map(capexOcf));
   const avgNi = averageFinite(rows.map(capexNi));
-  const stock = data?.stockSignals?.hyperscalers;
-  const stockLabel = IS_EN ? stock?.labelEn : stock?.labelKo;
-  const stockText = Number.isFinite(stock?.averageReturn3m) ? ht(` 주가 흐름: ${stockLabel} (${pctText(stock.averageReturn3m)}).`, ` Share-price trend: ${stockLabel} (${pctText(stock.averageReturn3m)}).`) : "";
-  setComment("f3", `${ht(`CAPEX 부담: ${capexBurdenLabel(avgOcf, avgNi)}. 평균 CAPEX/OCF ${pctText(avgOcf)}, CAPEX/순이익 ${pctText(avgNi)}.`, `CAPEX burden: ${capexBurdenLabel(avgOcf, avgNi)}. Avg CAPEX/OCF ${pctText(avgOcf)}, CAPEX/net income ${pctText(avgNi)}.`)}${stockText}`);
+  setComment("f3", ht(`CAPEX 부담: ${capexBurdenLabel(avgOcf, avgNi)}. 평균 CAPEX/OCF ${pctText(avgOcf)}, CAPEX/순이익 ${pctText(avgNi)}.`, `CAPEX burden: ${capexBurdenLabel(avgOcf, avgNi)}. Avg CAPEX/OCF ${pctText(avgOcf)}, CAPEX/net income ${pctText(avgNi)}.`));
 }
 
 function qoq(current, previous) {
@@ -221,11 +218,8 @@ function updateMemoryComment(data) {
   const valid = rows.filter((row) => Number.isFinite(row.growth));
   const avgGrowth = averageFinite(valid.map((row) => row.growth));
   const top = [...valid].sort((a, b) => b.growth - a.growth)[0];
-  const stock = data?.stockSignals?.memory;
-  const stockLabel = IS_EN ? stock?.labelEn : stock?.labelKo;
-  const stockText = Number.isFinite(stock?.averageReturn3m) ? ht(` 주가 흐름: ${stockLabel} (${pctText(stock.averageReturn3m)}).`, ` Share-price trend: ${stockLabel} (${pctText(stock.averageReturn3m)}).`) : "";
   setComment("f4", top
-    ? `${ht(`평균 영업이익 QoQ ${pctText(avgGrowth)}. 증가율 상위: ${top.company.name} ${pctText(top.growth)}.`, `Avg operating-profit QoQ ${pctText(avgGrowth)}. Top growth: ${top.company.name} ${pctText(top.growth)}.`)}${stockText}`
+    ? ht(`평균 영업이익 QoQ ${pctText(avgGrowth)}. 증가율 상위: ${top.company.name} ${pctText(top.growth)}.`, `Avg operating-profit QoQ ${pctText(avgGrowth)}. Top growth: ${top.company.name} ${pctText(top.growth)}.`)
     : ht("메모리 업체 영업이익 추이를 확인합니다.", "Checks memory-company operating-profit trends."));
 }
 

@@ -24,11 +24,11 @@ date,close,indiv_krw
 2026-07-15,3215.28,-123456789000
 ```
 
-GitHub Actions의 `Update KOSPI sentiment data` 워크플로가 평일 18:10 KST에 `scripts/update_kospi_sentiment.py`를 실행해 CSV와 메타 JSON을 갱신합니다. pykrx/KRX 인증이 필요한 경우 GitHub 저장소 Settings → Secrets and variables → Actions에 `KRX_ID`, `KRX_PW`를 등록해야 합니다.
+GitHub Actions의 `Update KOSPI market data` 워크플로가 한국 거래일 19:00 KST에 `scripts/update_kospi_sentiment.py`와 `scripts/update_market_per.py`를 실행해 CSV와 메타 JSON을 갱신합니다. pykrx/KRX 인증이 필요한 경우 GitHub 저장소 Settings → Secrets and variables → Actions에 `KRX_ID`, `KRX_PW`를 등록해야 합니다.
 
 ## F3·F4 실적 갱신
 
-`Update AI earnings data` 워크플로가 매일 한국시간 08:30과 19:30에 Yahoo Finance 공개 분기 데이터를 확인합니다. 새 분기나 수치 변경이 있을 때만 `docs/data/ai-earnings.json`을 갱신하므로, 실적이 없는 날에는 불필요한 커밋을 만들지 않습니다.
+`Update AI earnings data` 워크플로가 매일 한국시간 06:00에 Yahoo Finance 공개 분기·일별 종가 데이터를 확인합니다. 새 분기나 수치 변경이 있을 때만 `docs/data/ai-earnings.json`을 갱신하므로, 실적이 없는 날에는 불필요한 커밋을 만들지 않습니다.
 
 - F3: 하이퍼스케일러의 CAPEX/OCF, CAPEX/순이익, FCF와 최신 결산 핵심을 표시합니다.
 - F4: 메모리 제조사의 매출 증감, 영업이익 증감, 영업이익률과 최신 결산 핵심을 표시합니다.

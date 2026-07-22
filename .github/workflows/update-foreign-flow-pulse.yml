@@ -8,10 +8,8 @@ on:
       - ".github/workflows/update-foreign-flow-pulse.yml"
       - "scripts/update_foreign_flow_pulse.py"
   schedule:
-    # KRX publishes end-of-day investor data after the market close.
-    # Retry hourly from 19:15 through 22:15 KST on weekdays. Rows are
-    # deduplicated by KRX trading date, so repeated runs are safe.
-    - cron: "15 10-13 * * 1-5"
+    # F8 foreign flow: 19:00 KST on Korean trading days.
+    - cron: "0 10 * * 1-5"
   workflow_dispatch:
 
 permissions:

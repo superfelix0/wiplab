@@ -190,8 +190,8 @@ def price_summary(history: list[dict]) -> dict:
 def stock_signal(companies: list[dict], group: str) -> dict:
     if group == "hyperscalers":
         rows = [company for company in companies if company["group"] == "Hyperscaler"]
-    elif group == "memoryAll":
-        rows = [company for company in companies if company["group"] != "Hyperscaler"]
+    elif group in ("memoryAll", "all"):
+        rows = companies if group == "all" else [company for company in companies if company["group"] != "Hyperscaler"]
     else:
         rows = [company for company in companies if company["group"] != "Hyperscaler" and company["id"] != "kioxia"]
     returns = [company.get("priceSummary", {}).get("return3m") for company in rows]
@@ -280,6 +280,7 @@ def main() -> None:
             "hyperscalers": stock_signal(companies, "hyperscalers"),
             "memory": stock_signal(companies, "memory"),
             "memoryAll": stock_signal(companies, "memoryAll"),
+            "all": stock_signal(companies, "all"),
         },
         "releaseHistory": release_history[-30:],
         "sources": [{

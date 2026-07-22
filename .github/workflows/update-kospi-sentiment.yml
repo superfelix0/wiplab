@@ -9,9 +9,8 @@ on:
       - "scripts/update_kospi_sentiment.py"
       - "scripts/update_market_per.py"
   schedule:
-    # F1 KOSPI PER + F2 sentiment: retry at 19:15, 21:15 and 23:15 KST on
-    # trading days. GitHub Actions cron may start later than the requested time.
-    - cron: "15 10,12,14 * * 1-5"
+    # F1 KOSPI PER + F2 sentiment: 19:00 KST on Korean trading days.
+    - cron: "0 10 * * 1-5"
   workflow_dispatch:
 
 permissions:

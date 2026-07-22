@@ -8,8 +8,8 @@ on:
       - ".github/workflows/update-ai-earnings.yml"
       - "scripts/update_ai_earnings.py"
   schedule:
-    # Check after the Korean close and after the U.S. close every day. GitHub Actions cron uses UTC.
-    - cron: "30 10,23 * * *"
+    # F3/F4/F6 U.S. share-price data: 06:00 KST every day. GitHub Actions cron uses UTC.
+    - cron: "0 21 * * *"
   workflow_dispatch:
 
 permissions:

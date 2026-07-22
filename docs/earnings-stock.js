@@ -9,7 +9,7 @@
   const chart = panel.querySelector("[data-stock-chart]");
   const legend = panel.querySelector("[data-stock-legend]");
   const table = panel.querySelector("[data-stock-table]");
-  const colors = ["#2563eb", "#16a34a", "#d97706", "#dc2626", "#7c3aed", "#0891b2"];
+  const colors = ["#2563eb", "#16a34a", "#d97706", "#dc2626", "#7c3aed", "#0891b2", "#be123c", "#4d7c0f", "#9333ea", "#0f766e", "#a16207"];
   const number = new Intl.NumberFormat(isEn ? "en-US" : "ko-KR", { maximumFractionDigits: 2 });
   const t = (ko, en) => isEn ? en : ko;
   const pct = (value) => Number.isFinite(value) ? `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%` : "N/A";
@@ -18,6 +18,7 @@
 
   function relevantCompanies(data) {
     return (data.companies || []).filter((company) => {
+      if (group === "all") return true;
       if (group === "hyperscalers") return company.group === "Hyperscaler";
       return company.group !== "Hyperscaler" && (group === "memory-all" || company.id !== "kioxia");
     }).filter((company) => company.priceHistory?.length >= 2);
@@ -35,7 +36,9 @@
     const total = signal.total;
     const marketMeaning = group === "hyperscalers"
       ? t("AI 투자와 반도체 수요 기대가 한국 기술주에 주는 간접 신호", "an indirect signal for Korean technology stocks through AI investment and semiconductor-demand expectations")
-      : t("메모리 업황과 한국 반도체 주가에 주는 직접 신호", "a direct signal for the memory cycle and Korean semiconductor equities");
+      : group === "all"
+        ? t("AI 투자와 메모리 업황 기대를 함께 반영하는 한국 기술주 보조 신호", "a supporting signal for Korean technology equities through AI investment and the memory cycle")
+        : t("메모리 업황과 한국 반도체 주가에 주는 직접 신호", "a direct signal for the memory cycle and Korean semiconductor equities");
     comment.textContent = Number.isFinite(average)
       ? t(`최근 3개월 평균 수익률 ${pct(average)}, 상승 종목 ${count}/${total}개로 ${label}입니다. 이는 ${marketMeaning}로 해석합니다.`, `The average three-month return is ${pct(average)} with ${count}/${total} stocks up, a ${label.toLowerCase()} read. We interpret this as ${marketMeaning}.`)
       : t("주가 이력이 쌓이면 국내 시장에 대한 시사점을 함께 계산합니다.", "The Korea-market implication will be calculated once sufficient price history is available.");
