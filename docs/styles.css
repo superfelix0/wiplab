@@ -191,17 +191,17 @@ footer {
 
 .ticker-strip {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   border-bottom: 1px solid var(--line);
   background: var(--panel);
 }
 
-.ticker-strip span {
-  display: flex;
+.ticker-strip > span {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
-  min-height: 42px;
+  min-height: 52px;
   padding: 10px 14px;
   border-right: 1px solid var(--line-soft);
   color: var(--muted);
@@ -210,7 +210,7 @@ footer {
   text-transform: uppercase;
 }
 
-.ticker-strip span:last-child {
+.ticker-strip > span:last-child {
   border-right: 0;
 }
 
@@ -227,6 +227,7 @@ footer {
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
+  justify-content: flex-end;
 }
 
 .ticker-status {
@@ -237,6 +238,9 @@ footer {
   line-height: 1.1;
   text-transform: none;
   white-space: nowrap;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ticker-strip em {
@@ -2543,7 +2547,8 @@ footer p {
   .mobile-language { display: flex !important; gap: 5px; }
   .mobile-language a { border: 1px solid var(--line); color: var(--muted); padding: 4px 6px; font-size: 9px; font-weight: 800; }
   .mobile-language a[aria-current="true"] { border-color: var(--amber); color: var(--amber); }
-  .ticker-strip { min-height: 38px; padding: 5px 14px; font-size: 9px; overflow-x: auto; }
+  .ticker-strip { grid-template-columns: repeat(4, minmax(145px, 1fr)); min-height: 38px; padding: 5px 14px; font-size: 9px; overflow-x: auto; }
+  .ticker-strip > span { min-height: 42px; padding: 5px 10px; }
   .ticker-status { font-size: 7px; }
   .today-hero { padding-top: 16px; padding-bottom: 12px; }
   .today-hero .terminal-line, .today-hero .hero-copy { display: none; }

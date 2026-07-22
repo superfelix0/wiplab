@@ -1,6 +1,7 @@
 (() => {
   const path = window.location.pathname.replace(/\/+$/, "");
-  if (path !== "" && path !== "/en") {
+  const isMobile = window.matchMedia("(max-width: 760px)").matches;
+  if (isMobile && path !== "" && path !== "/en") {
     document.querySelector(".ticker-strip")?.remove();
     return;
   }
