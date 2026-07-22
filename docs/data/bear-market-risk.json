@@ -1,8 +1,8 @@
 {
   "ok": true,
   "sample": false,
-  "generatedAt": "2026-07-22T20:24:13+09:00",
-  "lastUpdated": "2026-07-22",
+  "generatedAt": "2026-07-23T03:12:00+09:00",
+  "lastUpdated": "2026-07-23",
   "operatorNote": {
     "ko": "기존 사이트 수집 데이터와 공개 데이터 대용치를 이용해 자동 산출합니다.",
     "en": "Automatically calculated from existing site datasets and public-data proxies."
@@ -101,8 +101,8 @@
       "titleKo": "시장 폭·유동성 다이버전스",
       "titleEn": "Market breadth & liquidity divergence",
       "anchor": "#breadth-liquidity",
-      "observationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -3.47조원, z=-0.79. 실질 유동성 보조값 3개월 변화 +8.5B USD.",
-      "observationEn": "Latest weekly retail net buying is -3.47T KRW versus its usual pattern, z=-0.79. 3-month real-liquidity proxy change +8.5B USD.",
+      "observationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -4.27조원, z=-0.97. 실질 유동성 보조값 3개월 변화 N/A.",
+      "observationEn": "Latest weekly retail net buying is -4.27T KRW versus its usual pattern, z=-0.97. 3-month real-liquidity proxy change N/A.",
       "recentChangeKo": "자동 산출",
       "recentChangeEn": "Auto-calculated",
       "judgmentKo": "개인 수급의 비정상적 위축과 미국 유동성 악화를 함께 봅니다.",
@@ -111,45 +111,45 @@
       "dataEn": "Retail-flow residuals, KOSPI weekly returns, and FRED liquidity proxy.",
       "criteriaKo": "개인 수급이 평소 패턴보다 크게 약하거나 유동성 방향이 악화되면 점수를 높입니다.",
       "criteriaEn": "Score rises when retail flow is unusually weak or liquidity direction deteriorates.",
-      "interpretationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -3.47조원, z=-0.79. 실질 유동성 보조값 3개월 변화 +8.5B USD.",
-      "interpretationEn": "Latest weekly retail net buying is -3.47T KRW versus its usual pattern, z=-0.79. 3-month real-liquidity proxy change +8.5B USD.",
+      "interpretationKo": "최근 주간 개인 순매수는 평소 패턴 대비 -4.27조원, z=-0.97. 실질 유동성 보조값 3개월 변화 N/A.",
+      "interpretationEn": "Latest weekly retail net buying is -4.27T KRW versus its usual pattern, z=-0.97. 3-month real-liquidity proxy change N/A.",
       "sources": [
         {
           "name": "FRED M2SL",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/M2SL",
-          "checkedAt": "2026-07-22T16:56:29+09:00"
+          "checkedAt": ""
         },
         {
           "name": "FRED WRESBAL",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/WRESBAL",
-          "checkedAt": "2026-07-22T16:56:29+09:00"
+          "checkedAt": ""
         },
         {
           "name": "FRED RRPONTSYD",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/RRPONTSYD",
-          "checkedAt": "2026-07-22T16:56:29+09:00"
+          "checkedAt": ""
         },
         {
           "name": "FRED WTREGEN",
           "type": "public data",
           "url": "https://fred.stlouisfed.org/series/WTREGEN",
-          "checkedAt": "2026-07-22T16:56:29+09:00"
+          "checkedAt": ""
         },
         {
           "name": "KRX investor flow via pykrx",
           "type": "public market data",
           "url": "https://github.com/sharebook-kr/pykrx",
-          "checkedAt": "2026-07-21"
+          "checkedAt": "2026-07-22"
         }
       ],
       "historyKo": [
-        "2026-07-22 자동 산출"
+        "2026-07-23 자동 산출"
       ],
       "historyEn": [
-        "2026-07-22 auto-calculated"
+        "2026-07-23 auto-calculated"
       ]
     },
     {
@@ -177,14 +177,14 @@
           "name": "Yahoo Finance fundamentals time-series",
           "type": "public endpoint",
           "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT",
-          "checkedAt": "2026-07-22T20:23:21+09:00"
+          "checkedAt": "2026-07-22T20:47:53+09:00"
         }
       ],
       "historyKo": [
-        "2026-07-22 자동 산출"
+        "2026-07-23 자동 산출"
       ],
       "historyEn": [
-        "2026-07-22 auto-calculated"
+        "2026-07-23 auto-calculated"
       ]
     },
     {
@@ -212,14 +212,14 @@
           "name": "Yahoo Finance fundamentals time-series",
           "type": "public endpoint",
           "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MU",
-          "checkedAt": "2026-07-22T20:23:21+09:00"
+          "checkedAt": "2026-07-22T20:47:53+09:00"
         }
       ],
       "historyKo": [
-        "2026-07-22 자동 산출"
+        "2026-07-23 자동 산출"
       ],
       "historyEn": [
-        "2026-07-22 auto-calculated"
+        "2026-07-23 auto-calculated"
       ]
     },
     {
@@ -247,15 +247,15 @@
           "name": "SEC IPO Statistics",
           "type": "official public statistics",
           "url": "https://www.sec.gov/data-research/statistics-data-visualizations/initial-public-offerings-ipos",
-          "checkedAt": "2026-07-22",
+          "checkedAt": "2026-07-23",
           "note": "Quarterly IPO counts/proceeds and issuer-type breakdown; downloadable workbook through 2026:Q1."
         }
       ],
       "historyKo": [
-        "2026-07-22 자동 산출"
+        "2026-07-23 자동 산출"
       ],
       "historyEn": [
-        "2026-07-22 auto-calculated"
+        "2026-07-23 auto-calculated"
       ],
       "computedData": {
         "latestPeriod": "2026:Q1",
@@ -301,14 +301,14 @@
           "name": "KRX KOSPI PER data",
           "type": "public/user-provided market data",
           "url": "https://data.krx.co.kr/",
-          "checkedAt": "2026-07-22T03:52:29+09:00"
+          "checkedAt": "2026-07-22T20:48:55+09:00"
         }
       ],
       "historyKo": [
-        "2026-07-22 자동 산출"
+        "2026-07-23 자동 산출"
       ],
       "historyEn": [
-        "2026-07-22 auto-calculated"
+        "2026-07-23 auto-calculated"
       ]
     }
   ],
@@ -415,6 +415,16 @@
     },
     {
       "date": "2026-07-22",
+      "totalScore": 4.0,
+      "changesKo": [
+        "자동 산출 데이터 갱신"
+      ],
+      "changesEn": [
+        "Auto-calculated data update"
+      ]
+    },
+    {
+      "date": "2026-07-23",
       "totalScore": 4.0,
       "changesKo": [
         "자동 산출 데이터 갱신"
