@@ -8,6 +8,7 @@ on:
       - ".github/workflows/update-kospi-sentiment.yml"
       - "scripts/update_kospi_sentiment.py"
       - "scripts/update_market_per.py"
+      - "scripts/update_signal_history.py"
   schedule:
     # F1 KOSPI PER + F2 sentiment: 19:00 KST on Korean trading days.
     - cron: "0 10 * * 1-5"
@@ -58,7 +59,7 @@ jobs:
         run: |
           for attempt in 1 2 3; do
             echo "Collection attempt ${attempt}/3"
-            if python scripts/update_kospi_sentiment.py && python scripts/update_market_per.py; then
+            if python scripts/update_kospi_sentiment.py && python scripts/update_market_per.py && python scripts/update_signal_history.py; then
               exit 0
             fi
             if [ "$attempt" = "3" ]; then
@@ -71,7 +72,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/kospi-sentiment.csv docs/data/kospi-sentiment-meta.json docs/data/kospi-per-history.csv docs/data/market-per.json
+          git add docs/data/kospi-sentiment.csv docs/data/kospi-sentiment-meta.json docs/data/kospi-per-history.csv docs/data/market-per.json docs/data/signal-history.json
           if git diff --cached --quiet; then
             echo "No data changes to commit."
           else

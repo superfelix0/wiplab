@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-07-23T03:39:44+09:00",
+  "snapshots": [
+    {
+      "date": "2026-07-16",
+      "labelKo": "방향성 혼재·고변동성",
+      "labelEn": "Mixed direction/high volatility",
+      "tone": "neutral",
+      "riskScore": 4.0,
+      "vkospi": 84.89,
+      "currentPer": 18.54,
+      "historicalAveragePer": 15.64,
+      "foreignFlowDate": "2026-07-22"
+    }
+  ]
+}

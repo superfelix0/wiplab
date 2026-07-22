@@ -23,12 +23,13 @@
   <div class="ticker-strip" aria-label="시장 시세"><span>KOSPI <b id="tickerKospi">--</b></span><span>NASDAQ <b id="tickerNasdaq">--</b></span><span>S&amp;P500 <b id="tickerSp500">--</b></span><span>USD/KRW <b id="tickerUsdKrw">--</b></span></div>
 
   <main>
+    <section id="returnBanner" class="return-banner" hidden aria-live="polite"></section>
     <section class="hero home-hero today-hero">
       <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./today <span class="flag">--market-read</span></p>
       <p class="eyebrow">TODAY'S MARKET READ</p>
       <h1>가볍게 보는 오늘의 시장 리서치 터미널</h1>
       <p class="hero-copy">복잡한 숫자 대신, 오늘 달라진 신호와 다음에 확인할 포인트부터 읽습니다.</p>
-      <div class="update-line"><span id="homeUpdatedAt">데이터를 불러오는 중입니다.</span><span>한국 장 마감 후 19:00 · 미국 장 마감 후 06:00</span></div>
+      <div class="update-line"><span id="homeUpdatedAt">데이터를 불러오는 중입니다.</span><span id="nextUpdate">다음 갱신 시간을 계산하고 있습니다.</span></div>
     </section>
 
     <section class="market-sentiment-panel today-read" aria-labelledby="market-sentiment-title">
