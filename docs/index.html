@@ -18,7 +18,7 @@
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="홈으로 이동"><span>WIP</span><strong>WIP Labs</strong></a>
-    <nav class="service-tabs" aria-label="주요 메뉴"><a href="./" aria-current="page">TODAY</a><a href="#korea">KOREA</a><a href="#ai">AI/SEMI</a><a href="#macro">MACRO/RISK</a><a class="lang-switch" href="./" aria-current="true">KO</a><a class="lang-switch" href="en/">EN</a><a href="https://blog.naver.com/nbchallenger" target="_blank" rel="noopener noreferrer">BLOG</a></nav>
+    <nav class="service-tabs" aria-label="주요 메뉴"><a href="./" aria-current="page">HOME</a><a href="valuation/">VALUATION</a><a href="sentiment-risk/">SENTIMENT/RISK</a><a href="ai-capex/">AI CAPEX</a><a href="memory-earnings/">MEMORY</a><a href="market-flow/">MARKET FLOW</a><a class="lang-switch" href="./" aria-current="true">KO</a><a class="lang-switch" href="en/">EN</a></nav>
   </header>
   <div class="ticker-strip" aria-label="시장 시세"><span>KOSPI <b id="tickerKospi">--</b></span><span>NASDAQ <b id="tickerNasdaq">--</b></span><span>S&amp;P500 <b id="tickerSp500">--</b></span><span>USD/KRW <b id="tickerUsdKrw">--</b></span></div>
 
@@ -33,29 +33,30 @@
 
     <section class="market-sentiment-panel today-read" aria-labelledby="market-sentiment-title">
       <div class="market-sentiment-head"><div><p class="eyebrow">KOREA MARKET PULSE</p><h2 id="market-sentiment-title">오늘의 한국 시장 읽기</h2></div><strong id="marketSentimentLabel" data-tone="neutral">계산 중</strong></div>
-      <div id="marketSentimentSummary" class="market-sentiment-copy" role="status" aria-live="polite"><p>최신 지표를 종합하고 있습니다.</p></div>
-      <div class="today-actions"><a href="#korea">한국 시장 신호 보기 <span>↓</span></a><a href="wip-7/">약세장 위험 자세히 보기 <span>→</span></a></div>
+      <p id="todaySignalChange" class="today-signal-change" role="status">전일 대비 신호를 계산하고 있습니다.</p><div id="signalHistory" class="signal-history" aria-label="최근 시장 신호"></div>
     </section>
 
     <section class="signal-section" aria-labelledby="changes-title">
-      <div class="section-title"><div><p class="eyebrow">WHAT TO CHECK NOW</p><h2 id="changes-title">지금 확인할 신호</h2><p class="section-copy">매일 보는 지표는 줄이고, 오늘의 판단에 직접 연결되는 세 가지부터 확인합니다.</p></div></div>
+      <div class="section-title"><div><p class="eyebrow">WHAT TO CHECK NOW</p><h2 id="changes-title">지금 확인할 신호</h2></div></div>
       <div class="today-signal-grid">
-        <a class="today-signal" href="wip-1/"><span class="signal-code">KOREA · VALUATION</span><strong>KOSPI 밸류에이션</strong><p id="commentF1">PER 데이터를 불러오는 중입니다.</p><small>F1 PER Monitor <b>→</b></small></a>
-        <a class="today-signal" href="wip-2/"><span class="signal-code">KOREA · SENTIMENT</span><strong>개인 심리와 변동성</strong><p id="commentF2">수급 신호를 불러오는 중입니다.</p><small>F2 Fear / Greed <b>→</b></small></a>
-        <a class="today-signal" href="wip-8/"><span class="signal-code">KOREA · FOREIGN FLOW</span><strong>외국인 현물·선물 수급</strong><p id="commentF8">외국인 수급을 불러오는 중입니다.</p><small>F8 Flow Pulse <b>→</b></small></a>
+        <a class="today-signal" href="valuation/"><span class="signal-code">KOREA · VALUATION</span><strong>KOSPI 밸류에이션</strong><p class="metric-brief"><b>현행 PER</b> <em id="homePerCurrent">--</em><small id="homePerChange">전일 대비 --</small><b>역사적 평균</b> <em id="homePerAverage">--</em><b>Forward PER</b> <em id="homePerForward">6.35x</em></p><small>시장 밸류에이션 <b>→</b></small></a>
+        <a class="today-signal" href="sentiment-risk/"><span class="signal-code">KOREA · SENTIMENT</span><strong>개인 심리와 변동성</strong><p id="commentF2">심리 신호를 불러오는 중입니다.</p><small>심리·위험 <b>→</b></small></a>
+        <a class="today-signal" href="market-flow/"><span class="signal-code">KOREA · INVESTOR FLOW</span><strong>매매주체별 동향</strong><p id="commentF8">외국인·개인·기관 수급을 불러오는 중입니다.</p><small>수급 상세 <b>→</b></small></a>
       </div>
     </section>
 
     <section class="theme-section" aria-labelledby="themes-title">
-      <div class="section-title"><div><p class="eyebrow">EXPLORE BY THEME</p><h2 id="themes-title">관심 주제로 이어보기</h2><p class="section-copy">상세 데이터는 목적에 따라 묶었습니다. 처음에는 한 주제만 골라 보셔도 됩니다.</p></div></div>
+      <div class="section-title"><div><p class="eyebrow">EXPLORE BY THEME</p><h2 id="themes-title">관심 주제</h2></div></div>
       <div class="theme-grid">
-        <article class="theme-card" id="korea"><span>01 / KOREA</span><h3>한국 시장</h3><p>현재 PER·Forward PER, 개인 심리, 외국인 현물·선물 흐름으로 오늘의 한국 시장을 읽습니다.</p><div><a href="wip-1/">밸류에이션 F1</a><a href="wip-2/">심리 F2</a><a href="wip-8/">수급 F8</a></div></article>
-        <article class="theme-card" id="ai"><span>02 / AI &amp; SEMICONDUCTOR</span><h3>AI·반도체 사이클</h3><p>하이퍼스케일러의 투자 여력, 메모리 기업의 이익 흐름, 글로벌 관련 주가를 함께 비교합니다.</p><div><a href="wip-3/">AI CAPEX F3</a><a href="wip-4/">메모리 실적 F4</a><a href="wip-6/">주가 F6</a></div></article>
-        <article class="theme-card" id="macro"><span>03 / MACRO &amp; RISK</span><h3>유동성과 위험</h3><p>미국 유동성의 방향과 약세장 전환 신호를 별도로 살펴봅니다. 단일 매매 신호가 아닌 점검 도구입니다.</p><div><a href="wip-5/">미국 유동성 F5</a><a href="wip-7/">약세장 위험 F7</a></div></article>
+        <article class="theme-card"><span>01 / KOREA MARKET</span><h3>한국 시장 밸류에이션</h3><p>KOSPI PER와 지수 흐름</p><div><a href="valuation/">바로 보기</a></div></article>
+        <article class="theme-card"><span>02 / KOREA MARKET</span><h3>시장 심리·위험</h3><p>개인 수급 심리와 약세장 전환 위험</p><div><a href="sentiment-risk/">바로 보기</a></div></article>
+        <article class="theme-card"><span>03 / AI INVESTMENT</span><h3>Hyperscaler AI CAPEX</h3><p>AI 투자 부담과 현금흐름</p><div><a href="ai-capex/">바로 보기</a></div></article>
+        <article class="theme-card"><span>04 / MEMORY CYCLE</span><h3>메모리 실적과 주가</h3><p>분기 영업이익과 주가 흐름</p><div><a href="memory-earnings/">바로 보기</a></div></article>
+        <article class="theme-card"><span>05 / KOREA MARKET</span><h3>매매주체별 동향</h3><p>외국인·개인·기관의 수급</p><div><a href="market-flow/">바로 보기</a></div></article>
       </div>
     </section>
 
-    <section class="details-section" aria-labelledby="details-title">
+    <section class="details-section" aria-labelledby="details-title" hidden>
       <div class="section-title"><div><p class="eyebrow">ALL METRICS</p><h2 id="details-title">전체 지표</h2><p class="section-copy">각 페이지의 계산 기준과 출처는 상세 화면에서 확인할 수 있습니다.</p></div></div>
       <div class="metric-directory" aria-label="전체 지표 목록">
         <a href="wip-1/"><b>F1</b><span>KOSPI PER Monitor</span><small>Daily</small></a><a href="wip-2/"><b>F2</b><span>KOSPI Fear / Greed</span><small>Daily</small></a><a href="wip-3/"><b>F3</b><span>Hyperscaler AI CAPEX</span><small>Quarterly</small></a><a href="wip-4/"><b>F4</b><span>Memory Operating Profit</span><small>Quarterly</small></a><a href="wip-5/"><b>F5</b><span>US Liquidity Monitor</span><small>Periodic</small></a><a href="wip-6/"><b>F6</b><span>AI / Semiconductor Prices</span><small>Daily</small></a><a href="wip-7/"><b>F7</b><span>Bear Market Risk</span><small>Weekly</small></a><a href="wip-8/"><b>F8</b><span>Foreign Flow Pulse</span><small>Daily</small></a>

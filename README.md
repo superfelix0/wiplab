@@ -9,7 +9,7 @@ WIP Labs는 한국 주식시장과 반도체 업황을 중심으로 재무지표
 - Cloudflare Pages
 - Build command: 없음
 - Build output directory: `docs`
-- Pages Function: `functions/api/market-ticker.js`, `functions/api/kospi-sentiment.js`, `functions/api/liquidity.js`, `functions/api/vix.js`
+- Pages Function: `functions/api/market-ticker.js`, `functions/api/kospi-sentiment.js`, `functions/api/vix.js`
 
 Cloudflare가 빌드 설정을 잘못 읽지 않도록 `wrangler.toml`에도 Pages 출력 경로를 명시했습니다.
 

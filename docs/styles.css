@@ -2412,6 +2412,21 @@ footer p {
   line-height: 1.65;
 }
 
+.metric-brief {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 10px;
+}
+
+.metric-brief b { color: var(--muted); font-size: 10px; font-weight: 700; }
+.metric-brief em { color: var(--title); font-size: 13px; font-style: normal; font-weight: 800; }
+.metric-brief small { grid-column: 1 / -1; color: var(--amber); font-size: 10px; }
+.today-signal-change { margin: 12px 0 0; color: var(--text); font-size: 12px; }
+.signal-history { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.signal-history span { border: 1px solid var(--line); background: rgba(255,255,255,.55); color: var(--muted); padding: 5px 7px; font-size: 10px; }
+.signal-history .is-current { border-color: var(--amber); color: var(--amber); font-weight: 800; }
+.kospi-index-line { fill: none; stroke: var(--green); stroke-width: 3; }
+
 .today-signal small {
   display: flex;
   justify-content: space-between;

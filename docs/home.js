@@ -160,14 +160,36 @@ function updatePerComment(data) {
     ? ht("Forward PER는 낮지만, 이익 신뢰도와 평균 PER 대비 수준을 함께 봐야 합니다.", "Forward PER is low, but earnings confidence and the historical average still matter.")
     : ht(`현행 ${homeNumber.format(currentPer)}배, 평균 ${homeNumber.format(historicalPer)}배, Forward ${homeNumber.format(forwardPer)}배.`, `Current ${homeNumber.format(currentPer)}x, average ${homeNumber.format(historicalPer)}x, forward ${homeNumber.format(forwardPer)}x.`);
   setComment("f1", `${safeDate(kospi.date)} · ${comment}`);
+  const current = document.querySelector("#homePerCurrent");
+  const average = document.querySelector("#homePerAverage");
+  const forward = document.querySelector("#homePerForward");
+  const change = document.querySelector("#homePerChange");
+  if (current) current.textContent = formatPerHome(currentPer);
+  if (average) average.textContent = formatPerHome(historicalPer);
+  if (forward) forward.textContent = formatPerHome(forwardPer);
+  const history = (kospi.history || []).filter((row) => Number.isFinite(Number(row.per)));
+  const previous = Number(history.at(-2)?.per);
+  if (change) change.textContent = Number.isFinite(previous)
+    ? ht(`전일 대비 ${currentPer - previous >= 0 ? "+" : ""}${(currentPer - previous).toFixed(2)}배`, `vs prior day ${currentPer - previous >= 0 ? "+" : ""}${(currentPer - previous).toFixed(2)}x`)
+    : ht("전일 대비 확인 중", "Prior-day change pending");
+}
+
+function formatPerHome(value) {
+  return Number.isFinite(value) ? `${homeNumber.format(value)}x` : "--";
 }
 
 function updateSentimentComment(meta, rows = []) {
   const latest = latestSentiment(rows);
   const view = sentimentView(latest);
+  const weekly = weeklySeries(rows);
+  const previous = weekly.length > 1 ? latestSentiment(rows.slice(0, -1)) : null;
+  const previousView = sentimentView(previous);
   const vkospi = meta?.kospi200Volatility;
   const vkospiText = Number.isFinite(vkospi?.value) ? ` VKOSPI ${homeNumber.format(vkospi.value)}.` : "";
-  setComment("f2", `${safeDate(latest?.date || meta?.lastDataDate)} · ${view.label}. ${view.detail}${vkospiText}`);
+  setComment("f2", ht(
+    `${view.label} · 직전 주 ${previousView.label} 대비 ${view.label === previousView.label ? "유지" : "변화"}.${vkospiText}`,
+    `${view.label} · ${view.label === previousView.label ? "unchanged" : `changed from ${previousView.label}`} versus the prior week.${vkospiText}`
+  ));
 }
 
 function capexOcf(latest) {
@@ -274,13 +296,15 @@ function updateForeignFlowComment(data) {
     return null;
   }
 
-  const spotTotal = rows.reduce((sum, row) => sum + Number(row.spot || 0), 0);
-  const futuresTotal = rows.reduce((sum, row) => sum + Number(row.futures || 0), 0);
-  const spotBuyDays = rows.filter((row) => Number(row.spot) > 0).length;
-  const futuresBuyDays = rows.filter((row) => Number(row.futures) > 0).length;
-  const jointBuyDays = rows.filter((row) => Number(row.spot) > 0 && Number(row.futures) > 0).length;
-  const riskOffDays = rows.filter((row) => Number(row.spot) <= 0 && Number(row.futures) <= 0).length;
-  const recentJointDays = rows.slice(-3).filter((row) => Number(row.spot) > 0 && Number(row.futures) > 0).length;
+  const foreignSpot = (row) => Number(row.foreignSpot ?? row.spot ?? 0);
+  const foreignFutures = (row) => Number(row.foreignFutures ?? row.futures ?? 0);
+  const spotTotal = rows.reduce((sum, row) => sum + foreignSpot(row), 0);
+  const futuresTotal = rows.reduce((sum, row) => sum + foreignFutures(row), 0);
+  const spotBuyDays = rows.filter((row) => foreignSpot(row) > 0).length;
+  const futuresBuyDays = rows.filter((row) => foreignFutures(row) > 0).length;
+  const jointBuyDays = rows.filter((row) => foreignSpot(row) > 0 && foreignFutures(row) > 0).length;
+  const riskOffDays = rows.filter((row) => foreignSpot(row) <= 0 && foreignFutures(row) <= 0).length;
+  const recentJointDays = rows.slice(-3).filter((row) => foreignSpot(row) > 0 && foreignFutures(row) > 0).length;
 
   let stageIndex;
   if (rows.length >= 5 && spotTotal > 0 && futuresTotal > 0 && jointBuyDays >= 4 && spotBuyDays >= 4 && futuresBuyDays >= 4 && recentJointDays === 3) stageIndex = 4;
@@ -425,23 +449,24 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
     homeEls.marketSentimentLabel.textContent = label;
     homeEls.marketSentimentLabel.dataset.tone = tone;
   }
-  if (homeEls.marketSentimentSummary) {
-    const paragraphs = sentences.slice(0, 5).map((sentence) => {
-      const paragraph = document.createElement("p");
-      paragraph.textContent = sentence;
-      return paragraph;
-    });
-    homeEls.marketSentimentSummary.replaceChildren(...paragraphs);
+  const change = document.querySelector("#todaySignalChange");
+  if (change) change.textContent = ht(
+    `전일 대비: ${retailView.label} · 외국인 수급 ${flowSummary?.label || "확인 중"} · VKOSPI ${Number.isFinite(vkospi) ? homeNumber.format(vkospi) : "--"}`,
+    `vs prior day: retail ${retailView.label} · foreign flow ${flowSummary?.label || "checking"} · VKOSPI ${Number.isFinite(vkospi) ? homeNumber.format(vkospi) : "--"}`
+  );
+  const history = document.querySelector("#signalHistory");
+  if (history) {
+    const labels = [label, riskLabel, retailView.label, flowSummary?.label || ht("수급 확인", "Flow check"), capexLabel];
+    history.innerHTML = labels.map((item, index) => `<span class="${index === 0 ? "is-current" : ""}">${item}</span>`).join("");
   }
 }
 
 async function loadHomeRead() {
   try {
-    const [perResult, sentimentResult, sentimentRowsResult, liquidityResult, earningsResult, bearRiskResult, foreignFlowResult] = await Promise.allSettled([
+    const [perResult, sentimentResult, sentimentRowsResult, earningsResult, bearRiskResult, foreignFlowResult] = await Promise.allSettled([
       readJson("/data/market-per.json"),
       readJson("/data/kospi-sentiment-meta.json"),
       readText("/data/kospi-sentiment.csv"),
-      readJson("/data/us-liquidity.json"),
       readJson("/data/ai-earnings.json"),
       readJson("/data/bear-market-risk.json"),
       readJson("/data/foreign-flow-pulse.json"),
@@ -449,7 +474,6 @@ async function loadHomeRead() {
     const per = perResult.status === "fulfilled" ? perResult.value : null;
     const sentiment = sentimentResult.status === "fulfilled" ? sentimentResult.value : null;
     const sentimentRows = sentimentRowsResult.status === "fulfilled" ? parseSentimentCsv(sentimentRowsResult.value) : [];
-    const liquidity = liquidityResult.status === "fulfilled" ? liquidityResult.value : null;
     const earnings = earningsResult.status === "fulfilled" ? earningsResult.value : null;
     const bearRisk = bearRiskResult.status === "fulfilled" ? bearRiskResult.value : null;
     const foreignFlow = foreignFlowResult.status === "fulfilled" ? foreignFlowResult.value : null;
@@ -458,13 +482,12 @@ async function loadHomeRead() {
     updateSentimentComment(sentiment, sentimentRows);
     updateHyperscalerComment(earnings);
     updateMemoryComment(earnings);
-    updateLiquidityComment(liquidity);
     updateMemoryPriceComment(earnings);
     updateBearRiskComment(bearRisk);
     const flowSummary = updateForeignFlowComment(foreignFlow);
     updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk, flowSummary);
 
-    const timestamps = [per?.generatedAt, sentiment?.generatedAt, liquidity?.generatedAt, earnings?.generatedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
+    const timestamps = [per?.generatedAt, sentiment?.generatedAt, earnings?.generatedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
     if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${formatHomeUpdatedAt(timestamps.sort().at(-1))}` : ht("업데이트 정보 없음", "No update information");
   } catch {
     setComment("f1", ht("요약 데이터를 불러오지 못했습니다. 각 페이지에서 개별 지표를 확인해 주세요.", "Could not load the summary. Please open each module page."));

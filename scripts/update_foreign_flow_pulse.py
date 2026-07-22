@@ -32,7 +32,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def fetch_market_summary(field: str, value: str) -> dict:
+def fetch_market_summary(field: str, value: str) -> list[dict]:
     body = urllib.parse.urlencode({field: value}).encode("utf-8")
     request = urllib.request.Request(
         KRX_URL,
@@ -52,10 +52,9 @@ def fetch_market_summary(field: str, value: str) -> dict:
             with urllib.request.urlopen(request, timeout=40) as response:
                 payload = json.loads(response.read().decode("utf-8"))
             rows = payload.get("output") or []
-            foreign = next((row for row in rows if "외국인" in str(row.get("INVST_TP", ""))), None)
-            if not foreign:
-                raise RuntimeError("KRX response did not contain a foreign-investor row")
-            return foreign
+            if not rows:
+                raise RuntimeError("KRX response did not contain investor rows")
+            return rows
         except Exception as error:  # network retry for scheduled jobs
             last_error = error
             if attempt < 3:
@@ -66,6 +65,13 @@ def fetch_market_summary(field: str, value: str) -> dict:
 
 def number(value: object) -> float:
     return float(str(value).replace(",", "").strip())
+
+
+def investor_value(rows: list[dict], *labels: str) -> float:
+    match = next((row for row in rows if any(label in str(row.get("INVST_TP", "")) for label in labels)), None)
+    if not match:
+        raise RuntimeError(f"KRX response did not contain investor row: {labels}")
+    return round(number(match.get("NETBID_TRDVAL")) / 1000, 4)
 
 
 def load_existing(path: Path) -> dict:
@@ -82,8 +88,13 @@ def load_existing(path: Path) -> dict:
 def main() -> None:
     args = parse_args()
     out = Path(args.out)
-    spot = fetch_market_summary("mktId", "STK")
-    futures = fetch_market_summary("prodId", "KR___FUK2I")
+    spot_rows = fetch_market_summary("mktId", "STK")
+    futures_rows = fetch_market_summary("prodId", "KR___FUK2I")
+
+    spot = next((row for row in spot_rows if "외국인" in str(row.get("INVST_TP", ""))), None)
+    futures = next((row for row in futures_rows if "외국인" in str(row.get("INVST_TP", ""))), None)
+    if not spot or not futures:
+        raise RuntimeError("KRX response did not contain foreign-investor rows")
 
     spot_date = str(spot.get("TRD_DD", ""))
     futures_date = str(futures.get("TRD_DD", ""))
@@ -93,19 +104,23 @@ def main() -> None:
     row = {
         "date": dt.datetime.strptime(spot_date, "%Y%m%d").date().isoformat(),
         # KRX publishes KRW billions; the page displays KRW trillions.
-        "spot": round(number(spot.get("NETBID_TRDVAL")) / 1000, 4),
-        "futures": round(number(futures.get("NETBID_TRDVAL")) / 1000, 4),
+        "foreignSpot": investor_value(spot_rows, "외국인"),
+        "foreignFutures": investor_value(futures_rows, "외국인"),
+        "individualSpot": investor_value(spot_rows, "개인"),
+        "institutionSpot": investor_value(spot_rows, "기관계", "기관합계", "기관"),
     }
 
     existing = load_existing(out)
     indexed = {
         str(item.get("date")): {
             "date": str(item.get("date")),
-            "spot": float(item.get("spot", 0)),
-            "futures": float(item.get("futures", 0)),
+            "foreignSpot": float(item.get("foreignSpot", item.get("spot", 0))),
+            "foreignFutures": float(item.get("foreignFutures", item.get("futures", 0))),
+            "individualSpot": float(item.get("individualSpot", 0)),
+            "institutionSpot": float(item.get("institutionSpot", 0)),
         }
         for item in existing.get("rows", [])
-        if isinstance(item, dict) and item.get("date")
+        if isinstance(item, dict) and item.get("date") and "individualSpot" in item and "institutionSpot" in item
     }
     previous_row = indexed.get(row["date"])
     row_changed = previous_row != row
@@ -125,8 +140,10 @@ def main() -> None:
         "source": {
             "name": "KRX Data Marketplace — previous-business-day investor trading trend",
             "url": KRX_HOME,
-            "spot": "KOSPI foreign-investor net trading value",
-            "futures": "KOSPI 200 futures foreign-investor net trading value",
+            "foreignSpot": "KOSPI foreign-investor net trading value",
+            "foreignFutures": "KOSPI 200 futures foreign-investor net trading value",
+            "individualSpot": "KOSPI individual-investor net trading value",
+            "institutionSpot": "KOSPI institutional-investor net trading value",
             "note": "KRX source values are converted from KRW billions to KRW trillions.",
         },
         "rows": rows,
