@@ -28,7 +28,7 @@ GitHub Actions의 `Update KOSPI market data` 워크플로가 한국 거래일 19
 
 ## F3·F4 실적 갱신
 
-`Update AI earnings data` 워크플로가 매일 한국시간 06:00에 Yahoo Finance 공개 분기·일별 종가 데이터를 확인합니다. 새 분기나 수치 변경이 있을 때만 `docs/data/ai-earnings.json`을 갱신하므로, 실적이 없는 날에는 불필요한 커밋을 만들지 않습니다.
+`Update AI earnings data` 워크플로가 Yahoo Finance 공개 분기·일별 종가 데이터를 미국장 종료 후 한국시간 06:00, 한국장 종료 후 19:00에 확인합니다. 새 분기나 수치 변경이 있을 때만 `docs/data/ai-earnings.json`을 갱신하므로, 실적이 없는 날에는 불필요한 커밋을 만들지 않습니다.
 
 - F3: 하이퍼스케일러의 CAPEX/OCF, CAPEX/순이익, FCF와 최신 결산 핵심을 표시합니다.
 - F4: 메모리 제조사의 매출 증감, 영업이익 증감, 영업이익률과 최신 결산 핵심을 표시합니다.
