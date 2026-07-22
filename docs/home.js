@@ -333,10 +333,12 @@ function updateForeignFlowComment(data) {
   const label = (IS_EN ? labelsEn : labelsKo)[stageIndex];
   const provisional = rows.length < 5 ? ht(" · 잠정", " · provisional") : "";
   const signed = (value) => `${value >= 0 ? "+" : ""}${value.toFixed(2)}`;
-  setComment("f8", ht(
-    `${safeDate(data.lastDataDate || rows.at(-1).date)} · ${label}${provisional}. 현물 ${signed(spotTotal)}조원, 선물 ${signed(futuresTotal)}조원 (${rows.length}/5일).`,
-    `${safeDate(data.lastDataDate || rows.at(-1).date)} · ${label}${provisional}. Spot ${signed(spotTotal)}T KRW, futures ${signed(futuresTotal)}T KRW (${rows.length}/5 sessions).`
-  ));
+  const flowLines = ht(
+    [`최근 거래일: ${safeDate(data.lastDataDate || rows.at(-1).date)}`, `판정: ${label}${provisional}`, `외국인 현물 ${signed(spotTotal)}조원 · 선물 ${signed(futuresTotal)}조원 (${rows.length}/5일)`],
+    [`Latest session: ${safeDate(data.lastDataDate || rows.at(-1).date)}`, `Read: ${label}${provisional}`, `Foreign spot ${signed(spotTotal)}T KRW · futures ${signed(futuresTotal)}T KRW (${rows.length}/5 sessions)`]
+  );
+  const flowTarget = homeEls.comments.f8;
+  if (flowTarget) flowTarget.innerHTML = flowLines.map((line) => `<span>${line}</span>`).join("");
   return { rows, spotTotal, futuresTotal, stageIndex, label, provisional: rows.length < 5 };
 }
 
