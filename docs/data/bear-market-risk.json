@@ -1,18 +1,18 @@
 {
   "ok": true,
   "sample": false,
-  "generatedAt": "2026-07-23T04:33:48+09:00",
+  "generatedAt": "2026-07-23T05:13:22+09:00",
   "lastUpdated": "2026-07-23",
   "operatorNote": {
     "ko": "기존 사이트 수집 데이터와 공개 데이터 대용치를 이용해 자동 산출합니다.",
     "en": "Automatically calculated from existing site datasets and public-data proxies."
   },
   "summary": {
-    "totalScore": 4.0,
+    "totalScore": 4.5,
     "previousScore": 4.0,
     "interpretation": {
-      "ko": "실제 연결 데이터 기준 현재 총점은 4.0/10, 관찰 단계입니다. IPO 항목은 SEC 분기 IPO 통계를 이용해 산출합니다. IPO 항목은 SEC 분기 통계와 미국 외 초대형 IPO 사건을 함께 반영합니다.",
-      "en": "Using connected data, the current score is 4.0/10, Watch stage. The IPO item combines SEC quarterly statistics with verified non-U.S. mega-IPO events."
+      "ko": "실제 연결 데이터 기준 현재 총점은 4.5/10, 주의 단계입니다. IPO 항목은 SEC 분기 IPO 통계를 이용해 산출합니다. IPO 항목은 SEC 분기 통계와 미국 외 초대형 IPO 사건을 함께 반영합니다.",
+      "en": "Using connected data, the current score is 4.5/10, Caution stage. The IPO item combines SEC quarterly statistics with verified non-U.S. mega-IPO events."
     }
   },
   "scoreScale": [
@@ -154,14 +154,14 @@
     },
     {
       "id": "leadership-quality",
-      "score": 1.2,
-      "statusKo": "주의",
-      "statusEn": "Caution",
+      "score": 1.6,
+      "statusKo": "경계",
+      "statusEn": "Alert",
       "titleKo": "주도주 경쟁력 약화",
       "titleEn": "Leadership quality weakening",
       "anchor": "#leadership-quality",
-      "observationKo": "하이퍼스케일러 평균 CAPEX/OCF +97.1%, CAPEX/순이익 +150.9%, 순이익 QoQ +28.1%.",
-      "observationEn": "Hyperscaler average CAPEX/OCF +97.1%, CAPEX/net income +150.9%, net-income QoQ +28.1%.",
+      "observationKo": "하이퍼스케일러 평균 CAPEX/OCF +104.5%, CAPEX/순이익 +147.5%, 순이익 QoQ +27.6%.",
+      "observationEn": "Hyperscaler average CAPEX/OCF +104.5%, CAPEX/net income +147.5%, net-income QoQ +27.6%.",
       "recentChangeKo": "자동 산출",
       "recentChangeEn": "Auto-calculated",
       "judgmentKo": "AI 주도주의 투자 부담이 현금흐름과 이익을 과도하게 압박하는지 봅니다.",
@@ -170,14 +170,14 @@
       "dataEn": "CAPEX/OCF, CAPEX/net income, and net-income growth from Yahoo Finance quarterly fundamentals.",
       "criteriaKo": "CAPEX가 OCF나 순이익을 크게 초과하거나 이익 증가율이 둔화되면 점수를 높입니다.",
       "criteriaEn": "Score rises when CAPEX materially exceeds OCF/net income or earnings growth weakens.",
-      "interpretationKo": "하이퍼스케일러 평균 CAPEX/OCF +97.1%, CAPEX/순이익 +150.9%, 순이익 QoQ +28.1%.",
-      "interpretationEn": "Hyperscaler average CAPEX/OCF +97.1%, CAPEX/net income +150.9%, net-income QoQ +28.1%.",
+      "interpretationKo": "하이퍼스케일러 평균 CAPEX/OCF +104.5%, CAPEX/순이익 +147.5%, 순이익 QoQ +27.6%.",
+      "interpretationEn": "Hyperscaler average CAPEX/OCF +104.5%, CAPEX/net income +147.5%, net-income QoQ +27.6%.",
       "sources": [
         {
           "name": "Yahoo Finance fundamentals time-series",
           "type": "public endpoint",
           "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MSFT",
-          "checkedAt": "2026-07-22T20:47:53+09:00"
+          "checkedAt": "2026-07-23T05:10:06+09:00"
         }
       ],
       "historyKo": [
@@ -212,7 +212,7 @@
           "name": "Yahoo Finance fundamentals time-series",
           "type": "public endpoint",
           "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MU",
-          "checkedAt": "2026-07-22T20:47:53+09:00"
+          "checkedAt": "2026-07-23T05:10:06+09:00"
         }
       ],
       "historyKo": [
@@ -415,7 +415,7 @@
     },
     {
       "date": "2026-07-23",
-      "totalScore": 4.0,
+      "totalScore": 4.5,
       "changesKo": [
         "자동 산출 데이터 갱신"
       ],
