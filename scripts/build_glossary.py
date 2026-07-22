@@ -16,6 +16,12 @@ SOURCE = Path("glossary-content.md")
 OUT = Path("docs/glossary")
 SITEMAP = Path("docs/sitemap.xml")
 BASE = "https://wiplabs.pages.dev"
+SERVICE_PAGES = [
+    Path("docs/index.html"), Path("docs/valuation/index.html"), Path("docs/sentiment-risk/index.html"),
+    Path("docs/ai-capex/index.html"), Path("docs/memory-earnings/index.html"), Path("docs/market-flow/index.html"),
+    Path("docs/en/index.html"), Path("docs/en/valuation/index.html"), Path("docs/en/sentiment-risk/index.html"),
+    Path("docs/en/ai-capex/index.html"), Path("docs/en/memory-earnings/index.html"), Path("docs/en/market-flow/index.html"),
+]
 
 
 def inline(text: str) -> str:
@@ -70,6 +76,9 @@ def parse() -> list[dict]:
     group, items, current = "", [], None
     for line in text.splitlines():
         if line.startswith("# ") and not line.startswith("## "):
+            if current:
+                items.append(current)
+                current = None
             group = line[2:].strip()
         elif line.startswith("## "):
             if current:
@@ -115,15 +124,15 @@ def layout(title: str, description: str, body: str, relative: str, schema: str) 
     return f'''<!doctype html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="{escape(description)}"><meta property="og:title" content="{escape(title)}"><meta property="og:description" content="{escape(description)}"><meta property="og:type" content="article">
-<link rel="canonical" href="{BASE}{relative}"><link rel="stylesheet" href="{('../' * (relative.count('/') - 1))}styles.css"><link rel="icon" href="{('../' * (relative.count('/') - 1))}favicon.svg"><title>{escape(title)}</title><script type="application/ld+json">{schema}</script></head>
-<body><header class="site-header"><a class="brand" href="{('../' * (relative.count('/') - 1))}"><span>WIP</span><strong>WIP Labs</strong></a><nav class="service-tabs"><a href="{('../' * (relative.count('/') - 1))}">HOME</a><a href="{('../' * (relative.count('/') - 1))}valuation/">VALUATION</a><a href="{('../' * (relative.count('/') - 1))}sentiment-risk/">SENTIMENT/RISK</a><a href="{('../' * (relative.count('/') - 1))}ai-capex/">AI CAPEX</a><a href="{('../' * (relative.count('/') - 1))}memory-earnings/">MEMORY</a><a href="{('../' * (relative.count('/') - 1))}market-flow/">MARKET FLOW</a><a class="lang-switch" href="{('../' * (relative.count('/') - 1))}" aria-current="true">KO</a></nav></header><main>{body}</main><footer><div><strong>WIP Labs</strong><p>스스로 판단하기 위해 시장의 숫자를 쉽게 읽습니다.</p></div><span>© 2026</span></footer></body></html>'''
+<link rel="canonical" href="{BASE}{relative}"><link rel="stylesheet" href="{('../' * (relative.count('/') - 1))}styles.css?v=glossary-20260723"><link rel="icon" href="{('../' * (relative.count('/') - 1))}favicon.svg"><title>{escape(title)}</title><script type="application/ld+json">{schema}</script></head>
+<body><header class="site-header"><a class="brand" href="{('../' * (relative.count('/') - 1))}"><span>WIP</span><strong>WIP Labs</strong></a><nav class="service-tabs"><a href="{('../' * (relative.count('/') - 1))}">HOME</a><a href="{('../' * (relative.count('/') - 1))}valuation/">VALUATION</a><a href="{('../' * (relative.count('/') - 1))}sentiment-risk/">SENTIMENT/RISK</a><a href="{('../' * (relative.count('/') - 1))}ai-capex/">AI CAPEX</a><a href="{('../' * (relative.count('/') - 1))}memory-earnings/">MEMORY</a><a href="{('../' * (relative.count('/') - 1))}market-flow/">MARKET FLOW</a><a class="lang-switch" href="{('../' * (relative.count('/') - 1))}" aria-current="true">KO</a><a class="lang-switch" href="{('../' * (relative.count('/') - 1))}en/">EN</a></nav></header><main>{body}</main><footer><div><strong>WIP Labs</strong><p>스스로 판단하기 위해 시장의 숫자를 쉽게 읽습니다.</p></div><a class="footer-glossary" href="/glossary/">Glossary</a><span>© 2026</span></footer></body></html>'''
 
 
 def build_item(item: dict) -> None:
     slug = item["slug"].strip("/").split("/")[-1]
     relative = f"/glossary/{slug}/"
     sections = f'''<section class="hero service-hero"><p class="eyebrow">GLOSSARY</p><h1>{inline(item['name'])}</h1><p class="hero-copy">{inline(item['description'])}</p></section>
-<article class="glossary-article"><section><h2>한 줄 정의</h2>{rich(item['definition'])}</section><section><h2>어떻게 읽나</h2>{rich(item['reading'])}</section><section><h2>한계와 오해</h2>{rich(item['limits'])}</section><section><h2>함께 보기</h2>{rich(item['related'])}</section></article>'''
+<nav class="glossary-breadcrumb" aria-label="Breadcrumb"><a href="/">WIP Labs</a> <span>›</span> <a href="/glossary/">Glossary</a> <span>›</span> <span>{inline(item['name'])}</span></nav><article class="glossary-article"><section><h2>한 줄 정의</h2>{rich(item['definition'])}</section><section><h2>어떻게 읽나</h2>{rich(item['reading'])}</section><section><h2>한계와 오해</h2>{rich(item['limits'])}</section><section><h2>함께 보기</h2>{rich(item['related'])}</section></article>'''
     schema = '{"@context":"https://schema.org","@type":"DefinedTerm","name":' + repr(item["name"]).replace("'", '"') + ',"description":' + repr(item["description"]).replace("'", '"') + '}'
     target = OUT / slug / "index.html"
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -156,6 +165,19 @@ def update_sitemap(items: list[dict]) -> None:
     SITEMAP.write_text(current.replace("</urlset>", additions + "</urlset>"), encoding="utf-8")
 
 
+def add_service_footer_links() -> None:
+    link = '<a class="footer-glossary" href="/glossary/">Glossary</a>'
+    for page in SERVICE_PAGES:
+        content = page.read_text(encoding="utf-8")
+        if "footer-glossary" in content:
+            continue
+        if "</footer>" in content:
+            content = content.replace("</footer>", link + "</footer>", 1)
+        else:
+            content = content.replace("</body>", f'<footer>{link}</footer></body>', 1)
+        page.write_text(content, encoding="utf-8")
+
+
 def main() -> None:
     items = parse()
     if len(items) != 15:
@@ -164,6 +186,7 @@ def main() -> None:
     for item in items:
         build_item(item)
     update_sitemap(items)
+    add_service_footer_links()
     print(f"Built {len(items)} glossary pages plus the hub.")
 
 

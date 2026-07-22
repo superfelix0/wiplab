@@ -303,6 +303,8 @@ footer {
 .glossary-article a { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
 .glossary-article pre { overflow-x: auto; padding: 14px; background: var(--panel-3); color: var(--title); }
 .glossary-table-row { font-family: ui-monospace, monospace; font-size: 12px; }
+.glossary-breadcrumb { max-width: 840px; margin: 0 auto 18px; padding: 0 18px; color: var(--faint); font-size: 11px; }
+.glossary-breadcrumb a { color: var(--muted); }
 
 .content-hub {
   display: grid;
