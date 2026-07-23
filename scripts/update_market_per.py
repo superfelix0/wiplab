@@ -39,6 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--history", default=str(DEFAULT_HISTORY), help="Accumulated KOSPI PER CSV path")
     parser.add_argument("--out", default="docs/data/market-per.json", help="Output JSON path")
     parser.add_argument("--lookback-days", type=int, default=14, help="Days to look back for the latest KRX trading day")
+    parser.add_argument("--max-staleness-days", type=int, default=5, help="Fail when the latest saved PER is older than this many calendar days")
     return parser.parse_args()
 
 
@@ -199,6 +200,16 @@ def main() -> None:
     history_rows = load_history(history_path)
     latest_row = fetch_latest_kospi_per(args.end, args.lookback_days)
     rows = merge_rows(history_rows, latest_row)
+    if not rows:
+        raise RuntimeError("KOSPI PER history is empty and KRX returned no observation.")
+    latest_date = dt.date.fromisoformat(rows[-1]["date"])
+    requested_date = parse_ymd(args.end)
+    staleness_days = (requested_date - latest_date).days
+    if staleness_days > args.max_staleness_days:
+        raise RuntimeError(
+            f"Latest KOSPI PER is stale by {staleness_days} days (latest {latest_date}, requested {requested_date}). "
+            "KRX authentication or index-fundamental retrieval needs attention; refusing to publish an outdated PER snapshot."
+        )
 
     if latest_row:
         previous_count = len(history_rows)
