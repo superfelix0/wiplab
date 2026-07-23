@@ -191,7 +191,7 @@ function renderCapexStructure(data) {
   const scaleMax = Math.max(1.2, ...rows.map(({ ratio }) => ratio)) * 1.08;
   const compare = document.querySelector("#capex-compare") || document.createElement("section");
   compare.id = "capex-compare";
-  compare.className = "capex-structure";
+  compare.className = "wl-section capex-structure";
   compare.innerHTML = `
     <div class="capex-structure-head"><div><span>L2 · ${t("기업별 비교", "Company comparison")}</span><h2>${t("현금흐름 안에서 감당되는 투자 규모", "Investment capacity within operating cash flow")}</h2><p>${t("CAPEX/OCF가 70% 이하면 여유, 70~100%면 점검, 100%를 넘으면 해당 분기 영업현금흐름만으로는 투자를 모두 충당하지 못한 구간으로 읽습니다.", "CAPEX/OCF below 70% indicates room, 70–100% calls for review, and above 100% means quarterly CAPEX exceeded operating cash flow.")}</p></div><small>${t("최근 결산 분기", "Latest reported quarter")}</small></div>
     <div class="capex-meter-labels"><span>0%</span><span>70%</span><span>100%</span><span>${Math.round(scaleMax * 100)}%</span></div>
@@ -213,7 +213,7 @@ function renderCapexStructure(data) {
     .sort((a, b) => a.date.localeCompare(b.date)).slice(-8);
   const trendPanel = document.querySelector("#capex-trend") || document.createElement("section");
   trendPanel.id = "capex-trend";
-  trendPanel.className = "capex-trend-panel";
+  trendPanel.className = "wl-section capex-trend-panel";
   const max = Math.max(1.2, ...trend.map(({ value }) => value)) * 1.08;
   const points = trend.map(({ value }, index) => `${trend.length === 1 ? 50 : (index / (trend.length - 1)) * 100},${100 - value / max * 100}`).join(" ");
   trendPanel.innerHTML = `<div class="capex-structure-head"><div><span>L3 · ${t("분기 추이", "Quarterly trend")}</span><h2>${t("하이퍼스케일러 평균 CAPEX/OCF", "Hyperscaler average CAPEX/OCF")}</h2><p>${t("공개된 기업별 분기값의 단순 평균입니다. 기업 구성과 회계 분류가 달라 절대 비교보다 방향을 보는 용도입니다.", "A simple average of disclosed quarterly company values. Company mix and accounting classification vary, so use it for direction rather than exact comparison.")}</p></div></div><div class="capex-trend-chart" role="img" aria-label="${t("최근 분기별 하이퍼스케일러 평균 CAPEX/OCF 추이", "Recent quarterly hyperscaler average CAPEX/OCF trend")}"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" x2="100" y1="${100 - .7 / max * 100}" y2="${100 - .7 / max * 100}"></line><line x1="0" x2="100" y1="${100 - 1 / max * 100}" y2="${100 - 1 / max * 100}"></line><polyline points="${points}"></polyline></svg></div><div class="capex-trend-values">${trend.map(({ date, value }) => `<span><small>${date}</small><b>${pct(value)}</b></span>`).join("")}</div>`;
