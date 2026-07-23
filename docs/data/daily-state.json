@@ -8,7 +8,7 @@
       "capex": "2026-07-24",
       "memory": "2026-07-24"
     },
-    "updatedAt": "2026-07-24T04:54:34+09:00",
+    "updatedAt": "2026-07-24T05:32:56+09:00",
     "source": "WIP Labs connected data pipeline",
     "session": "closed"
   },
@@ -68,6 +68,16 @@
       "count": 30,
       "window": 30,
       "shortWindow": 5,
+      "thresholds": {
+        "enter": {
+          "aligned": 68.3,
+          "contrarian": 31.7
+        },
+        "exit": {
+          "aligned": 60,
+          "contrarian": 40
+        }
+      },
       "indexReturn": -0.1642,
       "shortIndexReturn": -0.0877,
       "subjects": [
@@ -78,6 +88,8 @@
           "shortCumulative": 1.275245,
           "shortTrend": "continuing",
           "state": "contrarian",
+          "matchRate": 18.5,
+          "comparableDays": 27,
           "size": 57.05003099999999,
           "sizeRank": 1
         },
@@ -87,7 +99,9 @@
           "cumulative": -40.52264,
           "shortCumulative": 0.460335,
           "shortTrend": "turning",
-          "state": "aligned",
+          "state": "unrelated",
+          "matchRate": 66.7,
+          "comparableDays": 27,
           "size": 40.522639999999996,
           "sizeRank": 2
         },
@@ -98,12 +112,16 @@
           "shortCumulative": -1.90386,
           "shortTrend": "continuing",
           "state": "aligned",
+          "matchRate": 85.2,
+          "comparableDays": 27,
           "size": 18.138738,
           "sizeRank": 3
         }
       ],
       "leaderId": null,
-      "leaderConfidence": "unclear"
+      "leaderConfidence": "unclear",
+      "largestSellerId": "foreignSpot",
+      "ruleVersion": "match-rate-v1"
     },
     "earnings": {
       "capex": {

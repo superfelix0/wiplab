@@ -1,7 +1,7 @@
 /* Validates the generated daily regime snapshot before it is published. */
 import fs from "node:fs";
 import path from "node:path";
-import { RISK, riskStageFor } from "../docs/shared/thresholds.js";
+import { FLOW, RISK, flowThresholds, riskStageFor } from "../docs/shared/thresholds.js";
 
 const root = process.cwd();
 const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
@@ -25,7 +25,9 @@ function main() {
 
   const flowInput = state.inputs?.flow || {};
   if (flowInput.count >= flowInput.window) {
-    if (flowInput.window !== 30 || flowInput.shortWindow !== 5) fail("flow regime must use 30-session and 5-session windows");
+    if (flowInput.window !== FLOW.window || flowInput.shortWindow !== FLOW.shortWindow) fail("flow regime must use the shared flow windows");
+    const expectedThresholds = flowThresholds(flowInput.window);
+    if (flowInput.thresholds?.enter?.aligned !== expectedThresholds.enter.aligned || flowInput.thresholds?.enter?.contrarian !== expectedThresholds.enter.contrarian) fail("flow entry thresholds do not match the shared threshold source");
     if (!Array.isArray(flowInput.subjects) || flowInput.subjects.length !== 3) fail("30-session flow state needs all three participant groups");
     const leader = flowInput.subjects.find((subject) => subject.id === flowInput.leaderId);
     if (leader && (leader.state !== "aligned" || leader.sizeRank !== 1)) fail("flow leader must be the largest aligned cumulative flow");

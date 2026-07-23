@@ -1,7 +1,7 @@
 /* Build the single daily regime snapshot consumed by the renewed home and detail pages. */
 import fs from "node:fs";
 import path from "node:path";
-import { VALUATION, RISK, applyHysteresis, riskStageFor, riskStageWithHysteresis } from "../docs/shared/thresholds.js";
+import { FLOW, VALUATION, RISK, applyHysteresis, flowThresholds, riskStageFor, riskStageWithHysteresis } from "../docs/shared/thresholds.js";
 
 const root = process.cwd();
 const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
@@ -9,8 +9,8 @@ const exists = (file) => fs.existsSync(path.join(root, file));
 const output = "docs/data/daily-state.json";
 const historyOutput = "docs/data/regime-history.json";
 const now = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T") + "+09:00";
-const FLOW_WINDOW = 30;
-const FLOW_SHORT_WINDOW = 5;
+const FLOW_WINDOW = FLOW.window;
+const FLOW_SHORT_WINDOW = FLOW.shortWindow;
 
 function valuationState(percentile, previous) {
   const candidate = percentile < VALUATION.enter.low ? "low" : percentile > VALUATION.enter.high ? "high" : "mid";
@@ -31,30 +31,42 @@ function flowSummary(rows) {
   const shortSample = usable.slice(-FLOW_SHORT_WINDOW);
   const indexReturn = closes.get(sample.at(-1).date) / closes.get(sample[0].date) - 1;
   const shortIndexReturn = closes.get(shortSample.at(-1).date) / closes.get(shortSample[0].date) - 1;
+  const thresholds = flowThresholds(sample.length);
+  const dailyDirections = sample.map((row, index) => {
+    if (!index) return null;
+    const returnPct = closes.get(row.date) / closes.get(sample[index - 1].date) - 1;
+    return Math.abs(returnPct) >= FLOW.flatReturnPct / 100 ? Math.sign(returnPct) : null;
+  });
   const subjects = [["foreignSpot", "외국인"], ["individualSpot", "개인"], ["institutionSpot", "기관"]].map(([id, name]) => {
     const cumulative = sample.reduce((total, row) => total + Number(row[id] || 0), 0);
     const shortCumulative = shortSample.reduce((total, row) => total + Number(row[id] || 0), 0);
-    const state = Math.abs(indexReturn) < 0.003 || cumulative === 0
-      ? "unrelated"
-      : Math.sign(cumulative) === Math.sign(indexReturn) ? "aligned" : "contrarian";
+    const comparable = sample.slice(1).filter((row, index) => dailyDirections[index + 1] && Number(row[id] || 0) !== 0);
+    const matches = comparable.filter((row) => Math.sign(Number(row[id] || 0)) === dailyDirections[sample.indexOf(row)]).length;
+    const matchRate = comparable.length ? matches / comparable.length * 100 : null;
+    const state = matchRate == null ? "unrelated" : matchRate >= thresholds.enter.aligned ? "aligned" : matchRate <= thresholds.enter.contrarian ? "contrarian" : "unrelated";
     const shortTrend = cumulative === 0 || shortCumulative === 0
       ? "flat"
       : Math.sign(cumulative) === Math.sign(shortCumulative) ? "continuing" : "turning";
-    return { id, name, cumulative: Number(cumulative.toFixed(6)), shortCumulative: Number(shortCumulative.toFixed(6)), shortTrend, state, size: Math.abs(cumulative) };
+    return { id, name, cumulative: Number(cumulative.toFixed(6)), shortCumulative: Number(shortCumulative.toFixed(6)), shortTrend, state, matchRate: matchRate == null ? null : Number(matchRate.toFixed(1)), comparableDays: comparable.length, size: Math.abs(cumulative) };
   });
   const ranked = subjects.slice().sort((a, b) => b.size - a.size).map((subject, index) => ({ ...subject, sizeRank: index + 1 }));
-  const leader = ranked[0]?.state === "aligned" ? ranked[0] : null;
+  const aligned = ranked.filter((subject) => subject.state === "aligned");
+  const leader = aligned.length === FLOW.leader.maxAlignedSubjects && aligned[0].sizeRank <= FLOW.leader.sizeRankWithin ? aligned[0] : null;
+  const largestSeller = ranked.filter((subject) => subject.cumulative < 0).sort((a, b) => a.cumulative - b.cumulative)[0] || null;
   return {
     state: leader ? "aligned" : "unrelated",
-    label: leader ? `${leader.name} ${leader.cumulative >= 0 ? "순매수" : "순매도"} 우세` : "수급과 지수 방향 혼재",
+    label: leader ? `${leader.name} 수급 동행` : "수급과 지수 방향 혼재",
     count: sample.length,
     window: FLOW_WINDOW,
     shortWindow: FLOW_SHORT_WINDOW,
+    thresholds,
     indexReturn: Number(indexReturn.toFixed(4)),
     shortIndexReturn: Number(shortIndexReturn.toFixed(4)),
     subjects: ranked,
     leaderId: leader?.id ?? null,
     leaderConfidence: leader ? "confirmed" : "unclear",
+    largestSellerId: largestSeller?.id ?? null,
+    ruleVersion: "match-rate-v1",
   };
 }
 
