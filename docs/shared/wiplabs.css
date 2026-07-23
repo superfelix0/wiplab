@@ -1,4 +1,5 @@
 /* Shared aliases only: loading this file must not change the current visual system. */
 .wl { --wl-bg: var(--bg); --wl-panel: var(--panel); --wl-ink: var(--title); --wl-muted: var(--muted); --wl-line: var(--line); --wl-good-ink: var(--green); --wl-warn-ink: var(--amber); --wl-bad-ink: var(--red); }
 .wl-flash { outline: 2px solid var(--green); outline-offset: 5px; transition: outline-color .4s ease; }
+.wl-regime-banner { display: inline-flex; margin: 12px 0 0; padding: 6px 9px; border: 1px solid var(--line); color: var(--green); background: var(--panel-3); font-size: 11px; font-weight: 800; line-height: 1.35; }
 @media (prefers-reduced-motion: reduce) { .wl-flash { transition: none; } }
