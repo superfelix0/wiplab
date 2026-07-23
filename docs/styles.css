@@ -303,15 +303,17 @@ footer {
 .glossary-deep-links {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   gap: 7px;
   margin: 20px 0;
   color: var(--faint);
   font-size: 11px;
 }
 
-.glossary-deep-links > span { margin-right: 3px; font-weight: 700; }
+.glossary-deep-links > span { flex: 0 0 100%; margin: 0 0 2px; font-weight: 700; }
 .glossary-deep-links a {
+  display: inline-flex;
+  align-items: center;
   padding: 5px 8px;
   border: 1px solid var(--line);
   color: var(--green);
