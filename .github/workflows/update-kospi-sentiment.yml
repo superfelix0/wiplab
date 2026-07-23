@@ -59,7 +59,7 @@ jobs:
         run: |
           for attempt in 1 2 3; do
             echo "Collection attempt ${attempt}/3"
-            if python scripts/update_kospi_sentiment.py && python scripts/update_market_per.py && python scripts/update_signal_history.py && node scripts/build_daily_state.mjs; then
+            if python scripts/update_kospi_sentiment.py && python scripts/update_market_per.py && python scripts/update_signal_history.py && node scripts/build_daily_state.mjs && node tools/validate.mjs --require-prev; then
               exit 0
             fi
             if [ "$attempt" = "3" ]; then
