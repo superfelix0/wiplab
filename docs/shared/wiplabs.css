@@ -1,5 +1,38 @@
-/* Shared aliases only: loading this file must not change the current visual system. */
-.wl { --wl-bg: var(--bg); --wl-panel: var(--panel); --wl-ink: var(--title); --wl-muted: var(--muted); --wl-line: var(--line); --wl-good-ink: var(--green); --wl-warn-ink: var(--amber); --wl-bad-ink: var(--red); }
+/* Shared design primitives. They are scoped to .wl while pages migrate one by one. */
+.wl {
+  --wl-paper: var(--bg); --wl-surface: var(--panel); --wl-surface-alt: var(--panel-2);
+  --wl-ink: var(--title); --wl-ink-2: var(--muted); --wl-ink-3: var(--faint);
+  --wl-border: var(--line-soft); --wl-border-2: var(--line);
+  --wl-good-ink: var(--green); --wl-good-bg: var(--panel-3);
+  --wl-warn-ink: var(--amber); --wl-warn-bg: var(--amber-dim);
+  --wl-bad-ink: var(--red); --wl-bad-bg: #f2e0d8;
+  --wl-radius: 12px; --wl-radius-sm: 8px; --wl-mono: var(--mono);
+  max-width: 720px; margin: 0 auto; padding: 24px 18px 56px; color: var(--wl-ink);
+}
+.wl-head { margin-bottom: 26px; }
+.wl-eyebrow, .wl-kicker, .wl-basis { font-family: var(--wl-mono); font-size: 11px; letter-spacing: .12em; color: var(--wl-ink-3); }
+.wl-title { margin: 0 0 8px; font-size: 26px; font-weight: 600; line-height: 1.2; }
+.wl-lede { max-width: 52ch; margin: 0; color: var(--wl-ink-2); font-size: 15px; line-height: 1.6; }
+.wl-section { padding: 22px 0; border-top: 1px solid var(--wl-border); }
+.wl-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.wl-h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.wl-verdict, .wl-metrics { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.wl-panel, .wl-metric { display: flex; flex-direction: column; gap: 6px; padding: 14px; border: 1px solid var(--wl-border); border-radius: var(--wl-radius); background: var(--wl-surface); color: inherit; }
+.wl-panel:hover, .wl-panel:focus-visible { border-color: var(--wl-border-2); background: #fffdf7; outline: none; }
+.wl-panel-label, .wl-metric-label { font-size: 12px; color: var(--wl-ink-2); }
+.wl-panel-state, .wl-metric-value { font-size: 21px; font-weight: 600; line-height: 1.15; }
+.wl-panel-basis, .wl-panel-axis, .wl-metric-sub, .wl-source, .wl-note { color: var(--wl-ink-3); font-size: 12px; line-height: 1.5; }
+.wl-panel.is-warn { border-color: var(--amber); background: var(--wl-warn-bg); }
+.wl-panel.is-good { background: var(--wl-good-bg); }
+.wl-panel.is-bad { background: var(--wl-bad-bg); }
+.wl-dots { display: inline-flex; gap: 4px; }
+.wl-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--wl-border-2); }
+.wl-dot.is-on { background: var(--wl-warn-ink); }
+.wl-rows { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.wl-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; }
+.wl-row-name { font-size: 13px; font-weight: 500; }.wl-row-val { color: var(--wl-ink-2); font-family: var(--wl-mono); font-size: 12px; text-align: right; }
+.wl-row-bar { grid-column: 1 / -1; height: 8px; overflow: hidden; border-radius: 4px; background: var(--wl-surface-alt); }.wl-row-fill { height: 100%; border-radius: inherit; }
 .wl-flash { outline: 2px solid var(--green); outline-offset: 5px; transition: outline-color .4s ease; }
 .wl-regime-banner { display: inline-flex; margin: 12px 0 0; padding: 6px 9px; border: 1px solid var(--line); color: var(--green); background: var(--panel-3); font-size: 11px; font-weight: 800; line-height: 1.35; }
+@media (max-width: 460px) { .wl { padding: 20px 14px 48px; }.wl-verdict, .wl-metrics { grid-template-columns: 1fr; }.wl-title { font-size: 23px; } }
 @media (prefers-reduced-motion: reduce) { .wl-flash { transition: none; } }
