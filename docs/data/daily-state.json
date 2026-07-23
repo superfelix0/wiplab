@@ -1,7 +1,7 @@
 {
   "meta": {
     "basisDate": "2026-07-23",
-    "updatedAt": "2026-07-24T03:28:28+09:00",
+    "updatedAt": "2026-07-24T03:45:49+09:00",
     "source": "WIP Labs connected data pipeline",
     "session": "closed"
   },
@@ -32,6 +32,20 @@
         "prevState": "unrelated",
         "stateLabel": "방향 주도 불명",
         "href": "/market-flow/#flow-5d"
+      },
+      {
+        "id": "capex",
+        "state": "strained",
+        "prevState": null,
+        "stateLabel": "투자 부담",
+        "href": "/ai-capex/"
+      },
+      {
+        "id": "memory",
+        "state": "expanding",
+        "prevState": null,
+        "stateLabel": "실적 확장",
+        "href": "/memory-earnings/"
       }
     ]
   },
@@ -73,6 +87,18 @@
       ],
       "leaderId": null,
       "leaderConfidence": "unclear"
+    },
+    "earnings": {
+      "capex": {
+        "state": "strained",
+        "avgCapexOcf": 1.076364296192058,
+        "companies": 5
+      },
+      "memory": {
+        "state": "expanding",
+        "averageOperatingIncomeGrowth": 1.3829860001948566,
+        "companies": 5
+      }
     }
   }
 }

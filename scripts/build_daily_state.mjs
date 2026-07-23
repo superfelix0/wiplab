@@ -52,10 +52,28 @@ function flowSummary(rows, previousFlow = null) {
   return { state: leader ? "aligned" : "unrelated", label: leader ? `${leader.name} 동행 · 규모 상위` : "방향 주도 불명", count: sample.length, subjects: ranked, leaderId: leader?.id ?? null, leaderConfidence: leader ? "confirmed" : "unclear" };
 }
 
+function earningsSummary(data) {
+  const companies = data?.companies || [];
+  const hyperscalers = companies.filter((company) => company.group === "Hyperscaler");
+  const capexRatios = hyperscalers.map((company) => (company.quarters || []).slice(-2).map((quarter) => Math.abs(Number(quarter.capex)) / Number(quarter.operatingCashFlow))).flat().filter(Number.isFinite);
+  const avgCapexOcf = capexRatios.length ? capexRatios.reduce((sum, value) => sum + value, 0) / capexRatios.length : null;
+  const strained = hyperscalers.some((company) => (company.quarters || []).slice(-2).every((quarter) => Math.abs(Number(quarter.capex)) > Number(quarter.operatingCashFlow)));
+  const capexState = strained ? "strained" : avgCapexOcf >= 0.7 ? "elevated" : "normal";
+  const memory = companies.filter((company) => company.group !== "Hyperscaler" && company.id !== "kioxia");
+  const growth = memory.map((company) => {
+    const rows = (company.quarters || []).slice(-2);
+    if (rows.length < 2 || !Number(rows[0].quarterlyOperatingIncome)) return null;
+    return (Number(rows[1].quarterlyOperatingIncome) / Math.abs(Number(rows[0].quarterlyOperatingIncome))) - 1;
+  }).filter(Number.isFinite);
+  const averageGrowth = growth.length ? growth.reduce((sum, value) => sum + value, 0) / growth.length : null;
+  return { capex: { state: capexState, avgCapexOcf, companies: hyperscalers.length }, memory: { state: averageGrowth > 0 ? "expanding" : averageGrowth < 0 ? "contracting" : "flat", averageOperatingIncomeGrowth: averageGrowth, companies: memory.length } };
+}
+
 function main() {
   const market = read("docs/data/market-per.json").markets.kospi200;
   const riskData = read("docs/data/bear-market-risk.json");
   const flow = read("docs/data/foreign-flow-pulse.json");
+  const earnings = read("docs/data/ai-earnings.json");
   const previous = exists(output) ? read(output) : null;
   const perHistory = (market.history || []).map((row) => Number(row.per)).filter(Number.isFinite);
   const percentile = perHistory.filter((value) => value <= Number(market.per)).length / perHistory.length * 100;
@@ -71,6 +89,7 @@ function main() {
   const lowerWeeks = previousRisk && rawRiskRank < previousRiskRank ? (previousRiskAxis?.lowerWeeks ?? 0) + 1 : 0;
   const risk = riskStageWithHysteresis(rawRisk, previousRisk, lowerWeeks);
   const flowResult = flowSummary(flow.rows || [], previous?.inputs?.flow);
+  const earningsResult = earningsSummary(earnings);
   const basisDate = [market.date, riskData.lastUpdated, flow.lastDataDate].filter(Boolean).sort().at(-1) || now.slice(0, 10);
   const data = {
     meta: { basisDate, updatedAt: now, source: "WIP Labs connected data pipeline", session: "closed" },
@@ -78,9 +97,11 @@ function main() {
       { id: "valuation", state: valuation, prevState: previousValuation, stateLabel: VALUATION.labels[valuation], value: Number(percentile.toFixed(1)), href: "/valuation/#kospi-per" },
       { id: "risk", state: risk, prevState: previousRisk, rawState: rawRisk, lowerWeeks, stateLabel: RISK.labels[risk], value: score, maxScore, href: "/sentiment-risk/#risk-score" },
       { id: "flow", state: flowResult.state, prevState: previous?.regime?.axes?.find((axis) => axis.id === "flow")?.state ?? null, stateLabel: flowResult.label, href: "/market-flow/#flow-5d" },
+      { id: "capex", state: earningsResult.capex.state, prevState: previous?.regime?.axes?.find((axis) => axis.id === "capex")?.state ?? null, stateLabel: earningsResult.capex.state === "strained" ? "투자 부담" : earningsResult.capex.state === "elevated" ? "투자 확대" : "투자 여력", href: "/ai-capex/" },
+      { id: "memory", state: earningsResult.memory.state, prevState: previous?.regime?.axes?.find((axis) => axis.id === "memory")?.state ?? null, stateLabel: earningsResult.memory.state === "expanding" ? "실적 확장" : earningsResult.memory.state === "contracting" ? "실적 둔화" : "실적 보합", href: "/memory-earnings/" },
     ] },
     diff: [],
-    inputs: { currentPer: market.per, perPercentile: Number(percentile.toFixed(1)), riskScore: score, riskMaxScore: maxScore, flow: flowResult },
+    inputs: { currentPer: market.per, perPercentile: Number(percentile.toFixed(1)), riskScore: score, riskMaxScore: maxScore, flow: flowResult, earnings: earningsResult },
   };
   data.diff = data.regime.axes
     .filter((axis) => axis.prevState && axis.prevState !== axis.state)
