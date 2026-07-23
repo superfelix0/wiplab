@@ -3,6 +3,7 @@
   const t = (ko, english) => en ? english : ko;
   let banner = document.querySelector("#returnBanner");
   const historyEl = document.querySelector("#signalHistory");
+  historyEl?.remove();
   const updateEl = document.querySelector("#nextUpdate") || document.querySelector(".update-line span:last-child");
   const key = "wiplabs-last-signal";
   const languageKey = en ? "en" : "ko";
