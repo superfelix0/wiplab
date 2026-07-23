@@ -20,7 +20,7 @@
   </header>
   <div class="ticker-strip" aria-label="시장 시세"><span>KOSPI <b id="tickerKospi">--</b></span><span>NASDAQ <b id="tickerNasdaq">--</b></span><span>S&amp;P500 <b id="tickerSp500">--</b></span><span>USD/KRW <b id="tickerUsdKrw">--</b></span></div>
 
-  <main>
+  <main class="wl" data-page="home">
     <section id="returnBanner" class="return-banner" hidden aria-live="polite"></section>
     <section class="hero home-hero today-hero">
       <p class="terminal-line"><span class="user">wip</span><span class="path">@</span><span class="host">labs</span><span class="path">:~$</span> ./today <span class="flag">--market-read</span></p>
@@ -31,7 +31,7 @@
     </section>
 
     <section class="market-sentiment-panel today-read" aria-labelledby="market-sentiment-title">
-      <div class="market-sentiment-head"><div><p class="eyebrow">KOREA MARKET PULSE</p><h2 id="market-sentiment-title">오늘의 한국 시장 읽기</h2></div><strong id="marketSentimentLabel" data-tone="neutral">계산 중</strong></div>
+      <div class="market-sentiment-head"><div><p class="eyebrow">KOREA MARKET PULSE</p><h2 id="market-sentiment-title">오늘 상태</h2></div><strong id="marketSentimentLabel" data-tone="neutral">계산 중</strong></div>
       <p id="todaySignalChange" class="today-signal-change" role="status">전일 대비 신호를 계산하고 있습니다.</p><div id="signalHistory" class="signal-history" aria-label="최근 시장 신호"></div>
     </section>
 
