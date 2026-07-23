@@ -474,11 +474,13 @@ async function loadData() {
     dataMode = "live";
     setSentimentStatus(loaded.message, "ok");
   } catch {
-    rawRows = sampleRows();
+    rawRows = [];
     dataMeta = null;
     vixData = null;
-    dataMode = "demo";
-    setSentimentStatus(t("실데이터를 준비하는 중입니다. 현재 화면은 예시 데이터로 표시합니다.", "Actual data is being prepared. The current screen uses sample data."), "neutral");
+    dataMode = "unavailable";
+    sentimentEls.summary.innerHTML = `<p>${t("실제 개인 수급 데이터를 불러오지 못했습니다. 합성 데이터로 대체하지 않습니다.", "Live retail-flow data could not be loaded. It is not replaced with synthetic data.")}</p>`;
+    sentimentEls.detail.innerHTML = "";
+    setSentimentStatus(t("실데이터를 불러오지 못했습니다. 다음 자동 수집 후 다시 확인해 주세요.", "Live data is unavailable. Please check again after the next scheduled collection."), "error");
   } finally {
     if (sentimentEls.refresh) sentimentEls.refresh.disabled = false;
     render();
