@@ -1,7 +1,7 @@
 {
   "ok": true,
-  "generatedAt": "2026-07-23T03:07:33+09:00",
-  "lastDataDate": "2026-07-22",
+  "generatedAt": "2026-07-24T01:07:14+09:00",
+  "lastDataDate": "2026-07-23",
   "unit": "KRW trillion",
   "isSample": false,
   "source": {
@@ -20,6 +20,13 @@
       "foreignFutures": -0.043,
       "individualSpot": -1.218,
       "institutionSpot": -1.396
+    },
+    {
+      "date": "2026-07-23",
+      "foreignSpot": 2.136,
+      "foreignFutures": -0.657,
+      "individualSpot": -2.208,
+      "institutionSpot": 0.098
     }
   ]
 }
