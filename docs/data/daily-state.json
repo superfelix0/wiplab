@@ -1,7 +1,7 @@
 {
   "meta": {
     "basisDate": "2026-07-23",
-    "updatedAt": "2026-07-24T03:17:56+09:00",
+    "updatedAt": "2026-07-24T03:24:15+09:00",
     "source": "WIP Labs connected data pipeline",
     "session": "closed"
   },
@@ -25,8 +25,8 @@
       },
       {
         "id": "flow",
-        "state": "insufficient",
-        "stateLabel": "수급 이력 2/60",
+        "state": "ready",
+        "stateLabel": "판정 준비",
         "href": "/market-flow/#flow-5d"
       }
     ]
@@ -37,6 +37,6 @@
     "perPercentile": 83.2,
     "riskScore": 4.5,
     "riskMaxScore": 10,
-    "flowHistoryCount": 2
+    "flowHistoryCount": 121
   }
 }

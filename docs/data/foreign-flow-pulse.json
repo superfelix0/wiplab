@@ -1,8 +1,8 @@
 {
   "ok": true,
-  "generatedAt": "2026-07-24T01:07:14+09:00",
+  "generatedAt": "2026-07-24T03:23:00+09:00",
   "lastDataDate": "2026-07-23",
-  "unit": "KRW trillion",
+  "unit": "KRW trillion (spot); contracts (futures)",
   "isSample": false,
   "source": {
     "name": "KRX Data Marketplace — previous-business-day investor trading trend",
@@ -15,18 +15,853 @@
   },
   "rows": [
     {
+      "date": "2026-01-23",
+      "foreignSpot": 0.172239,
+      "individualSpot": -0.217022,
+      "institutionSpot": -0.081202,
+      "foreignFuturesContracts": 104496
+    },
+    {
+      "date": "2026-01-26",
+      "foreignSpot": -0.163296,
+      "individualSpot": 3.554502,
+      "institutionSpot": -3.414882,
+      "foreignFuturesContracts": -875020
+    },
+    {
+      "date": "2026-01-27",
+      "foreignSpot": 0.92522,
+      "individualSpot": -0.023147,
+      "institutionSpot": -0.899916,
+      "foreignFuturesContracts": 563643
+    },
+    {
+      "date": "2026-01-28",
+      "foreignSpot": 0.369282,
+      "individualSpot": 3.262219,
+      "institutionSpot": -3.489468,
+      "foreignFuturesContracts": -1576572
+    },
+    {
+      "date": "2026-01-29",
+      "foreignSpot": -1.500385,
+      "individualSpot": 3.371592,
+      "institutionSpot": -1.993751,
+      "foreignFuturesContracts": -1099110
+    },
+    {
+      "date": "2026-01-30",
+      "foreignSpot": -1.949628,
+      "individualSpot": 4.083588,
+      "institutionSpot": -2.328055,
+      "foreignFuturesContracts": -366126
+    },
+    {
+      "date": "2026-02-02",
+      "foreignSpot": -2.489186,
+      "individualSpot": 5.268908,
+      "institutionSpot": -2.88994,
+      "foreignFuturesContracts": -1577861
+    },
+    {
+      "date": "2026-02-03",
+      "foreignSpot": 0.745376,
+      "individualSpot": -2.885178,
+      "institutionSpot": 2.070462,
+      "foreignFuturesContracts": 612397
+    },
+    {
+      "date": "2026-02-04",
+      "foreignSpot": -0.99377,
+      "individualSpot": -0.351578,
+      "institutionSpot": 1.170169,
+      "foreignFuturesContracts": -282642
+    },
+    {
+      "date": "2026-02-05",
+      "foreignSpot": -5.07367,
+      "individualSpot": 8.15485,
+      "institutionSpot": -3.425569,
+      "foreignFuturesContracts": -1971652
+    },
+    {
+      "date": "2026-02-06",
+      "foreignSpot": -3.162705,
+      "individualSpot": 2.440797,
+      "institutionSpot": 0.509044,
+      "foreignFuturesContracts": -332326
+    },
+    {
+      "date": "2026-02-09",
+      "foreignSpot": 0.501395,
+      "individualSpot": -3.689198,
+      "institutionSpot": 3.027332,
+      "foreignFuturesContracts": 1667397
+    },
+    {
+      "date": "2026-02-10",
+      "foreignSpot": 0.159554,
+      "individualSpot": -0.467377,
+      "institutionSpot": 0.11971,
+      "foreignFuturesContracts": 869172
+    },
+    {
+      "date": "2026-02-11",
+      "foreignSpot": 0.905526,
+      "individualSpot": -1.47236,
+      "institutionSpot": 0.389912,
+      "foreignFuturesContracts": 366229
+    },
+    {
+      "date": "2026-02-12",
+      "foreignSpot": 3.159894,
+      "individualSpot": -4.303988,
+      "institutionSpot": 1.044122,
+      "foreignFuturesContracts": 1544109
+    },
+    {
+      "date": "2026-02-13",
+      "foreignSpot": -0.940583,
+      "individualSpot": 1.792993,
+      "institutionSpot": -0.998369,
+      "foreignFuturesContracts": 65943
+    },
+    {
+      "date": "2026-02-19",
+      "foreignSpot": -0.872276,
+      "individualSpot": -0.68374,
+      "institutionSpot": 1.394876,
+      "foreignFuturesContracts": 428713
+    },
+    {
+      "date": "2026-02-20",
+      "foreignSpot": -0.71288,
+      "individualSpot": -0.345127,
+      "institutionSpot": 0.903343,
+      "foreignFuturesContracts": 805939
+    },
+    {
+      "date": "2026-02-23",
+      "foreignSpot": -1.179826,
+      "individualSpot": 2.368275,
+      "institutionSpot": -1.365589,
+      "foreignFuturesContracts": -1455275
+    },
+    {
+      "date": "2026-02-24",
+      "foreignSpot": -0.071799,
+      "individualSpot": -2.346245,
+      "institutionSpot": 2.290811,
+      "foreignFuturesContracts": 621497
+    },
+    {
+      "date": "2026-02-25",
+      "foreignSpot": -1.342592,
+      "individualSpot": 1.47215,
+      "institutionSpot": 0.18462,
+      "foreignFuturesContracts": -1064073
+    },
+    {
+      "date": "2026-02-26",
+      "foreignSpot": -1.963177,
+      "individualSpot": 1.366138,
+      "institutionSpot": 0.337336,
+      "foreignFuturesContracts": -414272
+    },
+    {
+      "date": "2026-02-27",
+      "foreignSpot": -7.029834,
+      "individualSpot": 7.543032,
+      "institutionSpot": -0.773649,
+      "foreignFuturesContracts": -2765189
+    },
+    {
+      "date": "2026-03-03",
+      "foreignSpot": -5.007741,
+      "individualSpot": 6.876204,
+      "institutionSpot": -2.238112,
+      "foreignFuturesContracts": -359048
+    },
+    {
+      "date": "2026-03-04",
+      "foreignSpot": 0.350351,
+      "individualSpot": -0.735753,
+      "institutionSpot": 0.121624,
+      "foreignFuturesContracts": 2263794
+    },
+    {
+      "date": "2026-03-05",
+      "foreignSpot": -0.080797,
+      "individualSpot": 1.994941,
+      "institutionSpot": -1.957617,
+      "foreignFuturesContracts": -2549903
+    },
+    {
+      "date": "2026-03-06",
+      "foreignSpot": -1.938464,
+      "individualSpot": 3.316592,
+      "institutionSpot": -1.497234,
+      "foreignFuturesContracts": -1561975
+    },
+    {
+      "date": "2026-03-09",
+      "foreignSpot": -3.178104,
+      "individualSpot": 5.336999,
+      "institutionSpot": -2.296027,
+      "foreignFuturesContracts": -1303690
+    },
+    {
+      "date": "2026-03-10",
+      "foreignSpot": 1.097418,
+      "individualSpot": -1.780867,
+      "institutionSpot": 0.776082,
+      "foreignFuturesContracts": -372137
+    },
+    {
+      "date": "2026-03-11",
+      "foreignSpot": -0.22187,
+      "individualSpot": -0.121945,
+      "institutionSpot": 0.339932,
+      "foreignFuturesContracts": 85561
+    },
+    {
+      "date": "2026-03-12",
+      "foreignSpot": -2.349978,
+      "individualSpot": 2.753385,
+      "institutionSpot": -0.499372,
+      "foreignFuturesContracts": -1426402
+    },
+    {
+      "date": "2026-03-13",
+      "foreignSpot": -1.400599,
+      "individualSpot": 2.827818,
+      "institutionSpot": -1.500025,
+      "foreignFuturesContracts": -55639
+    },
+    {
+      "date": "2026-03-16",
+      "foreignSpot": -0.845713,
+      "individualSpot": 0.835091,
+      "institutionSpot": -0.038405,
+      "foreignFuturesContracts": -668016
+    },
+    {
+      "date": "2026-03-17",
+      "foreignSpot": -0.07416,
+      "individualSpot": -0.446635,
+      "institutionSpot": 0.468512,
+      "foreignFuturesContracts": -12493
+    },
+    {
+      "date": "2026-03-18",
+      "foreignSpot": 0.946278,
+      "individualSpot": -4.241848,
+      "institutionSpot": 3.415253,
+      "foreignFuturesContracts": 1700201
+    },
+    {
+      "date": "2026-03-19",
+      "foreignSpot": -1.885402,
+      "individualSpot": 3.491869,
+      "institutionSpot": -1.76167,
+      "foreignFuturesContracts": -1680719
+    },
+    {
+      "date": "2026-03-20",
+      "foreignSpot": -1.278069,
+      "individualSpot": 2.573411,
+      "institutionSpot": -1.335677,
+      "foreignFuturesContracts": -328625
+    },
+    {
+      "date": "2026-03-23",
+      "foreignSpot": -3.727801,
+      "individualSpot": 8.815644,
+      "institutionSpot": -5.567273,
+      "foreignFuturesContracts": -2239182
+    },
+    {
+      "date": "2026-03-24",
+      "foreignSpot": -1.945769,
+      "individualSpot": 0.513964,
+      "institutionSpot": 1.184577,
+      "foreignFuturesContracts": 383690
+    },
+    {
+      "date": "2026-03-25",
+      "foreignSpot": -1.304772,
+      "individualSpot": -1.744798,
+      "institutionSpot": 2.718732,
+      "foreignFuturesContracts": 1608099
+    },
+    {
+      "date": "2026-03-26",
+      "foreignSpot": -2.877435,
+      "individualSpot": 3.827072,
+      "institutionSpot": -1.087541,
+      "foreignFuturesContracts": 320668
+    },
+    {
+      "date": "2026-03-27",
+      "foreignSpot": -3.399898,
+      "individualSpot": 2.971972,
+      "institutionSpot": -0.013737,
+      "foreignFuturesContracts": -438831
+    },
+    {
+      "date": "2026-03-30",
+      "foreignSpot": -2.07803,
+      "individualSpot": 1.560944,
+      "institutionSpot": 0.136733,
+      "foreignFuturesContracts": -837
+    },
+    {
+      "date": "2026-03-31",
+      "foreignSpot": -3.804203,
+      "individualSpot": 3.247942,
+      "institutionSpot": 0.156456,
+      "foreignFuturesContracts": 133012
+    },
+    {
+      "date": "2026-04-01",
+      "foreignSpot": -0.697987,
+      "individualSpot": -4.146244,
+      "institutionSpot": 4.413667,
+      "foreignFuturesContracts": 1364809
+    },
+    {
+      "date": "2026-04-02",
+      "foreignSpot": -0.068009,
+      "individualSpot": 1.984507,
+      "institutionSpot": -2.330205,
+      "foreignFuturesContracts": 23230
+    },
+    {
+      "date": "2026-04-03",
+      "foreignSpot": 0.756956,
+      "individualSpot": -2.268527,
+      "institutionSpot": 0.976498,
+      "foreignFuturesContracts": 189624
+    },
+    {
+      "date": "2026-04-06",
+      "foreignSpot": -0.157773,
+      "individualSpot": -0.878913,
+      "institutionSpot": 0.6798,
+      "foreignFuturesContracts": -11073
+    },
+    {
+      "date": "2026-04-07",
+      "foreignSpot": 0.38278,
+      "individualSpot": -0.334636,
+      "institutionSpot": -0.400798,
+      "foreignFuturesContracts": 96015
+    },
+    {
+      "date": "2026-04-08",
+      "foreignSpot": 2.099552,
+      "individualSpot": -6.619107,
+      "institutionSpot": 3.722028,
+      "foreignFuturesContracts": 1668687
+    },
+    {
+      "date": "2026-04-09",
+      "foreignSpot": 1.911801,
+      "individualSpot": 0.377688,
+      "institutionSpot": -2.620145,
+      "foreignFuturesContracts": 378040
+    },
+    {
+      "date": "2026-04-10",
+      "foreignSpot": 1.08254,
+      "individualSpot": -1.461995,
+      "institutionSpot": 0.013211,
+      "foreignFuturesContracts": 361556
+    },
+    {
+      "date": "2026-04-13",
+      "foreignSpot": -0.47991,
+      "individualSpot": 0.961798,
+      "institutionSpot": -0.885003,
+      "foreignFuturesContracts": -213542
+    },
+    {
+      "date": "2026-04-14",
+      "foreignSpot": 0.885497,
+      "individualSpot": -2.762703,
+      "institutionSpot": 1.584377,
+      "foreignFuturesContracts": 1619383
+    },
+    {
+      "date": "2026-04-15",
+      "foreignSpot": 0.60073,
+      "individualSpot": -0.917958,
+      "institutionSpot": -0.092993,
+      "foreignFuturesContracts": 595509
+    },
+    {
+      "date": "2026-04-16",
+      "foreignSpot": 0.561303,
+      "individualSpot": -1.649339,
+      "institutionSpot": 0.820899,
+      "foreignFuturesContracts": 729307
+    },
+    {
+      "date": "2026-04-17",
+      "foreignSpot": -2.029683,
+      "individualSpot": 1.772128,
+      "institutionSpot": -0.148905,
+      "foreignFuturesContracts": -269429
+    },
+    {
+      "date": "2026-04-20",
+      "foreignSpot": -0.264492,
+      "individualSpot": -0.26233,
+      "institutionSpot": 0.254261,
+      "foreignFuturesContracts": 340674
+    },
+    {
+      "date": "2026-04-21",
+      "foreignSpot": 1.266777,
+      "individualSpot": -1.713034,
+      "institutionSpot": 0.595623,
+      "foreignFuturesContracts": -45219
+    },
+    {
+      "date": "2026-04-22",
+      "foreignSpot": -0.213102,
+      "individualSpot": 1.680655,
+      "institutionSpot": -1.342843,
+      "foreignFuturesContracts": -805481
+    },
+    {
+      "date": "2026-04-23",
+      "foreignSpot": -0.097158,
+      "individualSpot": 1.340071,
+      "institutionSpot": -1.161843,
+      "foreignFuturesContracts": 434494
+    },
+    {
+      "date": "2026-04-24",
+      "foreignSpot": -1.897614,
+      "individualSpot": 1.399318,
+      "institutionSpot": 0.521248,
+      "foreignFuturesContracts": -16300
+    },
+    {
+      "date": "2026-04-27",
+      "foreignSpot": 0.879355,
+      "individualSpot": -1.21508,
+      "institutionSpot": 0.299519,
+      "foreignFuturesContracts": 429377
+    },
+    {
+      "date": "2026-04-28",
+      "foreignSpot": -0.229149,
+      "individualSpot": 0.672467,
+      "institutionSpot": -0.451554,
+      "foreignFuturesContracts": -476945
+    },
+    {
+      "date": "2026-04-29",
+      "foreignSpot": -0.569263,
+      "individualSpot": 0.421692,
+      "institutionSpot": 0.22515,
+      "foreignFuturesContracts": -873618
+    },
+    {
+      "date": "2026-04-30",
+      "foreignSpot": -1.273613,
+      "individualSpot": 1.900537,
+      "institutionSpot": -0.633799,
+      "foreignFuturesContracts": 444626
+    },
+    {
+      "date": "2026-05-04",
+      "foreignSpot": 2.981498,
+      "individualSpot": -5.101169,
+      "institutionSpot": 2.226906,
+      "foreignFuturesContracts": 1000219
+    },
+    {
+      "date": "2026-05-06",
+      "foreignSpot": 2.878266,
+      "individualSpot": 0.362274,
+      "institutionSpot": -2.988962,
+      "foreignFuturesContracts": -2325605
+    },
+    {
+      "date": "2026-05-07",
+      "foreignSpot": -6.705386,
+      "individualSpot": 6.741301,
+      "institutionSpot": 0.125933,
+      "foreignFuturesContracts": -924257
+    },
+    {
+      "date": "2026-05-08",
+      "foreignSpot": -5.131215,
+      "individualSpot": 4.675436,
+      "institutionSpot": 0.392317,
+      "foreignFuturesContracts": -1307770
+    },
+    {
+      "date": "2026-05-11",
+      "foreignSpot": -2.890275,
+      "individualSpot": 3.546983,
+      "institutionSpot": -0.660353,
+      "foreignFuturesContracts": -920054
+    },
+    {
+      "date": "2026-05-12",
+      "foreignSpot": -5.499889,
+      "individualSpot": 7.674575,
+      "institutionSpot": -2.391057,
+      "foreignFuturesContracts": 86676
+    },
+    {
+      "date": "2026-05-13",
+      "foreignSpot": -3.758297,
+      "individualSpot": 2.070835,
+      "institutionSpot": 1.587314,
+      "foreignFuturesContracts": -2056382
+    },
+    {
+      "date": "2026-05-14",
+      "foreignSpot": -2.080345,
+      "individualSpot": 2.256661,
+      "institutionSpot": -0.277787,
+      "foreignFuturesContracts": -1594186
+    },
+    {
+      "date": "2026-05-15",
+      "foreignSpot": -5.608391,
+      "individualSpot": 8.96785,
+      "institutionSpot": -3.507934,
+      "foreignFuturesContracts": 869778
+    },
+    {
+      "date": "2026-05-18",
+      "foreignSpot": -3.579283,
+      "individualSpot": 2.107841,
+      "institutionSpot": 1.416465,
+      "foreignFuturesContracts": 8890
+    },
+    {
+      "date": "2026-05-19",
+      "foreignSpot": -5.669311,
+      "individualSpot": 6.166224,
+      "institutionSpot": -0.404437,
+      "foreignFuturesContracts": 185002
+    },
+    {
+      "date": "2026-05-20",
+      "foreignSpot": -2.891048,
+      "individualSpot": 1.729248,
+      "institutionSpot": 1.006783,
+      "foreignFuturesContracts": -346521
+    },
+    {
+      "date": "2026-05-21",
+      "foreignSpot": -0.282031,
+      "individualSpot": -2.892261,
+      "institutionSpot": 3.186452,
+      "foreignFuturesContracts": -1380028
+    },
+    {
+      "date": "2026-05-22",
+      "foreignSpot": -1.835284,
+      "individualSpot": 1.224101,
+      "institutionSpot": 0.488933,
+      "foreignFuturesContracts": 85288
+    },
+    {
+      "date": "2026-05-26",
+      "foreignSpot": -0.0662,
+      "individualSpot": 0.42718,
+      "institutionSpot": -0.298021,
+      "foreignFuturesContracts": -63986
+    },
+    {
+      "date": "2026-05-27",
+      "foreignSpot": 0.039842,
+      "individualSpot": 2.340661,
+      "institutionSpot": -2.280245,
+      "foreignFuturesContracts": 95739
+    },
+    {
+      "date": "2026-05-28",
+      "foreignSpot": -2.755268,
+      "individualSpot": 4.947039,
+      "institutionSpot": -2.308175,
+      "foreignFuturesContracts": -424875
+    },
+    {
+      "date": "2026-05-29",
+      "foreignSpot": -0.914974,
+      "individualSpot": -1.375142,
+      "institutionSpot": 2.238375,
+      "foreignFuturesContracts": 1724257
+    },
+    {
+      "date": "2026-06-01",
+      "foreignSpot": -2.845295,
+      "individualSpot": 1.811532,
+      "institutionSpot": 1.015466,
+      "foreignFuturesContracts": -540656
+    },
+    {
+      "date": "2026-06-02",
+      "foreignSpot": -6.304766,
+      "individualSpot": 8.027079,
+      "institutionSpot": -1.903215,
+      "foreignFuturesContracts": -898488
+    },
+    {
+      "date": "2026-06-04",
+      "foreignSpot": -6.657245,
+      "individualSpot": 6.070743,
+      "institutionSpot": 0.436912,
+      "foreignFuturesContracts": 799186
+    },
+    {
+      "date": "2026-06-05",
+      "foreignSpot": -2.774532,
+      "individualSpot": 6.466087,
+      "institutionSpot": -3.682373,
+      "foreignFuturesContracts": 1037453
+    },
+    {
+      "date": "2026-06-08",
+      "foreignSpot": -0.060563,
+      "individualSpot": 3.061102,
+      "institutionSpot": -3.246645,
+      "foreignFuturesContracts": 1310182
+    },
+    {
+      "date": "2026-06-09",
+      "foreignSpot": -2.052713,
+      "individualSpot": -0.62684,
+      "institutionSpot": 2.56487,
+      "foreignFuturesContracts": -2392212
+    },
+    {
+      "date": "2026-06-10",
+      "foreignSpot": -2.696507,
+      "individualSpot": 5.976761,
+      "institutionSpot": -3.500742,
+      "foreignFuturesContracts": 830859
+    },
+    {
+      "date": "2026-06-11",
+      "foreignSpot": -1.241614,
+      "individualSpot": 2.437988,
+      "institutionSpot": -1.227921,
+      "foreignFuturesContracts": -194113
+    },
+    {
+      "date": "2026-06-12",
+      "foreignSpot": 2.276747,
+      "individualSpot": -5.882616,
+      "institutionSpot": 3.77114,
+      "foreignFuturesContracts": 366855
+    },
+    {
+      "date": "2026-06-15",
+      "foreignSpot": 1.272373,
+      "individualSpot": -1.171953,
+      "institutionSpot": -0.096343,
+      "foreignFuturesContracts": 94079
+    },
+    {
+      "date": "2026-06-16",
+      "foreignSpot": 1.459464,
+      "individualSpot": -2.538029,
+      "institutionSpot": 1.136552,
+      "foreignFuturesContracts": 141307
+    },
+    {
+      "date": "2026-06-17",
+      "foreignSpot": -0.89646,
+      "individualSpot": 0.614265,
+      "institutionSpot": 0.405478,
+      "foreignFuturesContracts": -782050
+    },
+    {
+      "date": "2026-06-18",
+      "foreignSpot": 1.429601,
+      "individualSpot": -0.645478,
+      "institutionSpot": -0.672992,
+      "foreignFuturesContracts": -563916
+    },
+    {
+      "date": "2026-06-19",
+      "foreignSpot": -0.215469,
+      "individualSpot": 2.122922,
+      "institutionSpot": -1.84395,
+      "foreignFuturesContracts": 1476584
+    },
+    {
+      "date": "2026-06-22",
+      "foreignSpot": -1.971001,
+      "individualSpot": 2.312467,
+      "institutionSpot": -0.392424,
+      "foreignFuturesContracts": -176208
+    },
+    {
+      "date": "2026-06-23",
+      "foreignSpot": -3.955955,
+      "individualSpot": 11.413391,
+      "institutionSpot": -7.614023,
+      "foreignFuturesContracts": 2140859
+    },
+    {
+      "date": "2026-06-24",
+      "foreignSpot": -4.365794,
+      "individualSpot": 3.581533,
+      "institutionSpot": 0.681116,
+      "foreignFuturesContracts": -2293306
+    },
+    {
+      "date": "2026-06-25",
+      "foreignSpot": 0.105281,
+      "individualSpot": -3.850994,
+      "institutionSpot": 3.792301,
+      "foreignFuturesContracts": -2838047
+    },
+    {
+      "date": "2026-06-26",
+      "foreignSpot": -4.227274,
+      "individualSpot": 11.19015,
+      "institutionSpot": -7.20428,
+      "foreignFuturesContracts": 1379866
+    },
+    {
+      "date": "2026-06-29",
+      "foreignSpot": -7.458254,
+      "individualSpot": 5.310869,
+      "institutionSpot": 2.00883,
+      "foreignFuturesContracts": 91143
+    },
+    {
+      "date": "2026-06-30",
+      "foreignSpot": -3.653302,
+      "individualSpot": 0.852152,
+      "institutionSpot": 2.727992,
+      "foreignFuturesContracts": -834432
+    },
+    {
+      "date": "2026-07-01",
+      "foreignSpot": -1.840054,
+      "individualSpot": 2.587934,
+      "institutionSpot": -0.924669,
+      "foreignFuturesContracts": 1764661
+    },
+    {
+      "date": "2026-07-02",
+      "foreignSpot": -4.195538,
+      "individualSpot": 8.598414,
+      "institutionSpot": -4.668333,
+      "foreignFuturesContracts": 3204792
+    },
+    {
+      "date": "2026-07-03",
+      "foreignSpot": -2.162548,
+      "individualSpot": -2.402891,
+      "institutionSpot": 4.494403,
+      "foreignFuturesContracts": 181513
+    },
+    {
+      "date": "2026-07-06",
+      "foreignSpot": -1.60873,
+      "individualSpot": 3.212292,
+      "institutionSpot": -1.74781,
+      "foreignFuturesContracts": -1114434
+    },
+    {
+      "date": "2026-07-07",
+      "foreignSpot": -2.801469,
+      "individualSpot": 4.22945,
+      "institutionSpot": -1.538232,
+      "foreignFuturesContracts": 881992
+    },
+    {
+      "date": "2026-07-08",
+      "foreignSpot": 0.412312,
+      "individualSpot": 0.306683,
+      "institutionSpot": -0.71471,
+      "foreignFuturesContracts": 1633728
+    },
+    {
+      "date": "2026-07-09",
+      "foreignSpot": 0.239024,
+      "individualSpot": -1.380873,
+      "institutionSpot": 1.257887,
+      "foreignFuturesContracts": 746058
+    },
+    {
+      "date": "2026-07-10",
+      "foreignSpot": -0.30384,
+      "individualSpot": -0.775512,
+      "institutionSpot": 1.055972,
+      "foreignFuturesContracts": -773774
+    },
+    {
+      "date": "2026-07-13",
+      "foreignSpot": -1.66018,
+      "individualSpot": 5.216007,
+      "institutionSpot": -3.632722,
+      "foreignFuturesContracts": 1318331
+    },
+    {
+      "date": "2026-07-14",
+      "foreignSpot": 1.174956,
+      "individualSpot": -4.565187,
+      "institutionSpot": 3.42896,
+      "foreignFuturesContracts": 1630076
+    },
+    {
+      "date": "2026-07-15",
+      "foreignSpot": 2.571976,
+      "individualSpot": -3.309336,
+      "institutionSpot": 0.730061,
+      "foreignFuturesContracts": -1663808
+    },
+    {
+      "date": "2026-07-16",
+      "foreignSpot": -1.322577,
+      "individualSpot": 4.709273,
+      "institutionSpot": -3.486131,
+      "foreignFuturesContracts": 701426
+    },
+    {
+      "date": "2026-07-20",
+      "foreignSpot": 0.810153,
+      "individualSpot": 0.949233,
+      "institutionSpot": -1.841496,
+      "foreignFuturesContracts": 1010740
+    },
+    {
+      "date": "2026-07-21",
+      "foreignSpot": 0.528964,
+      "individualSpot": -1.634601,
+      "institutionSpot": 1.167711,
+      "foreignFuturesContracts": -679459
+    },
+    {
       "date": "2026-07-22",
-      "foreignSpot": 2.621,
+      "foreignSpot": 2.57922,
       "foreignFutures": -0.043,
-      "individualSpot": -1.218,
-      "institutionSpot": -1.396
+      "individualSpot": -1.37145,
+      "institutionSpot": -1.240361,
+      "foreignFuturesContracts": -42627
     },
     {
       "date": "2026-07-23",
-      "foreignSpot": 2.136,
+      "foreignSpot": 2.239054,
       "foreignFutures": -0.657,
-      "individualSpot": -2.208,
-      "institutionSpot": 0.098
+      "individualSpot": -2.271831,
+      "institutionSpot": 0.01361,
+      "foreignFuturesContracts": -656848
     }
   ]
 }
