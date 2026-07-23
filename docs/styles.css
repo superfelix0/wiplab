@@ -2564,6 +2564,19 @@ footer p {
   letter-spacing: .06em;
   text-transform: uppercase;
 }
+.us-market-preview { padding-top: 24px; padding-bottom: 24px; }
+.us-preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.us-preview-grid > section { border: 1px solid var(--line); background: var(--panel-2); padding: 16px; }
+.us-preview-grid h3 { margin: 0 0 12px; color: var(--title); font-size: 14px; }
+.us-preview-grid > section > small { display: block; margin-top: 12px; color: var(--faint); font-size: 10px; line-height: 1.45; }
+.us-preview-quotes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.us-preview-quotes article { display: grid; gap: 4px; min-width: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px; }
+.us-preview-quotes span { color: var(--faint); font-size: 10px; }
+.us-preview-quotes strong { color: var(--title); font-size: 14px; }
+.us-preview-quotes small, .us-preview-quotes .positive { font-size: 10px; }
+.us-preview-events { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.us-preview-events li { border-bottom: 1px solid var(--line-soft); padding-bottom: 8px; color: var(--text); font-size: 12px; line-height: 1.45; }
+.us-preview-events li:last-child { border-bottom: 0; }
 
 .today-signal small b { color: var(--amber); font-size: 14px; }
 .theme-card > div { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
@@ -2636,7 +2649,8 @@ footer p {
   .today-signal-grid,
   .theme-grid,
   .metric-directory,
-  .backtest-grid { grid-template-columns: 1fr; }
+  .backtest-grid,
+  .us-preview-grid { grid-template-columns: 1fr; }
   .today-signal,
   .theme-card { min-height: 0; }
   .metric-directory a,
@@ -2677,6 +2691,10 @@ footer p {
 .wl-flow-divergence span { color: var(--faint); font-size: 11px; }
 .wl-flow-divergence strong { color: var(--title); font-size: 19px; }
 .wl-flow-divergence small { color: var(--muted); font-size: 11px; }
+.wl-flow-divergence b { width: fit-content; padding: 3px 6px; border: 1px solid var(--line); font-size: 10px; }
+.wl-flow-divergence .flow-trend-continuing { color: var(--green); background: color-mix(in srgb, var(--green) 10%, var(--panel)); }
+.wl-flow-divergence .flow-trend-turning { color: var(--amber); background: color-mix(in srgb, var(--amber) 10%, var(--panel)); }
+.wl-flow-divergence .flow-trend-flat { color: var(--faint); }
 .valuation-percentile-scale { margin: 18px 0; padding: 18px; border: 1px solid var(--line); background: var(--panel-2); }
 .valuation-scale-head { display: flex; justify-content: space-between; gap: 16px; }
 .valuation-scale-head span { color: var(--faint); font-size: 10px; font-weight: 800; letter-spacing: .08em; }

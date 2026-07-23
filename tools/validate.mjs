@@ -25,8 +25,8 @@ function main() {
 
   const flowInput = state.inputs?.flow || {};
   if (flowInput.count >= flowInput.window) {
-    if (flowInput.window !== 10) fail("flow regime must use a 10-session window");
-    if (!Array.isArray(flowInput.subjects) || flowInput.subjects.length !== 3) fail("10-session flow state needs all three participant groups");
+    if (flowInput.window !== 30 || flowInput.shortWindow !== 5) fail("flow regime must use 30-session and 5-session windows");
+    if (!Array.isArray(flowInput.subjects) || flowInput.subjects.length !== 3) fail("30-session flow state needs all three participant groups");
     const leader = flowInput.subjects.find((subject) => subject.id === flowInput.leaderId);
     if (leader && (leader.state !== "aligned" || leader.sizeRank !== 1)) fail("flow leader must be the largest aligned cumulative flow");
     if (!leader && flowInput.leaderConfidence === "confirmed") fail("confirmed flow leader is missing");

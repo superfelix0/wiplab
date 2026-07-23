@@ -94,10 +94,15 @@ function applyDailyState(state) {
     homeEls.marketSentimentLabel.dataset.tone = "neutral";
   }
   const change = document.querySelector("#todaySignalChange");
-  if (change) change.textContent = ht(
-    `밸류에이션 ${valuationLabels[valuation?.state] || "확인"} · 위험 ${riskLabels[risk?.state] || "확인"} · 수급 ${flow?.state === "aligned" ? "동행" : "방향 주도 불명"}`,
-    `Valuation ${valuationLabels[valuation?.state] || "Checking"} · risk ${riskLabels[risk?.state] || "Checking"} · flow ${flow?.state === "aligned" ? "aligned" : "direction leader unclear"}`
-  );
+  if (change) {
+    const lead = flowInput?.label || (flow?.state === "aligned" ? ht("수급 우세", "Flow dominant") : ht("수급 혼재", "Flow mixed"));
+    const leader = (flowInput?.subjects || []).find((subject) => subject.id === flowInput?.leaderId);
+    const shortRead = leader?.shortTrend === "continuing" ? ht("5일도 같은 추세", "5-session trend continues") : leader?.shortTrend === "turning" ? ht("5일은 변화", "5-session trend changed") : ht("5일 보합", "5-session flat");
+    change.textContent = ht(
+      `밸류에이션: 역사적 ${valuationLabels[valuation?.state] || "구간"} · 약세장 전환 위험: ${riskLabels[risk?.state] || "확인"} · 30일 수급: ${lead} (${shortRead})`,
+      `Valuation: historical ${valuationLabels[valuation?.state] || "range"} · bear-market transition risk: ${riskLabels[risk?.state] || "Checking"} · 30-session flow: ${lead} (${shortRead})`
+    );
+  }
   const cardLabels = {
     valuation: { low: ht("역사적 하단", "Historical lower range"), mid: ht("역사적 중심", "Historical middle range"), high: ht("역사적 상단", "Historical upper range") },
     risk: riskLabels,

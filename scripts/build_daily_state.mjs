@@ -9,7 +9,8 @@ const exists = (file) => fs.existsSync(path.join(root, file));
 const output = "docs/data/daily-state.json";
 const historyOutput = "docs/data/regime-history.json";
 const now = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T") + "+09:00";
-const FLOW_WINDOW = 10;
+const FLOW_WINDOW = 30;
+const FLOW_SHORT_WINDOW = 5;
 
 function valuationState(percentile, previous) {
   const candidate = percentile < VALUATION.enter.low ? "low" : percentile > VALUATION.enter.high ? "high" : "mid";
@@ -25,15 +26,21 @@ function csvRows(file) {
 function flowSummary(rows) {
   const closes = new Map(csvRows("docs/data/kospi-per-history.csv").map((row) => [row.date, Number(row.close)]));
   const usable = rows.filter((row) => Number.isFinite(closes.get(row.date))).sort((a, b) => a.date.localeCompare(b.date));
-  if (usable.length < FLOW_WINDOW) return { state: "insufficient", label: `수급 이력 ${usable.length}/${FLOW_WINDOW}`, count: usable.length, window: FLOW_WINDOW };
+  if (usable.length < FLOW_WINDOW) return { state: "insufficient", label: `수급 이력 ${usable.length}/${FLOW_WINDOW}`, count: usable.length, window: FLOW_WINDOW, shortWindow: FLOW_SHORT_WINDOW };
   const sample = usable.slice(-FLOW_WINDOW);
+  const shortSample = usable.slice(-FLOW_SHORT_WINDOW);
   const indexReturn = closes.get(sample.at(-1).date) / closes.get(sample[0].date) - 1;
+  const shortIndexReturn = closes.get(shortSample.at(-1).date) / closes.get(shortSample[0].date) - 1;
   const subjects = [["foreignSpot", "외국인"], ["individualSpot", "개인"], ["institutionSpot", "기관"]].map(([id, name]) => {
     const cumulative = sample.reduce((total, row) => total + Number(row[id] || 0), 0);
+    const shortCumulative = shortSample.reduce((total, row) => total + Number(row[id] || 0), 0);
     const state = Math.abs(indexReturn) < 0.003 || cumulative === 0
       ? "unrelated"
       : Math.sign(cumulative) === Math.sign(indexReturn) ? "aligned" : "contrarian";
-    return { id, name, cumulative: Number(cumulative.toFixed(6)), state, size: Math.abs(cumulative) };
+    const shortTrend = cumulative === 0 || shortCumulative === 0
+      ? "flat"
+      : Math.sign(cumulative) === Math.sign(shortCumulative) ? "continuing" : "turning";
+    return { id, name, cumulative: Number(cumulative.toFixed(6)), shortCumulative: Number(shortCumulative.toFixed(6)), shortTrend, state, size: Math.abs(cumulative) };
   });
   const ranked = subjects.slice().sort((a, b) => b.size - a.size).map((subject, index) => ({ ...subject, sizeRank: index + 1 }));
   const leader = ranked[0]?.state === "aligned" ? ranked[0] : null;
@@ -42,7 +49,9 @@ function flowSummary(rows) {
     label: leader ? `${leader.name} ${leader.cumulative >= 0 ? "순매수" : "순매도"} 우세` : "수급과 지수 방향 혼재",
     count: sample.length,
     window: FLOW_WINDOW,
+    shortWindow: FLOW_SHORT_WINDOW,
     indexReturn: Number(indexReturn.toFixed(4)),
+    shortIndexReturn: Number(shortIndexReturn.toFixed(4)),
     subjects: ranked,
     leaderId: leader?.id ?? null,
     leaderConfidence: leader ? "confirmed" : "unclear",

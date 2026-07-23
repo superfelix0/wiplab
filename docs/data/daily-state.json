@@ -8,7 +8,7 @@
       "capex": "2026-07-24",
       "memory": "2026-07-24"
     },
-    "updatedAt": "2026-07-24T04:40:16+09:00",
+    "updatedAt": "2026-07-24T04:54:34+09:00",
     "source": "WIP Labs connected data pipeline",
     "session": "closed"
   },
@@ -35,9 +35,9 @@
       },
       {
         "id": "flow",
-        "state": "aligned",
-        "prevState": "aligned",
-        "stateLabel": "외국인 순매도 우세",
+        "state": "unrelated",
+        "prevState": "unrelated",
+        "stateLabel": "수급과 지수 방향 혼재",
         "href": "/market-flow/#flow-5d"
       },
       {
@@ -63,39 +63,47 @@
     "riskScore": 4.5,
     "riskMaxScore": 10,
     "flow": {
-      "state": "aligned",
-      "label": "외국인 순매도 우세",
-      "count": 10,
-      "window": 10,
-      "indexReturn": -0.1567,
+      "state": "unrelated",
+      "label": "수급과 지수 방향 혼재",
+      "count": 30,
+      "window": 30,
+      "shortWindow": 5,
+      "indexReturn": -0.1642,
+      "shortIndexReturn": -0.0877,
       "subjects": [
-        {
-          "id": "foreignSpot",
-          "name": "외국인",
-          "cumulative": -5.461076,
-          "state": "aligned",
-          "size": 5.461076000000001,
-          "sizeRank": 1
-        },
         {
           "id": "individualSpot",
           "name": "개인",
-          "cumulative": 5.239906,
+          "cumulative": 57.050031,
+          "shortCumulative": 1.275245,
+          "shortTrend": "continuing",
           "state": "contrarian",
-          "size": 5.2399059999999995,
+          "size": 57.05003099999999,
+          "sizeRank": 1
+        },
+        {
+          "id": "foreignSpot",
+          "name": "외국인",
+          "cumulative": -40.52264,
+          "shortCumulative": 0.460335,
+          "shortTrend": "turning",
+          "state": "aligned",
+          "size": 40.522639999999996,
           "sizeRank": 2
         },
         {
           "id": "institutionSpot",
           "name": "기관",
-          "cumulative": -0.152322,
+          "cumulative": -18.138738,
+          "shortCumulative": -1.90386,
+          "shortTrend": "continuing",
           "state": "aligned",
-          "size": 0.15232199999999985,
+          "size": 18.138738,
           "sizeRank": 3
         }
       ],
-      "leaderId": "foreignSpot",
-      "leaderConfidence": "confirmed"
+      "leaderId": null,
+      "leaderConfidence": "unclear"
     },
     "earnings": {
       "capex": {

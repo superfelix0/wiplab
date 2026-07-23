@@ -39,5 +39,14 @@
       hero.append(banner);
     } catch { /* Individual page data remains usable if the common state is unavailable. */ }
   };
-  document.addEventListener("DOMContentLoaded", () => { window.WIPLabs.wireDeepLinks(); addRegimeBanner(); });
+  document.addEventListener("DOMContentLoaded", () => {
+    window.WIPLabs.wireDeepLinks(); addRegimeBanner();
+    const path = location.pathname.replace(/\/$/, "");
+    if (path === "" || path === "/en") {
+      const script = document.createElement("script");
+      script.src = "/market-preview.js?v=20260724";
+      script.defer = true;
+      document.head.append(script);
+    }
+  });
 })();

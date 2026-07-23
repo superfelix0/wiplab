@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-07-24T04:40:16+09:00",
+  "generatedAt": "2026-07-24T04:54:34+09:00",
   "snapshots": [
     {
       "date": "2026-07-23",
-      "updatedAt": "2026-07-24T04:40:16+09:00",
-      "labelKo": "역사적 상단 · 주의 · 외국인 순매도 우세 · 투자 부담 · 실적 확장",
-      "labelEn": "valuation: high · risk: caution · flow: aligned · capex: strained · memory: expanding",
+      "updatedAt": "2026-07-24T04:54:34+09:00",
+      "labelKo": "역사적 상단 · 주의 · 수급과 지수 방향 혼재 · 투자 부담 · 실적 확장",
+      "labelEn": "valuation: high · risk: caution · flow: unrelated · capex: strained · memory: expanding",
       "axes": [
         {
           "id": "valuation",
@@ -19,8 +19,8 @@
         },
         {
           "id": "flow",
-          "state": "aligned",
-          "stateLabel": "외국인 순매도 우세"
+          "state": "unrelated",
+          "stateLabel": "수급과 지수 방향 혼재"
         },
         {
           "id": "capex",

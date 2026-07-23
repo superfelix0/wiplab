@@ -26,9 +26,17 @@
     const flowLabel = flow?.leaderConfidence === "confirmed"
       ? flow.label
       : t("수급과 지수 방향 혼재", "Flow and index direction mixed");
-    const divergence = (flow?.subjects || []).map((subject) => `<article><span>${labels[subject.id] || subject.name}</span><strong>${money(subject.cumulative)}</strong><small>${subject.state === "aligned" ? t("2주 지수 방향과 같은 순매수·순매도", "Same direction as the 2-week index move") : subject.state === "contrarian" ? t("2주 지수 방향과 반대", "Opposite to the 2-week index move") : t("지수 변화가 작아 판정 보류", "Index move too small to classify")}</small></article>`).join("");
+    const divergence = (flow?.subjects || []).map((subject) => {
+      const trend = subject.shortTrend === "continuing"
+        ? t("30일 추세 유지", "30-session trend continuing")
+        : subject.shortTrend === "turning"
+          ? t("최근 5일 변화", "5-session change")
+          : t("최근 5일 보합", "5-session flat");
+      const relation = subject.state === "aligned" ? t("30일 지수 방향과 같은 순매수·순매도", "Same direction as the 30-session index move") : subject.state === "contrarian" ? t("30일 지수 방향과 반대", "Opposite to the 30-session index move") : t("지수 변화가 작아 판정 보류", "Index move too small to classify");
+      return `<article><span>${labels[subject.id] || subject.name}</span><strong>${money(subject.cumulative)}</strong><small>${t("30일", "30 sessions")} ${money(subject.cumulative)} · ${t("5일", "5 sessions")} ${money(subject.shortCumulative)}</small><b class="flow-trend-${subject.shortTrend || "flat"}">${trend}</b><small>${relation}</small></article>`;
+    }).join("");
     const indexMove = Number.isFinite(flow?.indexReturn) ? `${flow.indexReturn >= 0 ? "+" : ""}${(flow.indexReturn * 100).toFixed(1)}%` : "--";
-    overview.innerHTML = `<div class="wl-flow-overview-head"><div><span>${t("L1 · 2주 누적 수급", "L1 · Two-week cumulative flow")}</span><h2>${flowLabel}</h2><p>${t("최근 10거래일 누적 순매수·순매도와 같은 기간 KOSPI 변화를 함께 봅니다. 일별 변동의 잡음보다 최근 수급 방향을 읽기 위한 기준입니다.", "Reads 10-session cumulative net flows alongside the KOSPI move over the same period, prioritizing the recent direction over daily noise.")}</p></div><b>KOSPI ${indexMove}</b></div><div class="wl-flow-divergence">${divergence || `<p>${t("수급 이력을 확인 중입니다.", "Checking flow history.")}</p>`}</div>`;
+    overview.innerHTML = `<div class="wl-flow-overview-head"><div><span>${t("L1 · 30일 누적 수급", "L1 · 30-session cumulative flow")}</span><h2>${flowLabel}</h2><p>${t("30영업일 누적 수급으로 큰 방향을 읽고, 5영업일 누적으로 최근 변화가 이어지는지 함께 확인합니다.", "Use 30-session cumulative flow for the broader direction, with the latest 5 sessions alongside it to check whether the move is continuing.")}</p></div><b>KOSPI ${indexMove}</b></div><div class="wl-flow-divergence">${divergence || `<p>${t("수급 이력을 확인 중입니다.", "Checking flow history.")}</p>`}</div>`;
     if (!overview.isConnected) root.querySelector(".flow-data-line")?.after(overview);
     const subjects = (flow?.subjects || []).map((subject) => `<li><b>${labels[subject.id] || subject.name}</b><span>${subject.matchRate}% ${t("일치", "match")}</span><small>${subject.state === "aligned" ? t("동행", "Aligned") : subject.state === "contrarian" ? t("역행", "Contrarian") : t("무관", "Unrelated")}</small></li>`).join("");
     const summary = flow?.leaderConfidence === "confirmed"
@@ -41,7 +49,7 @@
     const methodPanel = panel.firstElementChild;
     methodPanel.id = "flow-method";
     methodPanel.className = "flow-methodology";
-    methodPanel.innerHTML = `<div><span>${t("판정 기준", "How the reading is made")}</span><h2>${t("2주 누적 금액이 가장 큰 주체와 지수 방향을 비교합니다", "Compare the largest two-week cumulative flow with the index direction")}</h2><p>${t("최근 10거래일 누적 순매수·순매도의 절대 규모가 가장 큰 주체가 같은 기간 KOSPI 등락 방향과 같으면 수급 우세로, 반대면 혼재로 읽습니다. KOSPI 변동이 0.3% 미만이면 방향 판정은 보류합니다.", "The participant with the largest absolute cumulative net flow over the latest 10 sessions is treated as dominant only when its net-flow direction matches the KOSPI move. A KOSPI move below 0.3% leaves the direction unclassified.")}</p></div><small>${t("이는 단기 수급의 읽기 도구이며, 개별 주체의 매매가 시장 방향을 원인으로 설명한다는 뜻은 아닙니다.", "This is a short-term flow reading, not a claim that a participant's trading caused the market move.")}</small>`;
+    methodPanel.innerHTML = `<div><span>${t("판정 기준", "How the reading is made")}</span><h2>${t("30일 누적 금액이 가장 큰 주체와 지수 방향을 비교합니다", "Compare the largest 30-session cumulative flow with the index direction")}</h2><p>${t("최근 30영업일 누적 순매수·순매도의 절대 규모가 가장 큰 주체가 같은 기간 KOSPI 등락 방향과 같으면 수급 우세로, 반대면 혼재로 읽습니다. KOSPI 변동이 0.3% 미만이면 방향 판정은 보류합니다. 5영업일 수치는 단기 변화 확인용입니다.", "The participant with the largest absolute cumulative net flow over the latest 30 sessions is treated as dominant only when its net-flow direction matches the KOSPI move. A KOSPI move below 0.3% leaves the direction unclassified. The 5-session figure is for checking short-term change.")}</p></div><small>${t("이는 수급 흐름의 읽기 도구이며, 개별 주체의 매매가 시장 방향을 원인으로 설명한다는 뜻은 아닙니다.", "This is a flow-reading tool, not a claim that a participant's trading caused the market move.")}</small>`;
     placeholder.replaceWith(methodPanel);
     root.querySelector(".flow-commentary")?.remove();
 

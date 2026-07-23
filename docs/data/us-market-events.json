@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "generatedAt": "2026-07-24T04:53:18.523192+09:00",
+  "source": "Nasdaq Earnings Calendar public endpoint",
+  "events": [
+    {
+      "symbol": "META",
+      "name": "Meta",
+      "date": "2026-07-29",
+      "time": "time-after-hours",
+      "source": "Nasdaq Earnings Calendar"
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "date": "2026-07-29",
+      "time": "time-after-hours",
+      "source": "Nasdaq Earnings Calendar"
+    },
+    {
+      "symbol": "AAPL",
+      "name": "Apple",
+      "date": "2026-07-30",
+      "time": "time-after-hours",
+      "source": "Nasdaq Earnings Calendar"
+    },
+    {
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "date": "2026-07-30",
+      "time": "time-after-hours",
+      "source": "Nasdaq Earnings Calendar"
+    }
+  ]
+}
