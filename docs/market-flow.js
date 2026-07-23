@@ -47,7 +47,12 @@
     const placeholder = root.querySelector("[data-flow-note]");
     const panel = document.createElement("div");
     panel.innerHTML = methodology;
-    placeholder.replaceWith(panel.firstElementChild);
+    const methodPanel = panel.firstElementChild;
+    methodPanel.id = "flow-method";
+    methodPanel.className = "flow-methodology";
+    methodPanel.innerHTML = `<div><span>${t("판정 기준", "How the reading is made")}</span><h2>${t("방향을 주도한 주체는 동행률과 규모를 함께 봅니다", "Direction leadership requires both alignment and size")}</h2><p>${t("지수 변동률 절대값이 0.05% 미만인 날은 제외합니다. 한 주체가 60거래일 중 지수 방향과 63% 이상 동행하고, 동행 규모도 상위 두 주체 가운데 하나일 때만 방향 주도 신호로 표시합니다.", "Sessions with an absolute KOSPI move below 0.05% are excluded. A direction leader is shown only when one participant is aligned in at least 63% of the 60 sessions and its cumulative flow is among the two largest.")}</p></div><small>${t("기존 상태는 동행률이 57%/43% 경계를 넘어설 때만 전환합니다. 일별 순매수 금액은 아래 표에서 별도로 확인할 수 있습니다.", "An existing state changes only beyond the 57%/43% boundaries. Daily net-flow amounts remain available in the table below.")}</small>`;
+    placeholder.replaceWith(methodPanel);
+    root.querySelector(".flow-commentary")?.remove();
 
     const table = root.querySelector("[data-flow-table]");
     table.parentElement.id = "flow-daily";

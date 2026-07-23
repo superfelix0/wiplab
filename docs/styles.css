@@ -2656,6 +2656,11 @@ footer p {
 .flow-regime ul { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
 .flow-regime li { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line-soft); font-size: 12px; }
 .flow-regime li small { color: var(--amber); font-weight: 700; }
+.flow-methodology { display: grid; gap: 12px; margin: 18px 0; padding: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.42); }
+.flow-methodology span { color: var(--faint); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.flow-methodology h2 { margin: 6px 0; color: var(--title); font-size: 16px; }
+.flow-methodology p, .flow-methodology small { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+.flow-methodology small { padding-top: 10px; border-top: 1px solid var(--line-soft); }
 .flow-futures-note { margin: 10px 0 0; color: var(--faint); font-size: 11px; }
 .flow-card { min-height: 122px; }
 .wl-flow-overview { margin: 14px 0 18px; border: 1px solid var(--line); background: var(--panel-2); }
