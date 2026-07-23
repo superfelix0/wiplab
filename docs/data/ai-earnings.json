@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generatedAt": "2026-07-23T09:16:25+09:00",
+  "generatedAt": "2026-07-24T01:08:06+09:00",
   "source": "Yahoo Finance fundamentals time-series public endpoint",
   "companies": [
     {
@@ -14,8 +14,8 @@
       "quarters": [
         {
           "date": "2025-06-30",
-          "quarterlyNormalizedEBITDA": 651480912000.0,
           "quarterlyCapitalExpenditure": -299562606000.0,
+          "quarterlyNormalizedEBITDA": 651480912000.0,
           "quarterlyFreeCashFlow": 197501479000.0,
           "quarterlyOperatingIncome": 463423000000.0,
           "quarterlyTotalRevenue": 933792000000.0,
@@ -34,8 +34,8 @@
         },
         {
           "date": "2025-09-30",
-          "quarterlyNormalizedEBITDA": 691429787000.0,
           "quarterlyCapitalExpenditure": -288443339000.0,
+          "quarterlyNormalizedEBITDA": 691429787000.0,
           "quarterlyFreeCashFlow": 138385742000.0,
           "quarterlyOperatingIncome": 500685080000.0,
           "quarterlyTotalRevenue": 989918318000.0,
@@ -54,8 +54,8 @@
         },
         {
           "date": "2025-12-31",
-          "quarterlyNormalizedEBITDA": 758373419000.0,
           "quarterlyCapitalExpenditure": -361467698000.0,
+          "quarterlyNormalizedEBITDA": 758373419000.0,
           "quarterlyFreeCashFlow": 364041064000.0,
           "quarterlyOperatingIncome": 564880854000.0,
           "quarterlyTotalRevenue": 1046090449000.0,
@@ -74,8 +74,8 @@
         },
         {
           "date": "2026-03-31",
-          "quarterlyNormalizedEBITDA": 854928212000.0,
           "quarterlyCapitalExpenditure": -351706028000.0,
+          "quarterlyNormalizedEBITDA": 854928212000.0,
           "quarterlyFreeCashFlow": 347270237000.0,
           "quarterlyOperatingIncome": 658948859000.0,
           "quarterlyTotalRevenue": 1134103440000.0,
@@ -94,8 +94,8 @@
         },
         {
           "date": "2026-06-30",
-          "quarterlyNormalizedEBITDA": 766603000000.0,
           "quarterlyCapitalExpenditure": -496002000000.0,
+          "quarterlyNormalizedEBITDA": 766603000000.0,
           "quarterlyFreeCashFlow": 287363000000.0,
           "quarterlyOperatingIncome": 766603000000.0,
           "quarterlyTotalRevenue": 1270381000000.0,
@@ -120,10 +120,6 @@
         "en": "Revenue changed +12.0% QoQ and operating profit increased by +16.3%; operating margin was +60.3%."
       },
       "priceHistory": [
-        {
-          "date": "2026-01-14",
-          "close": 327.109985
-        },
         {
           "date": "2026-01-15",
           "close": 341.640015
@@ -639,14 +635,18 @@
         {
           "date": "2026-07-22",
           "close": 421.209991
+        },
+        {
+          "date": "2026-07-23",
+          "close": 415.13501
         }
       ],
       "priceSummary": {
-        "latestDate": "2026-07-22",
-        "latestClose": 421.209991,
-        "return1m": -0.09934359849580521,
-        "return3m": 0.14434363691715735,
-        "return6m": 0.2874739755780171
+        "latestDate": "2026-07-23",
+        "latestClose": 415.13501,
+        "return1m": -0.04870644210317232,
+        "return3m": 0.07148205620750536,
+        "return6m": 0.2729517244105195
       },
       "valuation": {
         "trailingPE": null,
@@ -1224,10 +1224,10 @@
         {
           "date": "2025-03-31",
           "quarterlyNormalizedEBITDA": -9000000.0,
-          "quarterlyOperatingExpense": 424000000.0,
           "quarterlyOperatingCashFlow": 26000000.0,
-          "quarterlyNetIncome": -1933000000.0,
+          "quarterlyOperatingExpense": 424000000.0,
           "quarterlyEBITDA": -1848000000.0,
+          "quarterlyNetIncome": -1933000000.0,
           "quarterlyFreeCashFlow": -18000000.0,
           "quarterlyOperatingIncome": -42000000.0,
           "quarterlyTotalRevenue": 1695000000.0,
@@ -1244,10 +1244,10 @@
         {
           "date": "2025-06-30",
           "quarterlyNormalizedEBITDA": 92000000.0,
-          "quarterlyOperatingExpense": 447000000.0,
           "quarterlyOperatingCashFlow": 94000000.0,
-          "quarterlyNetIncome": -23000000.0,
+          "quarterlyOperatingExpense": 447000000.0,
           "quarterlyEBITDA": 59000000.0,
+          "quarterlyNetIncome": -23000000.0,
           "quarterlyFreeCashFlow": 49000000.0,
           "quarterlyOperatingIncome": 51000000.0,
           "quarterlyTotalRevenue": 1901000000.0,
@@ -1264,10 +1264,10 @@
         {
           "date": "2025-09-30",
           "quarterlyNormalizedEBITDA": 216000000.0,
-          "quarterlyOperatingExpense": 495000000.0,
           "quarterlyOperatingCashFlow": 488000000.0,
-          "quarterlyNetIncome": 112000000.0,
+          "quarterlyOperatingExpense": 495000000.0,
           "quarterlyEBITDA": 200000000.0,
+          "quarterlyNetIncome": 112000000.0,
           "quarterlyFreeCashFlow": 438000000.0,
           "quarterlyOperatingIncome": 192000000.0,
           "quarterlyTotalRevenue": 2308000000.0,
@@ -1284,10 +1284,10 @@
         {
           "date": "2025-12-31",
           "quarterlyNormalizedEBITDA": 1010000000.0,
-          "quarterlyOperatingExpense": 466000000.0,
           "quarterlyOperatingCashFlow": 1019000000.0,
-          "quarterlyNetIncome": 803000000.0,
+          "quarterlyOperatingExpense": 466000000.0,
           "quarterlyEBITDA": 1000000000.0,
+          "quarterlyNetIncome": 803000000.0,
           "quarterlyFreeCashFlow": 980000000.0,
           "quarterlyOperatingIncome": 1075000000.0,
           "quarterlyTotalRevenue": 3025000000.0,
@@ -1304,10 +1304,10 @@
         {
           "date": "2026-03-31",
           "quarterlyNormalizedEBITDA": 4204000000.0,
-          "quarterlyOperatingExpense": 498000000.0,
           "quarterlyOperatingCashFlow": 3038000000.0,
-          "quarterlyNetIncome": 3615000000.0,
+          "quarterlyOperatingExpense": 498000000.0,
           "quarterlyEBITDA": 4151000000.0,
+          "quarterlyNetIncome": 3615000000.0,
           "quarterlyFreeCashFlow": 2993000000.0,
           "quarterlyOperatingIncome": 4164000000.0,
           "quarterlyTotalRevenue": 5950000000.0,
@@ -1329,10 +1329,6 @@
         "en": "Revenue changed +96.7% QoQ and operating profit increased by +287.3%; operating margin was +70.0%."
       },
       "priceHistory": [
-        {
-          "date": "2026-01-14",
-          "close": 387.809998
-        },
         {
           "date": "2026-01-15",
           "close": 409.23999
@@ -1848,14 +1844,18 @@
         {
           "date": "2026-07-22",
           "close": 1599.27002
+        },
+        {
+          "date": "2026-07-23",
+          "close": 1651.829956
         }
       ],
       "priceSummary": {
-        "latestDate": "2026-07-22",
-        "latestClose": 1599.27002,
-        "return1m": -0.2966315111876213,
-        "return3m": 0.7701026438599501,
-        "return6m": 2.529462477152437
+        "latestDate": "2026-07-23",
+        "latestClose": 1651.829956,
+        "return1m": -0.15877471165746238,
+        "return3m": 0.6871418225356789,
+        "return6m": 2.295158344159219
       },
       "valuation": {
         "trailingPE": null,
@@ -1881,14 +1881,14 @@
         {
           "date": "2025-05-31",
           "quarterlyOperatingCashFlow": 4609000000.0,
-          "quarterlyTotalRevenue": 9301000000.0,
           "quarterlyOperatingIncome": 2169000000.0,
+          "quarterlyTotalRevenue": 9301000000.0,
           "quarterlyFreeCashFlow": 1671000000.0,
           "quarterlyOperatingExpense": 1339000000.0,
           "quarterlyCapitalExpenditure": -2938000000.0,
-          "quarterlyNormalizedEBITDA": 4330000000.0,
           "quarterlyNetIncome": 1885000000.0,
           "quarterlyEBITDA": 4330000000.0,
+          "quarterlyNormalizedEBITDA": 4330000000.0,
           "profit": 1885000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": null,
@@ -1901,14 +1901,14 @@
         {
           "date": "2025-08-31",
           "quarterlyOperatingCashFlow": 5730000000.0,
-          "quarterlyTotalRevenue": 11315000000.0,
           "quarterlyOperatingIncome": 3693000000.0,
+          "quarterlyTotalRevenue": 11315000000.0,
           "quarterlyFreeCashFlow": 72000000.0,
           "quarterlyOperatingExpense": 1361000000.0,
           "quarterlyCapitalExpenditure": -5658000000.0,
-          "quarterlyNormalizedEBITDA": 5904000000.0,
           "quarterlyNetIncome": 3201000000.0,
           "quarterlyEBITDA": 5904000000.0,
+          "quarterlyNormalizedEBITDA": 5904000000.0,
           "profit": 3201000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 0.6981432360742705,
@@ -1921,14 +1921,14 @@
         {
           "date": "2025-11-30",
           "quarterlyOperatingCashFlow": 8411000000.0,
-          "quarterlyTotalRevenue": 13643000000.0,
           "quarterlyOperatingIncome": 6136000000.0,
+          "quarterlyTotalRevenue": 13643000000.0,
           "quarterlyFreeCashFlow": 3022000000.0,
           "quarterlyOperatingExpense": 1510000000.0,
           "quarterlyCapitalExpenditure": -5389000000.0,
-          "quarterlyNormalizedEBITDA": 8347000000.0,
           "quarterlyNetIncome": 5240000000.0,
           "quarterlyEBITDA": 8347000000.0,
+          "quarterlyNormalizedEBITDA": 8347000000.0,
           "profit": 5240000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 0.6369884411121525,
@@ -1941,14 +1941,14 @@
         {
           "date": "2026-02-28",
           "quarterlyOperatingCashFlow": 11903000000.0,
-          "quarterlyTotalRevenue": 23860000000.0,
           "quarterlyOperatingIncome": 16135000000.0,
+          "quarterlyTotalRevenue": 23860000000.0,
           "quarterlyFreeCashFlow": 5516000000.0,
           "quarterlyOperatingExpense": 1620000000.0,
           "quarterlyCapitalExpenditure": -6387000000.0,
-          "quarterlyNormalizedEBITDA": 18478000000.0,
           "quarterlyNetIncome": 13785000000.0,
           "quarterlyEBITDA": 18478000000.0,
+          "quarterlyNormalizedEBITDA": 18478000000.0,
           "profit": 13785000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 1.6307251908396947,
@@ -1961,14 +1961,14 @@
         {
           "date": "2026-05-31",
           "quarterlyOperatingCashFlow": 25388000000.0,
-          "quarterlyTotalRevenue": 41456000000.0,
           "quarterlyOperatingIncome": 33318000000.0,
+          "quarterlyTotalRevenue": 41456000000.0,
           "quarterlyFreeCashFlow": 17562000000.0,
           "quarterlyOperatingExpense": 1738000000.0,
           "quarterlyCapitalExpenditure": -7826000000.0,
-          "quarterlyNormalizedEBITDA": 35576000000.0,
           "quarterlyNetIncome": 28243000000.0,
           "quarterlyEBITDA": 35576000000.0,
+          "quarterlyNormalizedEBITDA": 35576000000.0,
           "profit": 28243000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 1.0488211824446863,
@@ -1986,10 +1986,6 @@
         "en": "Revenue changed +73.7% QoQ and operating profit increased by +106.5%; operating margin was +80.4%."
       },
       "priceHistory": [
-        {
-          "date": "2026-01-14",
-          "close": 333.350006
-        },
         {
           "date": "2026-01-15",
           "close": 336.630005
@@ -2505,14 +2501,18 @@
         {
           "date": "2026-07-22",
           "close": 959.47998
+        },
+        {
+          "date": "2026-07-23",
+          "close": 989.164978
         }
       ],
       "priceSummary": {
-        "latestDate": "2026-07-22",
-        "latestClose": 959.47998,
-        "return1m": -0.20794467793778715,
-        "return3m": 1.1351194297129443,
-        "return6m": 1.6287122739726025
+        "latestDate": "2026-07-23",
+        "latestClose": 989.164978,
+        "return1m": -0.05952350876097412,
+        "return3m": 1.0291395660939213,
+        "return6m": 1.5421218065118532
       },
       "valuation": {
         "trailingPE": null,
@@ -3854,11 +3854,11 @@
           "quarterlyNormalizedEBITDA": 39318000000.0,
           "quarterlyOperatingCashFlow": 37044000000.0,
           "quarterlyOperatingExpense": 16147000000.0,
-          "quarterlyEBITDA": 39705000000.0,
           "quarterlyNetIncome": 25824000000.0,
+          "quarterlyEBITDA": 39705000000.0,
           "quarterlyFreeCashFlow": 20299000000.0,
-          "quarterlyCapitalExpenditure": -16745000000.0,
           "quarterlyOperatingIncome": 32000000000.0,
+          "quarterlyCapitalExpenditure": -16745000000.0,
           "quarterlyTotalRevenue": 70066000000.0,
           "profit": 25824000000.0,
           "profitMetric": "Net income",
@@ -3874,11 +3874,11 @@
           "quarterlyNormalizedEBITDA": 44431000000.0,
           "quarterlyOperatingCashFlow": 42647000000.0,
           "quarterlyOperatingExpense": 18104000000.0,
-          "quarterlyEBITDA": 44434000000.0,
           "quarterlyNetIncome": 27233000000.0,
+          "quarterlyEBITDA": 44434000000.0,
           "quarterlyFreeCashFlow": 25568000000.0,
-          "quarterlyCapitalExpenditure": -17079000000.0,
           "quarterlyOperatingIncome": 34323000000.0,
+          "quarterlyCapitalExpenditure": -17079000000.0,
           "quarterlyTotalRevenue": 76441000000.0,
           "profit": 27233000000.0,
           "profitMetric": "Net income",
@@ -3894,11 +3894,11 @@
           "quarterlyNormalizedEBITDA": 47075000000.0,
           "quarterlyOperatingCashFlow": 45057000000.0,
           "quarterlyOperatingExpense": 15669000000.0,
-          "quarterlyEBITDA": 48060000000.0,
           "quarterlyNetIncome": 27747000000.0,
+          "quarterlyEBITDA": 48060000000.0,
           "quarterlyFreeCashFlow": 25663000000.0,
-          "quarterlyCapitalExpenditure": -19394000000.0,
           "quarterlyOperatingIncome": 37961000000.0,
+          "quarterlyCapitalExpenditure": -19394000000.0,
           "quarterlyTotalRevenue": 77673000000.0,
           "profit": 27747000000.0,
           "profitMetric": "Net income",
@@ -3914,11 +3914,11 @@
           "quarterlyNormalizedEBITDA": 57854000000.0,
           "quarterlyOperatingCashFlow": 35758000000.0,
           "quarterlyOperatingExpense": 17020000000.0,
-          "quarterlyEBITDA": 58180000000.0,
           "quarterlyNetIncome": 38458000000.0,
+          "quarterlyEBITDA": 58180000000.0,
           "quarterlyFreeCashFlow": 5882000000.0,
-          "quarterlyCapitalExpenditure": -29876000000.0,
           "quarterlyOperatingIncome": 38275000000.0,
+          "quarterlyCapitalExpenditure": -29876000000.0,
           "quarterlyTotalRevenue": 81273000000.0,
           "profit": 38458000000.0,
           "profitMetric": "Net income",
@@ -3934,11 +3934,11 @@
           "quarterlyNormalizedEBITDA": 48804000000.0,
           "quarterlyOperatingCashFlow": 46679000000.0,
           "quarterlyOperatingExpense": 17660000000.0,
-          "quarterlyEBITDA": 50285000000.0,
           "quarterlyNetIncome": 31778000000.0,
+          "quarterlyEBITDA": 50285000000.0,
           "quarterlyFreeCashFlow": 15803000000.0,
-          "quarterlyCapitalExpenditure": -30876000000.0,
           "quarterlyOperatingIncome": 38398000000.0,
+          "quarterlyCapitalExpenditure": -30876000000.0,
           "quarterlyTotalRevenue": 82886000000.0,
           "profit": 31778000000.0,
           "profitMetric": "Net income",
@@ -3957,10 +3957,6 @@
         "en": "CAPEX/OCF is 66.1% and CAPEX/net income is 97.2%. The investment burden remains manageable."
       },
       "priceHistory": [
-        {
-          "date": "2026-01-14",
-          "close": 459.380005
-        },
         {
           "date": "2026-01-15",
           "close": 456.660004
@@ -4476,14 +4472,18 @@
         {
           "date": "2026-07-22",
           "close": 390.339996
+        },
+        {
+          "date": "2026-07-23",
+          "close": 380.548309
         }
       ],
       "priceSummary": {
-        "latestDate": "2026-07-22",
-        "latestClose": 390.339996,
-        "return1m": 0.06261229446956285,
-        "return3m": -0.0797340807267628,
-        "return6m": -0.14120389543527867
+        "latestDate": "2026-07-23",
+        "latestClose": 380.548309,
+        "return1m": 0.017672105056040666,
+        "return3m": -0.12097316462013497,
+        "return6m": -0.14312147474009163
       },
       "valuation": {
         "trailingPE": null,
@@ -4515,8 +4515,8 @@
           "quarterlyEBITDA": 36482000000.0,
           "quarterlyNetIncome": 17127000000.0,
           "quarterlyFreeCashFlow": -8004000000.0,
-          "quarterlyCapitalExpenditure": -25019000000.0,
           "quarterlyTotalRevenue": 155667000000.0,
+          "quarterlyCapitalExpenditure": -25019000000.0,
           "profit": 17127000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": null,
@@ -4535,8 +4535,8 @@
           "quarterlyEBITDA": 36600000000.0,
           "quarterlyNetIncome": 18164000000.0,
           "quarterlyFreeCashFlow": 332000000.0,
-          "quarterlyCapitalExpenditure": -32183000000.0,
           "quarterlyTotalRevenue": 167702000000.0,
+          "quarterlyCapitalExpenditure": -32183000000.0,
           "profit": 18164000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 0.06054767326443627,
@@ -4555,8 +4555,8 @@
           "quarterlyEBITDA": 45504000000.0,
           "quarterlyNetIncome": 21187000000.0,
           "quarterlyFreeCashFlow": 430000000.0,
-          "quarterlyCapitalExpenditure": -35095000000.0,
           "quarterlyTotalRevenue": 180169000000.0,
+          "quarterlyCapitalExpenditure": -35095000000.0,
           "profit": 21187000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 0.1664280995375468,
@@ -4575,8 +4575,8 @@
           "quarterlyEBITDA": 46755000000.0,
           "quarterlyNetIncome": 21192000000.0,
           "quarterlyFreeCashFlow": 14937000000.0,
-          "quarterlyCapitalExpenditure": -39522000000.0,
           "quarterlyTotalRevenue": 213386000000.0,
+          "quarterlyCapitalExpenditure": -39522000000.0,
           "profit": 21192000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 0.00023599376976447822,
@@ -4595,8 +4595,8 @@
           "quarterlyEBITDA": 59579000000.0,
           "quarterlyNetIncome": 30255000000.0,
           "quarterlyFreeCashFlow": -18171000000.0,
-          "quarterlyCapitalExpenditure": -44203000000.0,
           "quarterlyTotalRevenue": 181519000000.0,
+          "quarterlyCapitalExpenditure": -44203000000.0,
           "profit": 30255000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 0.42766138165345413,
@@ -4614,10 +4614,6 @@
         "en": "CAPEX/OCF is 169.8% and CAPEX/net income is 146.1%. CAPEX pressure versus cash flow or profit needs monitoring."
       },
       "priceHistory": [
-        {
-          "date": "2026-01-14",
-          "close": 236.649994
-        },
         {
           "date": "2026-01-15",
           "close": 238.179993
@@ -5133,14 +5129,18 @@
         {
           "date": "2026-07-22",
           "close": 244.850006
+        },
+        {
+          "date": "2026-07-23",
+          "close": 233.850006
         }
       ],
       "priceSummary": {
-        "latestDate": "2026-07-22",
-        "latestClose": 244.850006,
-        "return1m": 0.0518064064721202,
-        "return3m": -0.02024728069709436,
-        "return6m": 0.05995673593073603
+        "latestDate": "2026-07-23",
+        "latestClose": 233.850006,
+        "return1m": -0.0011105676771151485,
+        "return3m": -0.08423400264632674,
+        "return6m": 0.010980969356975123
       },
       "valuation": {
         "trailingPE": null,
@@ -5171,8 +5171,8 @@
           "quarterlyCapitalExpenditure": -22446000000.0,
           "quarterlyNormalizedEBITDA": 37810000000.0,
           "quarterlyFreeCashFlow": 5301000000.0,
-          "quarterlyTotalRevenue": 96428000000.0,
           "quarterlyOperatingIncome": 31271000000.0,
+          "quarterlyTotalRevenue": 96428000000.0,
           "quarterlyOperatingCashFlow": 27747000000.0,
           "profit": 28196000000.0,
           "profitMetric": "Net income",
@@ -5191,8 +5191,8 @@
           "quarterlyCapitalExpenditure": -23953000000.0,
           "quarterlyNormalizedEBITDA": 39028000000.0,
           "quarterlyFreeCashFlow": 24461000000.0,
-          "quarterlyTotalRevenue": 102346000000.0,
           "quarterlyOperatingIncome": 31228000000.0,
+          "quarterlyTotalRevenue": 102346000000.0,
           "quarterlyOperatingCashFlow": 48414000000.0,
           "profit": 34979000000.0,
           "profitMetric": "Net income",
@@ -5211,8 +5211,8 @@
           "quarterlyCapitalExpenditure": -27851000000.0,
           "quarterlyNormalizedEBITDA": 43166000000.0,
           "quarterlyFreeCashFlow": 24551000000.0,
-          "quarterlyTotalRevenue": 113829000000.0,
           "quarterlyOperatingIncome": 35934000000.0,
+          "quarterlyTotalRevenue": 113829000000.0,
           "quarterlyOperatingCashFlow": 52402000000.0,
           "profit": 34455000000.0,
           "profitMetric": "Net income",
@@ -5231,8 +5231,8 @@
           "quarterlyCapitalExpenditure": -35674000000.0,
           "quarterlyNormalizedEBITDA": 47477000000.0,
           "quarterlyFreeCashFlow": 10116000000.0,
-          "quarterlyTotalRevenue": 109896000000.0,
           "quarterlyOperatingIncome": 39696000000.0,
+          "quarterlyTotalRevenue": 109896000000.0,
           "quarterlyOperatingCashFlow": 45790000000.0,
           "profit": 62578000000.0,
           "profitMetric": "Net income",
@@ -5269,10 +5269,6 @@
         "en": "Q2 update: revenue was $119.8B (+24% YoY) and Google Cloud reached $24.8B (+82%). $44.9B CAPEX exceeded $39.1B OCF, taking FCF to -$5.9B. Net income includes a large equity gain."
       },
       "priceHistory": [
-        {
-          "date": "2026-01-14",
-          "close": 335.839996
-        },
         {
           "date": "2026-01-15",
           "close": 332.779999
@@ -5788,14 +5784,18 @@
         {
           "date": "2026-07-22",
           "close": 342.089996
+        },
+        {
+          "date": "2026-07-23",
+          "close": 320.125
         }
       ],
       "priceSummary": {
-        "latestDate": "2026-07-22",
-        "latestClose": 342.089996,
-        "return1m": -0.021705551223801467,
-        "return3m": 0.029492271011976046,
-        "return6m": 0.062391291925465886
+        "latestDate": "2026-07-23",
+        "latestClose": 320.125,
+        "return1m": -0.07513074458829416,
+        "return3m": -0.056569039856232184,
+        "return6m": -0.025138573830035704
       },
       "valuation": {
         "trailingPE": null,
@@ -5824,11 +5824,11 @@
           "quarterlyTotalRevenue": 42314000000.0,
           "quarterlyCapitalExpenditure": -12941000000.0,
           "quarterlyOperatingExpense": 17187000000.0,
-          "quarterlyEBITDA": 22522000000.0,
           "quarterlyNetIncome": 16644000000.0,
+          "quarterlyEBITDA": 22522000000.0,
           "quarterlyFreeCashFlow": 11085000000.0,
-          "quarterlyNormalizedEBITDA": 22113000000.0,
           "quarterlyOperatingCashFlow": 24026000000.0,
+          "quarterlyNormalizedEBITDA": 22113000000.0,
           "profit": 16644000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": null,
@@ -5844,11 +5844,11 @@
           "quarterlyTotalRevenue": 47516000000.0,
           "quarterlyCapitalExpenditure": -16538000000.0,
           "quarterlyOperatingExpense": 18584000000.0,
-          "quarterlyEBITDA": 25117000000.0,
           "quarterlyNetIncome": 18337000000.0,
+          "quarterlyEBITDA": 25117000000.0,
           "quarterlyFreeCashFlow": 9023000000.0,
-          "quarterlyNormalizedEBITDA": 24921000000.0,
           "quarterlyOperatingCashFlow": 25561000000.0,
+          "quarterlyNormalizedEBITDA": 24921000000.0,
           "profit": 18337000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 0.101718336938236,
@@ -5864,11 +5864,11 @@
           "quarterlyTotalRevenue": 51242000000.0,
           "quarterlyCapitalExpenditure": -18829000000.0,
           "quarterlyOperatingExpense": 21501000000.0,
-          "quarterlyEBITDA": 26853000000.0,
           "quarterlyNetIncome": 2709000000.0,
+          "quarterlyEBITDA": 26853000000.0,
           "quarterlyFreeCashFlow": 11170000000.0,
-          "quarterlyNormalizedEBITDA": 26811000000.0,
           "quarterlyOperatingCashFlow": 29999000000.0,
+          "quarterlyNormalizedEBITDA": 26811000000.0,
           "profit": 2709000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": -0.8522659104542728,
@@ -5884,11 +5884,11 @@
           "quarterlyTotalRevenue": 59893000000.0,
           "quarterlyCapitalExpenditure": -21383000000.0,
           "quarterlyOperatingExpense": 24242000000.0,
-          "quarterlyEBITDA": 31221000000.0,
           "quarterlyNetIncome": 22768000000.0,
+          "quarterlyEBITDA": 31221000000.0,
           "quarterlyFreeCashFlow": 14831000000.0,
-          "quarterlyNormalizedEBITDA": 31339000000.0,
           "quarterlyOperatingCashFlow": 36214000000.0,
+          "quarterlyNormalizedEBITDA": 31339000000.0,
           "profit": 22768000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 7.404577334809893,
@@ -5904,11 +5904,11 @@
           "quarterlyTotalRevenue": 56311000000.0,
           "quarterlyCapitalExpenditure": -18997000000.0,
           "quarterlyOperatingExpense": 23221000000.0,
-          "quarterlyEBITDA": 28313000000.0,
           "quarterlyNetIncome": 26773000000.0,
+          "quarterlyEBITDA": 28313000000.0,
           "quarterlyFreeCashFlow": 13229000000.0,
-          "quarterlyNormalizedEBITDA": 29615000000.0,
           "quarterlyOperatingCashFlow": 32226000000.0,
+          "quarterlyNormalizedEBITDA": 29615000000.0,
           "profit": 26773000000.0,
           "profitMetric": "Net income",
           "profitGrowthQoQ": 0.17590477863668305,
@@ -5926,10 +5926,6 @@
         "en": "CAPEX/OCF is 58.9% and CAPEX/net income is 71.0%. CAPEX remains well covered by operating cash flow and profit."
       },
       "priceHistory": [
-        {
-          "date": "2026-01-14",
-          "close": 615.52002
-        },
         {
           "date": "2026-01-15",
           "close": 620.799988
@@ -6445,14 +6441,18 @@
         {
           "date": "2026-07-22",
           "close": 627.169983
+        },
+        {
+          "date": "2026-07-23",
+          "close": 602.369995
         }
       ],
       "priceSummary": {
-        "latestDate": "2026-07-22",
-        "latestClose": 627.169983,
-        "return1m": 0.11229938759454705,
-        "return3m": -0.062301959090136805,
-        "return6m": 0.0381546517095499
+        "latestDate": "2026-07-23",
+        "latestClose": 602.369995,
+        "return1m": 0.07145140900495028,
+        "return3m": -0.10722963467758384,
+        "return6m": -0.017276864101913536
       },
       "valuation": {
         "trailingPE": null,
@@ -6583,10 +6583,6 @@
         "en": "CAPEX/OCF is 112.8% and CAPEX/net income is 383.2%. CAPEX pressure versus cash flow or profit needs monitoring."
       },
       "priceHistory": [
-        {
-          "date": "2026-01-14",
-          "close": 193.610001
-        },
         {
           "date": "2026-01-15",
           "close": 189.850006
@@ -7102,14 +7098,18 @@
         {
           "date": "2026-07-22",
           "close": 125.839996
+        },
+        {
+          "date": "2026-07-23",
+          "close": 120.540001
         }
       ],
       "priceSummary": {
-        "latestDate": "2026-07-22",
-        "latestClose": 125.839996,
-        "return1m": -0.28120185658072205,
-        "return3m": -0.3054037788309739,
-        "return6m": -0.3005780491393736
+        "latestDate": "2026-07-23",
+        "latestClose": 120.540001,
+        "return1m": -0.27016227851387065,
+        "return3m": -0.35711999466666666,
+        "return6m": -0.3067632992074045
       },
       "valuation": {
         "trailingPE": null,
@@ -7126,18 +7126,18 @@
   ],
   "stockSignals": {
     "hyperscalers": {
-      "status": "neutral",
-      "labelKo": "중립",
-      "labelEn": "Neutral",
-      "averageReturn3m": -0.08763896566659837,
-      "positiveCount": 1,
+      "status": "unfavorable",
+      "labelKo": "비우호적",
+      "labelEn": "Unfavorable",
+      "averageReturn3m": -0.14522516729338888,
+      "positiveCount": 0,
       "total": 5
     },
     "memory": {
       "status": "favorable",
       "labelKo": "우호적",
       "labelEn": "Supportive",
-      "averageReturn3m": 0.5755849309080971,
+      "averageReturn3m": 0.5232244777775078,
       "positiveCount": 5,
       "total": 5
     },
@@ -7145,16 +7145,16 @@
       "status": "favorable",
       "labelKo": "우호적",
       "labelEn": "Supportive",
-      "averageReturn3m": 0.663844522890714,
+      "averageReturn3m": 0.6202108119485564,
       "positiveCount": 6,
       "total": 6
     },
     "all": {
-      "status": "favorable",
-      "labelKo": "우호적",
-      "labelEn": "Supportive",
-      "averageReturn3m": 0.3222611190010266,
-      "positiveCount": 7,
+      "status": "neutral",
+      "labelKo": "중립",
+      "labelEn": "Neutral",
+      "averageReturn3m": 0.27228536683858134,
+      "positiveCount": 6,
       "total": 11
     }
   },
