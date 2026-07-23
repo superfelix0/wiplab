@@ -31,7 +31,15 @@
     const days = daysUntil(date);
     return days === 0 ? "D-day" : days > 0 ? `D-${days}` : t("발표일 경과", "Reported date passed");
   };
-  const eventText = (event) => `${event.name} (${event.symbol}) · ${dDay(event.date)} · ${event.date} · ${eventTime(event.time)}`;
+  const eventText = (event, releaseSymbols) => {
+    const days = daysUntil(event.date);
+    const releaseState = days < 0
+      ? releaseSymbols.has(event.symbol)
+        ? t("데이터 반영 완료", "Data update complete")
+        : t("발표 확인 대기", "Awaiting data confirmation")
+      : dDay(event.date);
+    return `${event.name} (${event.symbol}) · ${releaseState} · ${event.date} · ${eventTime(event.time)}`;
+  };
 
   function renderQuotes(data) {
     const items = data?.items || [];
@@ -59,17 +67,20 @@
       : t("미국 시장 미리보기 원천 응답을 기다리고 있습니다.", "Waiting for the U.S. market-preview source.");
   }
 
-  function renderEvents(data) {
+  function renderEvents(data, earnings) {
     const events = data?.events || [];
+    const symbolsByCompany = new Map((earnings?.companies || []).map((company) => [company.id, company.symbol]));
+    const releaseSymbols = new Set((earnings?.releaseHistory || []).map((release) => symbolsByCompany.get(release.companyId)).filter(Boolean));
     root.querySelector("[data-preview-events]").innerHTML = events.length
-      ? events.slice(0, 4).map((event) => `<li>${eventText(event)}</li>`).join("")
+      ? events.slice(0, 4).map((event) => `<li>${eventText(event, releaseSymbols)}</li>`).join("")
       : `<li>${t("다음 자동 수집 후 관심 기업의 실적 일정이 표시됩니다.", "Watchlist earnings dates will appear after the next successful collection.")}</li>`;
     const summary = root.querySelector("[data-preview-summary]");
-    if (summary && events.length) summary.textContent += ` ${t(`다음 실적: ${eventText(events[0])}.`, `Next earnings: ${eventText(events[0])}.`)}`;
+    if (summary && events.length) summary.textContent += ` ${t(`다음 실적: ${eventText(events[0], releaseSymbols)}.`, `Next earnings: ${eventText(events[0], releaseSymbols)}.`)}`;
   }
 
   Promise.all([
     fetch(`/api/us-market-preview?ts=${Date.now()}`, { cache: "no-store" }).then((response) => response.ok ? response.json() : null),
     fetch(`/data/us-market-events.json?ts=${Date.now()}`, { cache: "no-store" }).then((response) => response.ok ? response.json() : null),
-  ]).then(([quotes, events]) => { renderQuotes(quotes); renderEvents(events); }).catch(() => { renderQuotes(null); renderEvents(null); });
+    fetch(`/data/ai-earnings.json?ts=${Date.now()}`, { cache: "no-store" }).then((response) => response.ok ? response.json() : null),
+  ]).then(([quotes, events, earnings]) => { renderQuotes(quotes); renderEvents(events, earnings); }).catch(() => { renderQuotes(null); renderEvents(null, null); });
 })();
