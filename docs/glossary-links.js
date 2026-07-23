@@ -27,5 +27,8 @@
   section.className = "glossary-deep-links";
   section.setAttribute("aria-label", isEn ? "Glossary links" : "용어해설 바로가기");
   section.innerHTML = `<span>${isEn ? "Korean glossary terms" : "이 페이지의 용어"}</span>${terms.map(([label, slug]) => `<a href="${glossary}${slug}/">${label}</a>`).join("")}`;
-  target.before(section);
+  // Keep the supplementary links in the page column.  `before()` placed the
+  // block next to <main>, outside the centred layout on pages without a
+  // source panel (notably Market Flow).
+  target.append(section);
 })();
