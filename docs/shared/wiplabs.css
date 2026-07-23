@@ -18,6 +18,8 @@
 .wl .section-title h2 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.35; }
 .wl .section-title .section-copy { margin: 6px 0 0; color: var(--wl-ink-2); font-size: 14px; line-height: 1.55; }
 .wl-history-kicker { margin: 24px 0 10px; }
+.wl .earnings-release-panel > .wl-kicker,
+.wl .earnings-takeaway-panel > .wl-kicker { margin: 0 0 10px; }
 .wl-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .wl-h2 { margin: 0; font-size: 17px; font-weight: 600; }
 .wl-verdict, .wl-metrics { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
