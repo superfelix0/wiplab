@@ -93,6 +93,24 @@ function applyDailyState(state) {
     `밸류에이션 ${valuationLabels[valuation?.state] || "확인"} · 위험 ${riskLabels[risk?.state] || "확인"} · 수급 ${flow?.state === "aligned" ? "동행" : "방향 주도 불명"}`,
     `Valuation ${valuationLabels[valuation?.state] || "Checking"} · risk ${riskLabels[risk?.state] || "Checking"} · flow ${flow?.state === "aligned" ? "aligned" : "direction leader unclear"}`
   );
+  const cardLabels = {
+    valuation: { low: ht("역사적 하단", "Historical lower range"), mid: ht("역사적 중심", "Historical middle range"), high: ht("역사적 상단", "Historical upper range") },
+    risk: riskLabels,
+    flow: { aligned: ht("수급 동행", "Flow aligned"), unrelated: ht("방향 주도 불명", "Leader unclear"), insufficient: ht("데이터 부족", "Insufficient history") },
+    capex: { normal: ht("투자 여력", "Capacity available"), elevated: ht("투자 확대", "Investment elevated"), strained: ht("투자 부담", "Investment strain") },
+    memory: { expanding: ht("실적 확장", "Earnings expanding"), flat: ht("실적 보합", "Earnings flat"), contracting: ht("실적 둔화", "Earnings contracting") },
+  };
+  const hrefs = { valuation: "valuation/", risk: "sentiment-risk/", capex: "ai-capex/", memory: "memory-earnings/", flow: "market-flow/" };
+  Object.entries(hrefs).forEach(([id, href]) => {
+    const axis = axes.get(id);
+    const card = document.querySelector(`.theme-card a[href="${href}"]`)?.closest(".theme-card");
+    if (!axis || !card) return;
+    card.querySelector(".theme-state")?.remove();
+    const badge = document.createElement("small");
+    badge.className = "theme-state";
+    badge.textContent = cardLabels[id]?.[axis.state] || ht("상태 확인", "Checking status");
+    card.querySelector("div")?.prepend(badge);
+  });
 }
 
 function toNumber(value) {
