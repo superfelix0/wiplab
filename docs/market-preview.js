@@ -12,7 +12,7 @@
     root.className = "us-market-preview";
     root.id = "usMarketPreview";
     root.setAttribute("aria-labelledby", "preview-title");
-    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">U.S. MARKET PREVIEW</p><h2 id="preview-title">${t("미국 장 전·후와 예정 실적", "U.S. pre/post market and earnings")}</h2></div></div><div class="us-preview-grid"><section><h3>${t("미국 시장 미리보기", "U.S. market preview")}</h3><div class="us-preview-quotes" data-preview-quotes></div><small data-preview-source></small></section><section><h3>${t("관심 기업 실적 일정", "Watchlist earnings")}</h3><ul class="us-preview-events" data-preview-events></ul><small>${t("출처: Nasdaq Earnings Calendar", "Source: Nasdaq Earnings Calendar")}</small></section></div>`;
+    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">U.S. MARKET PREVIEW</p><h2 id="preview-title">${t("미국 장 전·후와 예정 실적", "U.S. pre/post market and earnings")}</h2></div></div><p class="us-preview-summary" data-preview-summary>${t("미국 시세와 일정 변화를 불러오는 중입니다.", "Loading U.S. quote and event changes.")}</p><div class="us-preview-grid"><section><h3>${t("미국 시장 미리보기", "U.S. market preview")}</h3><div class="us-preview-quotes" data-preview-quotes></div><small data-preview-source></small></section><section><h3>${t("관심 기업 실적 일정", "Watchlist earnings")}</h3><ul class="us-preview-events" data-preview-events></ul><small>${t("출처: Nasdaq Earnings Calendar", "Source: Nasdaq Earnings Calendar")}</small></section></div>`;
     document.querySelector(".market-sentiment-panel")?.after(root);
   }
 
@@ -39,6 +39,15 @@
     root.querySelector("[data-preview-source]").textContent = items.length
       ? t("출처: Yahoo Finance 공개 차트 시세 · 무료 시세는 지연될 수 있습니다.", "Source: Yahoo Finance public chart quotes · free quotes may be delayed.")
       : t("시세 원천: Yahoo Finance 공개 차트 시세", "Quote source: Yahoo Finance public chart endpoint");
+    const lead = items.find((item) => item.id === "nasdaq-futures") || items[0];
+    const semi = items.find((item) => item.id === "semiconductor");
+    const summary = root.querySelector("[data-preview-summary]");
+    if (summary) summary.textContent = lead
+      ? t(
+        `미국 시장 미리보기: ${lead.label} ${pct(lead.changePct)}${semi ? ` · ${semi.label} ${pct(semi.changePct)}` : ""}.`,
+        `U.S. preview: ${lead.label} ${pct(lead.changePct)}${semi ? ` · ${semi.label} ${pct(semi.changePct)}` : ""}.`
+      )
+      : t("미국 시장 미리보기 원천 응답을 기다리고 있습니다.", "Waiting for the U.S. market-preview source.");
   }
 
   function renderEvents(data) {
@@ -46,6 +55,8 @@
     root.querySelector("[data-preview-events]").innerHTML = events.length
       ? events.slice(0, 4).map((event) => `<li>${eventText(event)}</li>`).join("")
       : `<li>${t("다음 자동 수집 후 관심 기업의 실적 일정이 표시됩니다.", "Watchlist earnings dates will appear after the next successful collection.")}</li>`;
+    const summary = root.querySelector("[data-preview-summary]");
+    if (summary && events.length) summary.textContent += ` ${t(`다음 실적: ${eventText(events[0])}.`, `Next earnings: ${eventText(events[0])}.`)}`;
   }
 
   Promise.all([

@@ -379,6 +379,28 @@ function updateMemoryPriceComment(data) {
   setComment("f6", ht(`최근 3개월 평균 ${pctText(stock.averageReturn3m)} · ${label} (${stock.positiveCount}/${stock.total} 상승)`, `Average 3M ${pctText(stock.averageReturn3m)} · ${label} (${stock.positiveCount}/${stock.total} up)`));
 }
 
+function updateEarningsReleaseMarkers(data) {
+  const releases = (data?.releaseHistory || []).slice().sort((a, b) => String(b.detectedAt).localeCompare(String(a.detectedAt)));
+  const cards = [
+    { href: "ai-capex/", group: "Hyperscaler" },
+    { href: "memory-earnings/", group: "Memory / Foundry" },
+  ];
+  cards.forEach(({ href, group }) => {
+    const card = document.querySelector(`.theme-card a[href="${href}"]`)?.closest(".theme-card");
+    if (!card) return;
+    card.querySelector(".theme-release")?.remove();
+    const release = releases.find((item) => item.group === group || (group === "Memory / Foundry" && item.group !== "Hyperscaler"));
+    if (!release) return;
+    const marker = document.createElement("small");
+    marker.className = "theme-release";
+    marker.textContent = ht(
+      `${release.companyName} · ${String(release.detectedAt || "").slice(5, 10)} 실적 반영`,
+      `${release.companyName} · earnings update ${String(release.detectedAt || "").slice(0, 10)}`
+    );
+    card.querySelector("div")?.prepend(marker);
+  });
+}
+
 function scoreTextHome(value) {
   return Number.isFinite(value) ? `${homeNumber.format(value)}/10` : "N/A";
 }
@@ -594,6 +616,7 @@ async function loadHomeRead() {
     updateHyperscalerComment(earnings);
     updateMemoryComment(earnings);
     updateMemoryPriceComment(earnings);
+    updateEarningsReleaseMarkers(earnings);
     updateBearRiskComment(bearRisk);
     const flowSummary = updateForeignFlowComment(foreignFlow);
     // The home view intentionally does not publish an aggregate investment score.
