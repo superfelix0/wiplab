@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "basisDate": "2026-07-23",
+    "updatedAt": "2026-07-24T03:16:03+09:00",
+    "source": "WIP Labs connected data pipeline",
+    "session": "closed"
+  },
+  "regime": {
+    "axes": [
+      {
+        "id": "valuation",
+        "state": "high",
+        "stateLabel": "역사적 상단",
+        "value": 83.2,
+        "href": "/valuation/#kospi-per"
+      },
+      {
+        "id": "risk",
+        "state": "caution",
+        "rawState": "caution",
+        "stateLabel": "주의",
+        "value": 4.5,
+        "maxScore": 10,
+        "href": "/sentiment-risk/#risk-score"
+      },
+      {
+        "id": "flow",
+        "state": "insufficient",
+        "stateLabel": "수급 이력 1/60",
+        "href": "/market-flow/#flow-5d"
+      }
+    ]
+  },
+  "diff": [],
+  "inputs": {
+    "currentPer": 18.54,
+    "perPercentile": 83.2,
+    "riskScore": 4.5,
+    "riskMaxScore": 10,
+    "flowHistoryCount": 1
+  }
+}

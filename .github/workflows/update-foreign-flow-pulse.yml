@@ -34,13 +34,15 @@ jobs:
           python-version: "3.11"
 
       - name: Collect KRX foreign flow
-        run: python scripts/update_foreign_flow_pulse.py
+        run: |
+          python scripts/update_foreign_flow_pulse.py
+          node scripts/build_daily_state.mjs
 
       - name: Commit updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/foreign-flow-pulse.json
+          git add docs/data/foreign-flow-pulse.json docs/data/daily-state.json
           if git diff --cached --quiet; then
             echo "No foreign-flow data changes to commit."
           else
