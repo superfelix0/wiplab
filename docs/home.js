@@ -63,6 +63,38 @@ function setComment(key, text) {
   if (target) target.textContent = text;
 }
 
+function applyDailyState(state) {
+  if (!state?.regime?.axes) return;
+  const axes = new Map(state.regime.axes.map((axis) => [axis.id, axis]));
+  const valuation = axes.get("valuation");
+  const risk = axes.get("risk");
+  const flow = axes.get("flow");
+  const flowInput = state.inputs?.flow;
+  const valuationLabels = { low: ht("역사적 하단", "Historical lower range"), mid: ht("역사적 중심", "Historical middle range"), high: ht("역사적 상단", "Historical upper range") };
+  const riskLabels = { normal: ht("정상", "Normal"), observe: ht("관찰", "Observe"), caution: ht("주의", "Caution"), alert: ht("경계", "Alert"), danger: ht("위험", "Danger") };
+  if (valuation) setComment("f1", ht(
+    `현행 PER ${homeNumber.format(state.inputs?.currentPer)}배 · 2010년 이후 백분위 ${homeNumber.format(valuation.value)}% (${valuationLabels[valuation.state] || "확인"})`,
+    `Current PER ${homeNumber.format(state.inputs?.currentPer)}x · percentile since 2010 ${homeNumber.format(valuation.value)}% (${valuationLabels[valuation.state] || "Checking"})`
+  ));
+  if (risk) setComment("f7", ht(
+    `약세장 전환 위험 ${homeNumber.format(risk.value)}/${homeNumber.format(risk.maxScore)} · ${riskLabels[risk.state] || "확인"} 단계`,
+    `Bear-market transition risk ${homeNumber.format(risk.value)}/${homeNumber.format(risk.maxScore)} · ${riskLabels[risk.state] || "Checking"}`
+  ));
+  if (flow) setComment("f8", ht(
+    `${flowInput?.count || 0}거래일 기준 ${flow.state === "aligned" ? "동행" : flow.state === "insufficient" ? "데이터 부족" : "방향 주도 불명"} · ${flowInput?.leaderConfidence === "confirmed" ? "규모 조건 충족" : "한 주체로 단정하지 않음"}`,
+    `${flowInput?.count || 0}-session view: ${flow.state === "aligned" ? "aligned" : flow.state === "insufficient" ? "insufficient history" : "direction leader unclear"} · ${flowInput?.leaderConfidence === "confirmed" ? "size condition met" : "not attributed to one participant"}`
+  ));
+  if (homeEls.marketSentimentLabel) {
+    homeEls.marketSentimentLabel.textContent = ht("신호별 확인", "Review by signal");
+    homeEls.marketSentimentLabel.dataset.tone = "neutral";
+  }
+  const change = document.querySelector("#todaySignalChange");
+  if (change) change.textContent = ht(
+    `밸류에이션 ${valuationLabels[valuation?.state] || "확인"} · 위험 ${riskLabels[risk?.state] || "확인"} · 수급 ${flow?.state === "aligned" ? "동행" : "방향 주도 불명"}`,
+    `Valuation ${valuationLabels[valuation?.state] || "Checking"} · risk ${riskLabels[risk?.state] || "Checking"} · flow ${flow?.state === "aligned" ? "aligned" : "direction leader unclear"}`
+  );
+}
+
 function toNumber(value) {
   if (typeof value === "number") return value;
   if (value === null || value === undefined) return NaN;
@@ -509,7 +541,7 @@ function updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk
 
 async function loadHomeRead() {
   try {
-    const [perResult, sentimentResult, sentimentRowsResult, earningsResult, bearRiskResult, foreignFlowResult, forwardPerResult] = await Promise.allSettled([
+    const [perResult, sentimentResult, sentimentRowsResult, earningsResult, bearRiskResult, foreignFlowResult, forwardPerResult, dailyStateResult] = await Promise.allSettled([
       readJson("/data/market-per.json"),
       readJson("/data/kospi-sentiment-meta.json"),
       readText("/data/kospi-sentiment.csv"),
@@ -517,6 +549,7 @@ async function loadHomeRead() {
       readJson("/data/bear-market-risk.json"),
       readJson("/data/foreign-flow-pulse.json"),
       readText("/data/kospi-forward-per-history.csv"),
+      readJson("/data/daily-state.json"),
     ]);
     const per = perResult.status === "fulfilled" ? perResult.value : null;
     const sentiment = sentimentResult.status === "fulfilled" ? sentimentResult.value : null;
@@ -525,6 +558,7 @@ async function loadHomeRead() {
     const bearRisk = bearRiskResult.status === "fulfilled" ? bearRiskResult.value : null;
     const foreignFlow = foreignFlowResult.status === "fulfilled" ? foreignFlowResult.value : null;
     const latestForwardPer = forwardPerResult.status === "fulfilled" ? latestHomeForwardPer(forwardPerResult.value) : null;
+    const dailyState = dailyStateResult.status === "fulfilled" ? dailyStateResult.value : null;
     if (latestForwardPer) HOME_FORWARD_PER = latestForwardPer.value;
 
     updatePerComment(per, sentimentRows);
@@ -535,6 +569,7 @@ async function loadHomeRead() {
     updateBearRiskComment(bearRisk);
     const flowSummary = updateForeignFlowComment(foreignFlow);
     updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk, flowSummary);
+    applyDailyState(dailyState);
 
     const timestamps = [per?.generatedAt, sentiment?.generatedAt, earnings?.generatedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
     if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${formatHomeUpdatedAt(timestamps.sort().at(-1))}` : ht("업데이트 정보 없음", "No update information");
