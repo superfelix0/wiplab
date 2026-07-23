@@ -230,11 +230,17 @@ function render(data) {
 async function loadEarnings() {
   setEarningsStatus(t("하이퍼스케일러 실적 데이터를 불러오는 중입니다.", "Loading hyperscaler earnings data."));
   try {
-    const response = await fetch(`/data/ai-earnings.json?ts=${Date.now()}`, { cache: "no-store" });
+    const [response, stateResponse] = await Promise.all([
+      fetch(`/data/ai-earnings.json?ts=${Date.now()}`, { cache: "no-store" }),
+      fetch(`/data/daily-state.json?ts=${Date.now()}`, { cache: "no-store" }),
+    ]);
     const data = await response.json().catch(() => null);
+    const state = stateResponse.ok ? await stateResponse.json() : null;
     if (!response.ok || !data?.ok) throw new Error(t("하이퍼스케일러 실적 데이터를 불러오지 못했습니다.", "Could not load hyperscaler earnings data."));
     render(data);
-    setEarningsStatus(t(`업데이트: ${formatEarningsUpdatedAt(data.generatedAt)}`, `Updated: ${formatEarningsUpdatedAt(data.generatedAt)}`), "ok");
+    const capex = state?.regime?.axes?.find((axis) => axis.id === "capex");
+    const label = { normal: t("투자 여력", "Capacity available"), elevated: t("투자 확대", "Investment elevated"), strained: t("투자 부담", "Investment strain") }[capex?.state] || t("상태 확인 중", "Checking regime");
+    setEarningsStatus(t(`공통 상태: ${label} · 업데이트: ${formatEarningsUpdatedAt(data.generatedAt)}`, `Shared regime: ${label} · updated: ${formatEarningsUpdatedAt(data.generatedAt)}`), "ok");
   } catch (error) {
     setEarningsStatus(error.message || t("하이퍼스케일러 실적 데이터를 불러오지 못했습니다.", "Could not load hyperscaler earnings data."), "error");
   }

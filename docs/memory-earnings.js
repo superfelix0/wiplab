@@ -307,8 +307,12 @@ function setupMemoryTabs() {
 async function loadMemoryEarnings() {
   setMemoryStatus(mt("메모리 실적 데이터를 불러오는 중입니다.", "Loading memory earnings data."));
   try {
-    const response = await fetch(`/data/ai-earnings.json?ts=${Date.now()}`, { cache: "no-store" });
+    const [response, stateResponse] = await Promise.all([
+      fetch(`/data/ai-earnings.json?ts=${Date.now()}`, { cache: "no-store" }),
+      fetch(`/data/daily-state.json?ts=${Date.now()}`, { cache: "no-store" }),
+    ]);
     const data = await response.json().catch(() => null);
+    const state = stateResponse.ok ? await stateResponse.json() : null;
     if (!response.ok || !data?.ok) throw new Error(mt("메모리 실적 데이터를 불러오지 못했습니다.", "Could not load memory earnings data."));
     const companies = memoryCompanies(data);
     renderMemorySummary(companies);
@@ -329,7 +333,9 @@ async function loadMemoryEarnings() {
         hour12: MEMORY_IS_EN,
         timeZone: "Asia/Seoul",
       }).format(updatedAt);
-    setMemoryStatus(mt(`업데이트: ${readableUpdatedAt}`, `Updated: ${readableUpdatedAt}`), "ok");
+    const memory = state?.regime?.axes?.find((axis) => axis.id === "memory");
+    const label = { expanding: mt("실적 확장", "Earnings expanding"), flat: mt("실적 보합", "Earnings flat"), contracting: mt("실적 둔화", "Earnings contracting") }[memory?.state] || mt("상태 확인 중", "Checking regime");
+    setMemoryStatus(mt(`공통 상태: ${label} · 업데이트: ${readableUpdatedAt}`, `Shared regime: ${label} · updated: ${readableUpdatedAt}`), "ok");
   } catch (error) {
     setMemoryStatus(error.message || mt("메모리 실적 데이터를 불러오지 못했습니다.", "Could not load memory earnings data."), "error");
   }
