@@ -34,7 +34,8 @@
       const label = stateCopy[axisId]?.[locale]?.[axis.state] || axis.state;
       const banner = document.createElement("p");
       banner.className = "wl-regime-banner";
-      banner.textContent = locale === "en" ? `Current shared regime: ${label} · data date ${state.meta?.basisDate || "--"}` : `공통 상태: ${label} · 데이터 기준일 ${state.meta?.basisDate || "--"}`;
+      const sourceDate = state.meta?.inputDates?.[axisId] || state.meta?.basisDate || "--";
+      banner.textContent = locale === "en" ? `Current shared regime: ${label} · data date ${sourceDate}` : `공통 상태: ${label} · 데이터 기준일 ${sourceDate}`;
       hero.append(banner);
     } catch { /* Individual page data remains usable if the common state is unavailable. */ }
   };

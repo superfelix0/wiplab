@@ -93,7 +93,13 @@ function main() {
   const earningsResult = earningsSummary(earnings);
   const basisDate = [market.date, riskData.lastUpdated, flow.lastDataDate].filter(Boolean).sort().at(-1) || now.slice(0, 10);
   const data = {
-    meta: { basisDate, updatedAt: now, source: "WIP Labs connected data pipeline", session: "closed" },
+    meta: {
+      basisDate,
+      inputDates: { valuation: market.date, risk: riskData.lastUpdated, flow: flow.lastDataDate, capex: earnings.generatedAt?.slice(0, 10), memory: earnings.generatedAt?.slice(0, 10) },
+      updatedAt: now,
+      source: "WIP Labs connected data pipeline",
+      session: "closed",
+    },
     regime: { axes: [
       { id: "valuation", state: valuation, prevState: previousValuation, stateLabel: VALUATION.labels[valuation], value: Number(percentile.toFixed(1)), href: "/valuation/#kospi-per" },
       { id: "risk", state: risk, prevState: previousRisk, rawState: rawRisk, lowerWeeks, stateLabel: RISK.labels[risk], value: score, maxScore, href: "/sentiment-risk/#risk-score" },

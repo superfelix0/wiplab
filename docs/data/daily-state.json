@@ -1,7 +1,14 @@
 {
   "meta": {
     "basisDate": "2026-07-23",
-    "updatedAt": "2026-07-24T03:55:19+09:00",
+    "inputDates": {
+      "valuation": "2026-07-16",
+      "risk": "2026-07-23",
+      "flow": "2026-07-23",
+      "capex": "2026-07-24",
+      "memory": "2026-07-24"
+    },
+    "updatedAt": "2026-07-24T04:09:41+09:00",
     "source": "WIP Labs connected data pipeline",
     "session": "closed"
   },
