@@ -7,6 +7,7 @@ const root = process.cwd();
 const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
 const exists = (file) => fs.existsSync(path.join(root, file));
 const output = "docs/data/daily-state.json";
+const historyOutput = "docs/data/regime-history.json";
 const now = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T") + "+09:00";
 
 function valuationState(percentile, previous) {
@@ -107,6 +108,18 @@ function main() {
     .filter((axis) => axis.prevState && axis.prevState !== axis.state)
     .map((axis) => ({ id: axis.id, type: "state-change", from: axis.prevState, to: axis.state, href: axis.href }));
   fs.writeFileSync(path.join(root, output), JSON.stringify(data, null, 2) + "\n");
+  const priorHistory = exists(historyOutput) ? read(historyOutput) : { snapshots: [] };
+  const snapshot = {
+    date: data.meta.basisDate,
+    updatedAt: data.meta.updatedAt,
+    labelKo: data.regime.axes.map((axis) => axis.stateLabel).join(" · "),
+    labelEn: data.regime.axes.map((axis) => `${axis.id}: ${axis.state}`).join(" · "),
+    axes: data.regime.axes.map(({ id, state, stateLabel }) => ({ id, state, stateLabel })),
+    diff: data.diff,
+  };
+  const snapshots = [...(priorHistory.snapshots || []).filter((row) => row.date !== snapshot.date), snapshot]
+    .sort((a, b) => a.date.localeCompare(b.date)).slice(-366);
+  fs.writeFileSync(path.join(root, historyOutput), JSON.stringify({ generatedAt: now, snapshots }, null, 2) + "\n");
   console.log(`Wrote ${output} for ${basisDate}`);
 }
 main();

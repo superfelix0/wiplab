@@ -42,7 +42,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/foreign-flow-pulse.json docs/data/daily-state.json
+          git add docs/data/foreign-flow-pulse.json docs/data/daily-state.json docs/data/regime-history.json
           if git diff --cached --quiet; then
             echo "No foreign-flow data changes to commit."
           else

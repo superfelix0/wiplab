@@ -45,7 +45,7 @@
     localStorage.setItem(key, JSON.stringify({ label: latest.label, signalKey: latest.signalKey, language: languageKey, visitedAt: Date.now(), date: latest.date }));
   }
 
-  fetch(`/data/signal-history.json?ts=${Date.now()}`, { cache: "no-store" })
+  fetch(`/data/regime-history.json?ts=${Date.now()}`, { cache: "no-store" })
     .then((response) => response.ok ? response.json() : Promise.reject())
     .then((data) => {
       const rows = (data.snapshots || []).slice(-7);
