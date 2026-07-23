@@ -15,6 +15,8 @@ const bearEls = {
   disclaimer: document.querySelector("#bearDisclaimer"),
 };
 
+document.querySelector(".risk-dashboard")?.setAttribute("id", "risk-score");
+
 const BEAR_IS_EN = document.documentElement.lang?.toLowerCase().startsWith("en");
 const bearNumber = new Intl.NumberFormat(BEAR_IS_EN ? "en-US" : "ko-KR", { maximumFractionDigits: 1 });
 

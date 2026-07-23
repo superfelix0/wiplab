@@ -6,6 +6,8 @@ const sentimentEls = {
   range: document.querySelector("#sentimentRange"),
 };
 
+document.querySelector(".sentiment-dashboard")?.setAttribute("id", "retail-sentiment");
+
 const IS_EN = document.documentElement.lang?.toLowerCase().startsWith("en");
 const fmt = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", { maximumFractionDigits: 2 });
 const fmt0 = new Intl.NumberFormat(IS_EN ? "en-US" : "ko-KR", { maximumFractionDigits: 0 });
