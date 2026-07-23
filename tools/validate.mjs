@@ -1,7 +1,7 @@
 /* Validates the generated daily regime snapshot before it is published. */
 import fs from "node:fs";
 import path from "node:path";
-import { FLOW, RISK, riskStageFor } from "../docs/shared/thresholds.js";
+import { RISK, riskStageFor } from "../docs/shared/thresholds.js";
 
 const root = process.cwd();
 const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
@@ -24,11 +24,11 @@ function main() {
   if (risk.state !== riskStageFor(Number(risk.value), Number(risk.maxScore)) && risk.rawState !== riskStageFor(Number(risk.value), Number(risk.maxScore))) fail("risk state does not match the shared threshold source");
 
   const flowInput = state.inputs?.flow || {};
-  if (flowInput.count >= FLOW.window) {
-    if (!Array.isArray(flowInput.subjects) || flowInput.subjects.length !== 3) fail("60-session flow state needs all three participant groups");
-    const aligned = flowInput.subjects.filter((subject) => subject.state === "aligned");
+  if (flowInput.count >= flowInput.window) {
+    if (flowInput.window !== 10) fail("flow regime must use a 10-session window");
+    if (!Array.isArray(flowInput.subjects) || flowInput.subjects.length !== 3) fail("10-session flow state needs all three participant groups");
     const leader = flowInput.subjects.find((subject) => subject.id === flowInput.leaderId);
-    if (leader && (aligned.length !== FLOW.leader.maxAlignedSubjects || leader.sizeRank > FLOW.leader.sizeRankWithin)) fail("flow leader violates alignment or size conditions");
+    if (leader && (leader.state !== "aligned" || leader.sizeRank !== 1)) fail("flow leader must be the largest aligned cumulative flow");
     if (!leader && flowInput.leaderConfidence === "confirmed") fail("confirmed flow leader is missing");
   } else if (flow.state !== "insufficient") {
     fail("flow must remain insufficient until the full window is available");

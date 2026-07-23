@@ -2661,7 +2661,9 @@ footer p {
 .flow-methodology h2 { margin: 6px 0; color: var(--title); font-size: 16px; }
 .flow-methodology p, .flow-methodology small { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
 .flow-methodology small { padding-top: 10px; border-top: 1px solid var(--line-soft); }
-.flow-futures-note { margin: 10px 0 0; color: var(--faint); font-size: 11px; }
+.flow-futures-note,
+.flow-source-note { margin: 10px 0 0; color: var(--faint); font-size: 11px; line-height: 1.5; }
+.flow-source-note { margin-top: 4px; }
 .flow-card { min-height: 122px; }
 .wl-flow-overview { margin: 14px 0 18px; border: 1px solid var(--line); background: var(--panel-2); }
 .wl-flow-overview-head { display: flex; justify-content: space-between; gap: 16px; padding: 18px; border-bottom: 1px solid var(--line); }

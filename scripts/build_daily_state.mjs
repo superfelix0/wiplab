@@ -1,7 +1,7 @@
 /* Build the single daily regime snapshot consumed by the renewed home and detail pages. */
 import fs from "node:fs";
 import path from "node:path";
-import { VALUATION, FLOW, RISK, applyHysteresis, riskStageFor, riskStageWithHysteresis } from "../docs/shared/thresholds.js";
+import { VALUATION, RISK, applyHysteresis, riskStageFor, riskStageWithHysteresis } from "../docs/shared/thresholds.js";
 
 const root = process.cwd();
 const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
@@ -9,6 +9,7 @@ const exists = (file) => fs.existsSync(path.join(root, file));
 const output = "docs/data/daily-state.json";
 const historyOutput = "docs/data/regime-history.json";
 const now = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T") + "+09:00";
+const FLOW_WINDOW = 10;
 
 function valuationState(percentile, previous) {
   const candidate = percentile < VALUATION.enter.low ? "low" : percentile > VALUATION.enter.high ? "high" : "mid";
@@ -21,36 +22,31 @@ function csvRows(file) {
   return lines.map((line) => Object.fromEntries(columns.map((column, index) => [column, line.split(",")[index]])));
 }
 
-function flowSummary(rows, previousFlow = null) {
+function flowSummary(rows) {
   const closes = new Map(csvRows("docs/data/kospi-per-history.csv").map((row) => [row.date, Number(row.close)]));
   const usable = rows.filter((row) => Number.isFinite(closes.get(row.date))).sort((a, b) => a.date.localeCompare(b.date));
-  if (usable.length < FLOW.window) return { state: "insufficient", label: `수급 이력 ${usable.length}/${FLOW.window}`, count: usable.length };
-  const sample = usable.slice(-FLOW.window);
-  const previousSubjects = new Map((previousFlow?.subjects || []).map((subject) => [subject.id, subject]));
+  if (usable.length < FLOW_WINDOW) return { state: "insufficient", label: `수급 이력 ${usable.length}/${FLOW_WINDOW}`, count: usable.length, window: FLOW_WINDOW };
+  const sample = usable.slice(-FLOW_WINDOW);
+  const indexReturn = closes.get(sample.at(-1).date) / closes.get(sample[0].date) - 1;
   const subjects = [["foreignSpot", "외국인"], ["individualSpot", "개인"], ["institutionSpot", "기관"]].map(([id, name]) => {
-    let matches = 0, observations = 0;
-    for (let index = 1; index < sample.length; index += 1) {
-      const change = (closes.get(sample[index].date) / closes.get(sample[index - 1].date) - 1) * 100;
-      if (Math.abs(change) < FLOW.flatReturnPct) continue;
-      observations += 1;
-      if (Math.sign(Number(sample[index][id])) === Math.sign(change)) matches += 1;
-    }
-    const matchRate = observations ? matches / observations * 100 : 50;
-    const prior = previousSubjects.get(id)?.state;
-    const remainsAligned = prior === "aligned" && matchRate >= FLOW.exit.aligned;
-    const remainsContrarian = prior === "contrarian" && matchRate <= FLOW.exit.contrarian;
-    const state = remainsAligned || matchRate >= FLOW.enter.aligned
-      ? "aligned"
-      : remainsContrarian || matchRate <= FLOW.enter.contrarian
-        ? "contrarian"
-        : "unrelated";
-    const size = sample.map((row) => Math.abs(Number(row[id]))).sort((a, b) => a - b)[Math.floor(sample.length / 2)];
-    return { id, name, matchRate: Number(matchRate.toFixed(1)), state, size };
+    const cumulative = sample.reduce((total, row) => total + Number(row[id] || 0), 0);
+    const state = Math.abs(indexReturn) < 0.003 || cumulative === 0
+      ? "unrelated"
+      : Math.sign(cumulative) === Math.sign(indexReturn) ? "aligned" : "contrarian";
+    return { id, name, cumulative: Number(cumulative.toFixed(6)), state, size: Math.abs(cumulative) };
   });
   const ranked = subjects.slice().sort((a, b) => b.size - a.size).map((subject, index) => ({ ...subject, sizeRank: index + 1 }));
-  const aligned = ranked.filter((subject) => subject.state === "aligned");
-  const leader = aligned.length === FLOW.leader.maxAlignedSubjects && aligned[0].sizeRank <= FLOW.leader.sizeRankWithin ? aligned[0] : null;
-  return { state: leader ? "aligned" : "unrelated", label: leader ? `${leader.name} 동행 · 규모 상위` : "방향 주도 불명", count: sample.length, subjects: ranked, leaderId: leader?.id ?? null, leaderConfidence: leader ? "confirmed" : "unclear" };
+  const leader = ranked[0]?.state === "aligned" ? ranked[0] : null;
+  return {
+    state: leader ? "aligned" : "unrelated",
+    label: leader ? `${leader.name} ${leader.cumulative >= 0 ? "순매수" : "순매도"} 우세` : "수급과 지수 방향 혼재",
+    count: sample.length,
+    window: FLOW_WINDOW,
+    indexReturn: Number(indexReturn.toFixed(4)),
+    subjects: ranked,
+    leaderId: leader?.id ?? null,
+    leaderConfidence: leader ? "confirmed" : "unclear",
+  };
 }
 
 function earningsSummary(data) {
@@ -89,7 +85,7 @@ function main() {
   const previousRiskRank = RISK.stages.indexOf(previousRisk);
   const lowerWeeks = previousRisk && rawRiskRank < previousRiskRank ? (previousRiskAxis?.lowerWeeks ?? 0) + 1 : 0;
   const risk = riskStageWithHysteresis(rawRisk, previousRisk, lowerWeeks);
-  const flowResult = flowSummary(flow.rows || [], previous?.inputs?.flow);
+  const flowResult = flowSummary(flow.rows || []);
   const earningsResult = earningsSummary(earnings);
   const basisDate = [market.date, riskData.lastUpdated, flow.lastDataDate].filter(Boolean).sort().at(-1) || now.slice(0, 10);
   const data = {

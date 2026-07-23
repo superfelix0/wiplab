@@ -16,17 +16,7 @@
   function render(rows, regime) {
     const sorted = rows.slice().sort((a, b) => a.date.localeCompare(b.date));
     const latest = sorted.at(-1);
-    const previous = sorted.at(-2);
-    const fiveDays = sorted.slice(-5);
-    const priorFiveDays = sorted.slice(-10, -5);
-    const cards = Object.keys(labels).map((key) => {
-      const daily = Number(latest?.[key] || 0);
-      const dailyChange = daily - Number(previous?.[key] || 0);
-      const weekly = sum(fiveDays, key);
-      const weeklyChange = weekly - sum(priorFiveDays, key);
-      return `<article class="flow-card"><span>${labels[key]}</span><strong>${money(daily)}</strong><small>${t("전일 순매수", "Net flow")} · ${t("전일 대비", "vs prior")} ${money(dailyChange)}</small><small>${t("최근 5거래일", "Last 5 sessions")} ${money(weekly)} · ${t("직전 5일 대비", "vs prior 5")} ${money(weeklyChange)}</small></article>`;
-    }).join("");
-    root.querySelector("[data-flow-cards]").innerHTML = cards;
+    root.querySelector("[data-flow-cards]")?.remove();
     root.querySelector("[data-flow-date]").textContent = latest?.date || "--";
 
     const flow = regime?.inputs?.flow;
@@ -34,10 +24,11 @@
     overview.className = "wl-flow-overview";
     overview.id = "flow-5d";
     const flowLabel = flow?.leaderConfidence === "confirmed"
-      ? t(`${labels[flow.leaderId]} 동행`, `${labels[flow.leaderId]} aligned`)
-      : t("방향 주도 불명", "Direction leader unclear");
-    const divergence = (flow?.subjects || []).map((subject) => `<article><span>${labels[subject.id] || subject.name}</span><strong>${subject.matchRate}%</strong><small>${subject.state === "aligned" ? t("지수와 동행", "Aligned with index") : subject.state === "contrarian" ? t("지수와 역행", "Contrarian to index") : t("일관성 낮음", "No stable relation")}</small></article>`).join("");
-    overview.innerHTML = `<div class="wl-flow-overview-head"><div><span>${t("L1 · 수급 구조", "L1 · Flow structure")}</span><h2>${flowLabel}</h2><p>${t("당일 순매수 규모와 별개로, 60거래일 동안 지수 방향과 얼마나 일관되게 움직였는지를 봅니다.", "Separate daily flow size from the 60-session consistency of each participant with the index direction.")}</p></div><b>${flow?.count || 0}${t(" 거래일", " sessions")}</b></div><div class="wl-flow-divergence">${divergence || `<p>${t("수급 이력을 확인 중입니다.", "Checking flow history.")}</p>`}</div>`;
+      ? flow.label
+      : t("수급과 지수 방향 혼재", "Flow and index direction mixed");
+    const divergence = (flow?.subjects || []).map((subject) => `<article><span>${labels[subject.id] || subject.name}</span><strong>${money(subject.cumulative)}</strong><small>${subject.state === "aligned" ? t("2주 지수 방향과 같은 순매수·순매도", "Same direction as the 2-week index move") : subject.state === "contrarian" ? t("2주 지수 방향과 반대", "Opposite to the 2-week index move") : t("지수 변화가 작아 판정 보류", "Index move too small to classify")}</small></article>`).join("");
+    const indexMove = Number.isFinite(flow?.indexReturn) ? `${flow.indexReturn >= 0 ? "+" : ""}${(flow.indexReturn * 100).toFixed(1)}%` : "--";
+    overview.innerHTML = `<div class="wl-flow-overview-head"><div><span>${t("L1 · 2주 누적 수급", "L1 · Two-week cumulative flow")}</span><h2>${flowLabel}</h2><p>${t("최근 10거래일 누적 순매수·순매도와 같은 기간 KOSPI 변화를 함께 봅니다. 일별 변동의 잡음보다 최근 수급 방향을 읽기 위한 기준입니다.", "Reads 10-session cumulative net flows alongside the KOSPI move over the same period, prioritizing the recent direction over daily noise.")}</p></div><b>KOSPI ${indexMove}</b></div><div class="wl-flow-divergence">${divergence || `<p>${t("수급 이력을 확인 중입니다.", "Checking flow history.")}</p>`}</div>`;
     if (!overview.isConnected) root.querySelector(".flow-data-line")?.after(overview);
     const subjects = (flow?.subjects || []).map((subject) => `<li><b>${labels[subject.id] || subject.name}</b><span>${subject.matchRate}% ${t("일치", "match")}</span><small>${subject.state === "aligned" ? t("동행", "Aligned") : subject.state === "contrarian" ? t("역행", "Contrarian") : t("무관", "Unrelated")}</small></li>`).join("");
     const summary = flow?.leaderConfidence === "confirmed"
@@ -50,18 +41,22 @@
     const methodPanel = panel.firstElementChild;
     methodPanel.id = "flow-method";
     methodPanel.className = "flow-methodology";
-    methodPanel.innerHTML = `<div><span>${t("판정 기준", "How the reading is made")}</span><h2>${t("방향을 주도한 주체는 동행률과 규모를 함께 봅니다", "Direction leadership requires both alignment and size")}</h2><p>${t("지수 변동률 절대값이 0.05% 미만인 날은 제외합니다. 한 주체가 60거래일 중 지수 방향과 63% 이상 동행하고, 동행 규모도 상위 두 주체 가운데 하나일 때만 방향 주도 신호로 표시합니다.", "Sessions with an absolute KOSPI move below 0.05% are excluded. A direction leader is shown only when one participant is aligned in at least 63% of the 60 sessions and its cumulative flow is among the two largest.")}</p></div><small>${t("기존 상태는 동행률이 57%/43% 경계를 넘어설 때만 전환합니다. 일별 순매수 금액은 아래 표에서 별도로 확인할 수 있습니다.", "An existing state changes only beyond the 57%/43% boundaries. Daily net-flow amounts remain available in the table below.")}</small>`;
+    methodPanel.innerHTML = `<div><span>${t("판정 기준", "How the reading is made")}</span><h2>${t("2주 누적 금액이 가장 큰 주체와 지수 방향을 비교합니다", "Compare the largest two-week cumulative flow with the index direction")}</h2><p>${t("최근 10거래일 누적 순매수·순매도의 절대 규모가 가장 큰 주체가 같은 기간 KOSPI 등락 방향과 같으면 수급 우세로, 반대면 혼재로 읽습니다. KOSPI 변동이 0.3% 미만이면 방향 판정은 보류합니다.", "The participant with the largest absolute cumulative net flow over the latest 10 sessions is treated as dominant only when its net-flow direction matches the KOSPI move. A KOSPI move below 0.3% leaves the direction unclassified.")}</p></div><small>${t("이는 단기 수급의 읽기 도구이며, 개별 주체의 매매가 시장 방향을 원인으로 설명한다는 뜻은 아닙니다.", "This is a short-term flow reading, not a claim that a participant's trading caused the market move.")}</small>`;
     placeholder.replaceWith(methodPanel);
     root.querySelector(".flow-commentary")?.remove();
 
     const table = root.querySelector("[data-flow-table]");
     table.parentElement.id = "flow-daily";
-    table.innerHTML = `<thead><tr><th>${t("날짜", "Date")}</th><th>${labels.foreignSpot}</th><th>${labels.individualSpot}</th><th>${labels.institutionSpot}</th><th>${t("외국인 선물", "Foreign futures")}</th></tr></thead><tbody>${sorted.slice(-10).reverse().map((row) => `<tr><td>${row.date}</td><td>${money(row.foreignSpot)}</td><td>${money(row.individualSpot)}</td><td>${money(row.institutionSpot)}</td><td>${contracts(row.foreignFuturesContracts)}</td></tr>`).join("")}</tbody>`;
+    table.innerHTML = `<thead><tr><th>${t("날짜", "Date")}</th><th>${labels.foreignSpot}</th><th>${labels.individualSpot}</th><th>${labels.institutionSpot}</th><th>${t("외국인 선물", "Foreign futures")}</th></tr></thead><tbody>${sorted.slice(-5).reverse().map((row) => `<tr><td>${row.date}</td><td>${money(row.foreignSpot)}</td><td>${money(row.individualSpot)}</td><td>${money(row.institutionSpot)}</td><td>${contracts(row.foreignFuturesContracts)}</td></tr>`).join("")}</tbody>`;
     const futures = document.createElement("p");
     futures.id = "flow-futures";
     futures.className = "flow-futures-note";
     futures.textContent = t("외국인 선물은 계약 수로 표시하며, 현물 순매수 금액과 합산하지 않습니다.", "Foreign futures are shown in contracts and are not added to cash-equity flow.");
     table.parentElement.after(futures);
+    const source = root.querySelector(".flow-source-note") || document.createElement("p");
+    source.className = "flow-source-note";
+    source.textContent = t("출처: KRX Data Marketplace · KOSPI 투자자별 거래실적(현물) 및 KOSPI200 선물 투자자별 거래실적", "Source: KRX Data Marketplace · KOSPI investor trading (spot) and KOSPI 200 futures investor trading.");
+    if (!source.isConnected) futures.after(source);
   }
 
   Promise.all([

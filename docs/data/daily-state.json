@@ -8,7 +8,7 @@
       "capex": "2026-07-24",
       "memory": "2026-07-24"
     },
-    "updatedAt": "2026-07-24T04:09:41+09:00",
+    "updatedAt": "2026-07-24T04:40:16+09:00",
     "source": "WIP Labs connected data pipeline",
     "session": "closed"
   },
@@ -35,9 +35,9 @@
       },
       {
         "id": "flow",
-        "state": "unrelated",
-        "prevState": "unrelated",
-        "stateLabel": "방향 주도 불명",
+        "state": "aligned",
+        "prevState": "aligned",
+        "stateLabel": "외국인 순매도 우세",
         "href": "/market-flow/#flow-5d"
       },
       {
@@ -63,37 +63,39 @@
     "riskScore": 4.5,
     "riskMaxScore": 10,
     "flow": {
-      "state": "unrelated",
-      "label": "방향 주도 불명",
-      "count": 60,
+      "state": "aligned",
+      "label": "외국인 순매도 우세",
+      "count": 10,
+      "window": 10,
+      "indexReturn": -0.1567,
       "subjects": [
-        {
-          "id": "individualSpot",
-          "name": "개인",
-          "matchRate": 36.2,
-          "state": "contrarian",
-          "size": 2.437988,
-          "sizeRank": 1
-        },
         {
           "id": "foreignSpot",
           "name": "외국인",
-          "matchRate": 56.9,
-          "state": "unrelated",
-          "size": 1.971001,
+          "cumulative": -5.461076,
+          "state": "aligned",
+          "size": 5.461076000000001,
+          "sizeRank": 1
+        },
+        {
+          "id": "individualSpot",
+          "name": "개인",
+          "cumulative": 5.239906,
+          "state": "contrarian",
+          "size": 5.2399059999999995,
           "sizeRank": 2
         },
         {
           "id": "institutionSpot",
           "name": "기관",
-          "matchRate": 72.4,
+          "cumulative": -0.152322,
           "state": "aligned",
-          "size": 1.342843,
+          "size": 0.15232199999999985,
           "sizeRank": 3
         }
       ],
-      "leaderId": null,
-      "leaderConfidence": "unclear"
+      "leaderId": "foreignSpot",
+      "leaderConfidence": "confirmed"
     },
     "earnings": {
       "capex": {

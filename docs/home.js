@@ -80,10 +80,15 @@ function applyDailyState(state) {
     `약세장 전환 위험 ${homeNumber.format(risk.value)}/${homeNumber.format(risk.maxScore)} · ${riskLabels[risk.state] || "확인"} 단계`,
     `Bear-market transition risk ${homeNumber.format(risk.value)}/${homeNumber.format(risk.maxScore)} · ${riskLabels[risk.state] || "Checking"}`
   ));
-  if (flow) setComment("f8", ht(
-    `${flowInput?.count || 0}거래일 기준 ${flow.state === "aligned" ? "동행" : flow.state === "insufficient" ? "데이터 부족" : "방향 주도 불명"} · ${flowInput?.leaderConfidence === "confirmed" ? "규모 조건 충족" : "한 주체로 단정하지 않음"}`,
-    `${flowInput?.count || 0}-session view: ${flow.state === "aligned" ? "aligned" : flow.state === "insufficient" ? "insufficient history" : "direction leader unclear"} · ${flowInput?.leaderConfidence === "confirmed" ? "size condition met" : "not attributed to one participant"}`
-  ));
+  if (flow) {
+    const indexMove = Number.isFinite(flowInput?.indexReturn)
+      ? `${flowInput.indexReturn >= 0 ? "+" : ""}${(flowInput.indexReturn * 100).toFixed(1)}%`
+      : "--";
+    setComment("f8", ht(
+      `최근 ${flowInput?.window || flowInput?.count || 0}거래일 누적: ${flowInput?.label || "판정 중"} · KOSPI ${indexMove}`,
+      `Latest ${flowInput?.window || flowInput?.count || 0}-session cumulative: ${flowInput?.label || "Checking"} · KOSPI ${indexMove}`
+    ));
+  }
   if (homeEls.marketSentimentLabel) {
     homeEls.marketSentimentLabel.textContent = ht("신호별 확인", "Review by signal");
     homeEls.marketSentimentLabel.dataset.tone = "neutral";
