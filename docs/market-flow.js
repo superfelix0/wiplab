@@ -30,9 +30,10 @@
     const comparison = subjects.map((subject) => {
       const width = Math.min(100, Math.abs(Number(subject.cumulative)) / Math.max(...subjects.map((item) => Math.abs(Number(item.cumulative))), 1) * 100);
       const tone = subject.state === "aligned" ? "is-good" : subject.state === "contrarian" ? "is-bad" : "";
-      const fill = Number(subject.cumulative) >= 0 ? "var(--wl-good-ink)" : "var(--wl-bad-ink)";
+      const positive = Number(subject.cumulative) >= 0;
+      const fill = positive ? "var(--wl-good-ink)" : "var(--wl-bad-ink)";
       const rate = Number.isFinite(subject.matchRate) ? `${subject.matchRate.toFixed(1)}%` : "--";
-      return `<li class="wl-row ${tone}"><span class="wl-row-name">${labels[subject.id] || subject.name}</span><span class="wl-row-val">${money(subject.cumulative)} · ${t("일별 일치", "Daily match")} ${rate}</span><span class="wl-row-bar"><span class="wl-row-fill" style="display:block;width:${width}%;background:${fill}"></span></span><small>${t(`30일 누적 ${money(subject.cumulative)} · 5일 ${money(subject.shortCumulative)} · ${trendLabel(subject.shortTrend)}`, `30-session ${money(subject.cumulative)} · 5-session ${money(subject.shortCumulative)} · ${trendLabel(subject.shortTrend)}`)}</small></li>`;
+      return `<li class="wl-row ${tone}"><span class="wl-row-name">${labels[subject.id] || subject.name}</span><span class="wl-row-val">${money(subject.cumulative)} · ${t("일별 일치", "Daily match")} ${rate}</span><span class="wl-div" role="img" aria-label="${labels[subject.id] || subject.name} ${money(subject.cumulative)}"><i class="wl-div-axis"></i><i class="wl-div-fill ${positive ? "buy" : "sell"}" style="width:${width}%;background:${fill}"></i></span><small>${t(`30일 누적 ${money(subject.cumulative)} · 5일 ${money(subject.shortCumulative)} · ${trendLabel(subject.shortTrend)}`, `30-session ${money(subject.cumulative)} · 5-session ${money(subject.shortCumulative)} · ${trendLabel(subject.shortTrend)}`)}</small></li>`;
     }).join("");
     const dailyRows = sorted.slice(-5).reverse().map((row) => `<tr><td>${row.date}</td><td>${money(row.foreignSpot)}</td><td>${money(row.individualSpot)}</td><td>${money(row.institutionSpot)}</td><td>${contracts(row.foreignFuturesContracts)}</td></tr>`).join("");
 
