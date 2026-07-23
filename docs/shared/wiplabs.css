@@ -1,0 +1,4 @@
+/* Shared aliases only: loading this file must not change the current visual system. */
+.wl { --wl-bg: var(--bg); --wl-panel: var(--panel); --wl-ink: var(--title); --wl-muted: var(--muted); --wl-line: var(--line); --wl-good-ink: var(--green); --wl-warn-ink: var(--amber); --wl-bad-ink: var(--red); }
+.wl-flash { outline: 2px solid var(--green); outline-offset: 5px; transition: outline-color .4s ease; }
+@media (prefers-reduced-motion: reduce) { .wl-flash { transition: none; } }
