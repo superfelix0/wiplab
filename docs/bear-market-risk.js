@@ -49,16 +49,18 @@ function setBearStatus(message, state = "neutral") {
   bearEls.status.dataset.state = state;
 }
 
-function renderSummary(data) {
-  const total = Number(data?.summary?.totalScore);
+function renderSummary(data, dailyState = null) {
+  const dailyRisk = dailyState?.regime?.axes?.find((axis) => axis.id === "risk");
+  const total = Number.isFinite(Number(dailyRisk?.value)) ? Number(dailyRisk.value) : Number(data?.summary?.totalScore);
   const previous = Number(data?.summary?.previousScore);
   const delta = Number.isFinite(total) && Number.isFinite(previous) ? total - previous : null;
-  const stage = stageFor(total, data.scoreScale);
+  const dailyLabels = { normal: ["정상", "Normal"], watch: ["관찰", "Watch"], caution: ["주의", "Caution"], alert: ["경계", "Alert"], danger: ["위험", "Risk"] };
+  const stage = dailyRisk ? { labelKo: dailyLabels[dailyRisk.state]?.[0] || "확인 필요", labelEn: dailyLabels[dailyRisk.state]?.[1] || "Needs data", tone: dailyRisk.state } : stageFor(total, data.scoreScale);
   bearEls.score.textContent = `${scoreText(total)} / 10`;
   bearEls.stage.textContent = BEAR_IS_EN ? stage.labelEn : stage.labelKo;
   bearEls.stage.dataset.tone = stage.tone;
   bearEls.weekChange.textContent = Number.isFinite(delta) ? `${delta >= 0 ? "+" : ""}${scoreText(delta)} ${bt("점", "pts")}` : "N/A";
-  bearEls.updated.textContent = data.lastUpdated || data.generatedAt || "N/A";
+  bearEls.updated.textContent = dailyState?.meta?.basisDate || data.lastUpdated || data.generatedAt || "N/A";
   bearEls.summary.textContent = bText(data.summary?.interpretation);
 }
 
@@ -172,10 +174,14 @@ function renderSourceRegistry(data) {
 async function loadBearRisk() {
   setBearStatus(bt("약세장 위험 데이터를 불러오는 중입니다.", "Loading bear-market risk data."));
   try {
-    const response = await fetch(`/data/bear-market-risk.json?ts=${Date.now()}`, { cache: "no-store" });
+    const [response, dailyResponse] = await Promise.all([
+      fetch(`/data/bear-market-risk.json?ts=${Date.now()}`, { cache: "no-store" }),
+      fetch(`/data/daily-state.json?ts=${Date.now()}`, { cache: "no-store" }),
+    ]);
     const data = await response.json();
+    const dailyState = dailyResponse.ok ? await dailyResponse.json() : null;
     if (!response.ok || !data?.ok) throw new Error(bt("약세장 위험 데이터를 불러오지 못했습니다.", "Could not load bear-market risk data."));
-    renderSummary(data);
+    renderSummary(data, dailyState);
     renderCards(data);
     renderDetails(data);
     renderChart(data);
