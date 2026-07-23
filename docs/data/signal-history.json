@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-23T03:51:03+09:00",
+  "generatedAt": "2026-07-24T01:07:51+09:00",
   "snapshots": [
     {
       "date": "2026-07-23",
@@ -11,6 +11,17 @@
       "currentPer": 18.54,
       "historicalAveragePer": 15.64,
       "foreignFlowDate": "2026-07-22"
+    },
+    {
+      "date": "2026-07-24",
+      "labelKo": "방향성 혼재·고변동성",
+      "labelEn": "Mixed direction/high volatility",
+      "tone": "neutral",
+      "riskScore": 4.5,
+      "vkospi": 80.46,
+      "currentPer": 18.54,
+      "historicalAveragePer": 15.64,
+      "foreignFlowDate": "2026-07-23"
     }
   ]
 }
