@@ -406,19 +406,28 @@ async function fetchMarketPerData() {
   return data;
 }
 
-function buildCards(perData) {
+function buildCards(perData, dailyState = null) {
   const kospi = perData.markets.kospi200;
   const forwardPer = FORWARD_PER_CONSENSUS.value;
+  const valuation = dailyState?.regime?.axes?.find((axis) => axis.id === "valuation");
+  const memo = valuationMemo(kospi.per, kospi.historicalAveragePer, forwardPer);
+  if (valuation) {
+    const range = { low: t("역사적 하단", "Historical lower range"), mid: t("역사적 중심", "Historical middle range"), high: t("역사적 상단", "Historical upper range") }[valuation.state] || t("확인", "Checking");
+    memo.footnote = t(
+      `2010년 이후 PER 백분위 ${numberFormatter.format(valuation.value)}% · 공통 판정 ${range}. ${memo.footnote}`,
+      `PER percentile since 2010: ${numberFormatter.format(valuation.value)}% · shared regime: ${range}. ${memo.footnote}`
+    );
+  }
 
   return [
-    valuationMemo(kospi.per, kospi.historicalAveragePer, forwardPer),
+    memo,
   ];
 }
 
-function renderCards(perData) {
+function renderCards(perData, dailyState = null) {
   if (!marketCards) return;
 
-  marketCards.innerHTML = buildCards(perData)
+  marketCards.innerHTML = buildCards(perData, dailyState)
     .map((card) => `
       <article>
         <div class="market-card-head">
@@ -492,13 +501,14 @@ async function loadMarketDashboard() {
   setStatus(t("KRX PER 데이터를 불러오는 중입니다.", "Loading KRX PER data."));
 
   try {
-    const [perData, forwardHistory, perHistory] = await Promise.all([
+    const [perData, forwardHistory, perHistory, dailyState] = await Promise.all([
       fetchMarketPerData(),
       fetchForwardPerHistory().catch(() => []),
       fetchKospiPerHistory().catch(() => []),
+      fetch(`/data/daily-state.json?ts=${Date.now()}`, { cache: "no-store" }).then((response) => response.ok ? response.json() : null).catch(() => null),
     ]);
     useLatestForwardPer(forwardHistory);
-    renderCards(perData);
+    renderCards(perData, dailyState);
     renderMarketPerChart(perData);
     renderPerBacktest(perData, perHistory);
     renderSources(perData);
