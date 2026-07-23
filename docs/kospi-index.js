@@ -2,6 +2,7 @@
   const chart = document.querySelector("#kospiTrendChart");
   const status = document.querySelector("#kospiTrendStatus");
   if (!chart || !status) return;
+  chart.closest(".price-trend-panel")?.setAttribute("id", "kospi-index");
   const en = document.documentElement.lang.startsWith("en");
   const say = (ko, english) => en ? english : ko;
 

@@ -2686,5 +2686,34 @@ footer p {
 .scale-marker em { position: absolute; top: -24px; left: 0; color: var(--title); font-size: 10px; font-style: normal; white-space: nowrap; transform: translateX(-50%); }
 .scale-marker.forward em { top: 18px; color: var(--red); }
 .valuation-scale-labels { display: flex; justify-content: space-between; color: var(--faint); font-size: 10px; }
+.capex-structure,
+.capex-trend-panel { margin: 18px 0; border: 1px solid var(--line); background: var(--panel-2); }
+.capex-structure-head { display: flex; justify-content: space-between; gap: 20px; padding: 18px; border-bottom: 1px solid var(--line); }
+.capex-structure-head span { color: var(--faint); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.capex-structure-head h2 { margin: 6px 0; color: var(--title); font-size: 18px; }
+.capex-structure-head p { max-width: 700px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+.capex-structure-head > small { align-self: flex-start; color: var(--faint); font-size: 10px; white-space: nowrap; }
+.capex-meter-labels { display: grid; grid-template-columns: 7fr 3fr 2fr 1fr; padding: 13px 18px 0; color: var(--faint); font-size: 10px; }
+.capex-meter-labels span:nth-child(n+2) { text-align: right; }
+.capex-company-list { padding: 6px 18px 12px; }
+.capex-company-list article { display: grid; grid-template-columns: minmax(110px, .55fr) minmax(160px, 2fr) 58px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+.capex-company-list article:last-child { border-bottom: 0; }
+.capex-company-list strong { color: var(--title); font-size: 12px; }
+.capex-company-list small { display: block; margin-top: 2px; color: var(--faint); font-size: 10px; }
+.capex-company-list b { color: var(--title); font-size: 12px; text-align: right; }
+.capex-meter { position: relative; height: 10px; overflow: hidden; background: linear-gradient(90deg, color-mix(in srgb, var(--green) 32%, var(--panel)) 0 58.3%, color-mix(in srgb, var(--amber) 35%, var(--panel)) 58.3% 83.3%, color-mix(in srgb, var(--red) 30%, var(--panel)) 83.3%); }
+.capex-meter::before,
+.capex-meter::after { position: absolute; z-index: 2; top: 0; bottom: 0; width: 1px; background: color-mix(in srgb, var(--title) 48%, transparent); content: ""; }
+.capex-meter::before { left: 58.3%; }
+.capex-meter::after { left: 83.3%; }
+.capex-meter i { position: absolute; z-index: 1; top: 1px; bottom: 1px; left: 0; display: block; background: var(--title); opacity: .82; }
+.capex-trend-chart { height: 130px; padding: 18px 18px 0; }
+.capex-trend-chart svg { width: 100%; height: 100%; overflow: visible; }
+.capex-trend-chart line { stroke: var(--line); stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
+.capex-trend-chart polyline { fill: none; stroke: var(--green); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.capex-trend-values { display: grid; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 4px; padding: 12px 18px 18px; }
+.capex-trend-values span { display: grid; gap: 3px; border-top: 1px solid var(--line-soft); padding-top: 6px; }
+.capex-trend-values small { color: var(--faint); font-size: 10px; }
+.capex-trend-values b { color: var(--title); font-size: 11px; }
 @media (max-width: 760px) { .wl-flow-overview-head { display: grid; padding: 14px; } .wl-flow-divergence { grid-template-columns: 1fr; } .wl-flow-divergence article, .wl-flow-divergence article:last-child { border-right: 0; border-bottom: 1px solid var(--line); } .wl-flow-divergence article:last-child { border-bottom: 0; } }
-@media (max-width: 760px) { .flow-regime { grid-template-columns: 1fr; padding: 14px; } .flow-regime strong { font-size: 16px; } .valuation-percentile-scale { padding: 14px; } .valuation-scale-head { display: grid; } .valuation-scale-track { margin-top: 42px; } }
+@media (max-width: 760px) { .flow-regime { grid-template-columns: 1fr; padding: 14px; } .flow-regime strong { font-size: 16px; } .valuation-percentile-scale { padding: 14px; } .valuation-scale-head, .capex-structure-head { display: grid; } .valuation-scale-track { margin-top: 42px; } .capex-structure-head { padding: 14px; } .capex-meter-labels, .capex-company-list { padding-right: 14px; padding-left: 14px; } .capex-company-list article { grid-template-columns: minmax(86px, .75fr) minmax(110px, 1.5fr) 48px; gap: 8px; } .capex-trend-chart { padding-right: 14px; padding-left: 14px; } .capex-trend-values { padding: 12px 14px 14px; } }

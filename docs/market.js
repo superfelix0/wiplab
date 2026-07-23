@@ -452,7 +452,7 @@ function renderPercentileScale(perData, dailyState = null) {
   const currentPercentile = Number(dailyState?.inputs?.perPercentile ?? percentileFor(Number(kospi.per)));
   const forwardPercentile = percentileFor(FORWARD_PER_CONSENSUS.value);
   const panel = document.querySelector("#valuationPercentileScale") || document.createElement("section");
-  panel.id = "valuationPercentileScale";
+  panel.id = "kospi-per";
   panel.className = "valuation-percentile-scale";
   panel.innerHTML = `<div class="valuation-scale-head"><div><span>${t("L2 · 역사 분포", "L2 · Historical distribution")}</span><h2>${t("PER 백분위 스케일", "PER percentile scale")}</h2><p>${t("2010년 이후 일별 KOSPI PER 분포에서 현행과 Forward PER의 위치를 비교합니다.", "Places current and forward PER within the daily KOSPI PER distribution since 2010.")}</p></div><small>${t("하단 30% · 중심 30~70% · 상단 70%", "Lower 30% · middle 30–70% · upper 70%")}</small></div><div class="valuation-scale-track" role="img" aria-label="${t(`현행 PER 백분위 ${currentPercentile.toFixed(1)}%, Forward PER 백분위 ${forwardPercentile.toFixed(1)}%`, `Current PER percentile ${currentPercentile.toFixed(1)}%, Forward PER percentile ${forwardPercentile.toFixed(1)}%`)}"><i class="scale-low"></i><i class="scale-mid"></i><i class="scale-high"></i><b class="scale-marker current" style="left:${Math.max(2, Math.min(98, currentPercentile))}%"><em>${t("현행", "Current")} ${formatPer(Number(kospi.per))}</em></b><b class="scale-marker forward" style="left:${Math.max(2, Math.min(98, forwardPercentile))}%"><em>Forward ${formatPer(FORWARD_PER_CONSENSUS.value)}</em></b></div><div class="valuation-scale-labels"><span>0%</span><span>30%</span><span>70%</span><span>100%</span></div>`;
   if (!panel.isConnected) dashboard.querySelector("#marketCards")?.before(panel);

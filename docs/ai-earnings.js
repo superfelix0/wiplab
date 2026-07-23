@@ -179,6 +179,47 @@ function renderRankings(data) {
   syncTabs();
 }
 
+function renderCapexStructure(data) {
+  const dashboard = document.querySelector(".earnings-dashboard");
+  const tabList = dashboard?.querySelector(".earnings-chart-tabs");
+  if (!dashboard || !tabList) return;
+
+  const rows = rowsWithLatest(data)
+    .map(({ company, latest }) => ({ company, latest, ratio: capexOcf(latest) }))
+    .filter(({ ratio }) => Number.isFinite(ratio))
+    .sort((a, b) => b.ratio - a.ratio);
+  const scaleMax = Math.max(1.2, ...rows.map(({ ratio }) => ratio)) * 1.08;
+  const compare = document.querySelector("#capex-compare") || document.createElement("section");
+  compare.id = "capex-compare";
+  compare.className = "capex-structure";
+  compare.innerHTML = `
+    <div class="capex-structure-head"><div><span>L2 · ${t("기업별 비교", "Company comparison")}</span><h2>${t("현금흐름 안에서 감당되는 투자 규모", "Investment capacity within operating cash flow")}</h2><p>${t("CAPEX/OCF가 70% 이하면 여유, 70~100%면 점검, 100%를 넘으면 해당 분기 영업현금흐름만으로는 투자를 모두 충당하지 못한 구간으로 읽습니다.", "CAPEX/OCF below 70% indicates room, 70–100% calls for review, and above 100% means quarterly CAPEX exceeded operating cash flow.")}</p></div><small>${t("최근 결산 분기", "Latest reported quarter")}</small></div>
+    <div class="capex-meter-labels"><span>0%</span><span>70%</span><span>100%</span><span>${Math.round(scaleMax * 100)}%</span></div>
+    <div class="capex-company-list">${rows.map(({ company, latest, ratio }) => {
+      const width = Math.min(100, ratio / scaleMax * 100);
+      return `<article><div><strong>${company.name}</strong><small>${latest.date}</small></div><div class="capex-meter" aria-label="${company.name} CAPEX/OCF ${pct(ratio)}"><i style="width:${width}%"></i></div><b>${pct(ratio)}</b></article>`;
+    }).join("") || `<p class="empty-note">${t("표시할 CAPEX/OCF 데이터가 없습니다.", "No CAPEX/OCF data is available.")}</p>`}</div>`;
+  tabList.before(compare);
+
+  const buckets = new Map();
+  hyperscalers(data).forEach((company) => (company.quarters || []).forEach((quarter) => {
+    const ratio = capexOcf(quarter);
+    if (!Number.isFinite(ratio) || !quarter.date) return;
+    if (!buckets.has(quarter.date)) buckets.set(quarter.date, []);
+    buckets.get(quarter.date).push(ratio);
+  }));
+  const trend = Array.from(buckets, ([date, values]) => ({ date, value: average(values) }))
+    .filter(({ value }) => Number.isFinite(value))
+    .sort((a, b) => a.date.localeCompare(b.date)).slice(-8);
+  const trendPanel = document.querySelector("#capex-trend") || document.createElement("section");
+  trendPanel.id = "capex-trend";
+  trendPanel.className = "capex-trend-panel";
+  const max = Math.max(1.2, ...trend.map(({ value }) => value)) * 1.08;
+  const points = trend.map(({ value }, index) => `${trend.length === 1 ? 50 : (index / (trend.length - 1)) * 100},${100 - value / max * 100}`).join(" ");
+  trendPanel.innerHTML = `<div class="capex-structure-head"><div><span>L3 · ${t("분기 추이", "Quarterly trend")}</span><h2>${t("하이퍼스케일러 평균 CAPEX/OCF", "Hyperscaler average CAPEX/OCF")}</h2><p>${t("공개된 기업별 분기값의 단순 평균입니다. 기업 구성과 회계 분류가 달라 절대 비교보다 방향을 보는 용도입니다.", "A simple average of disclosed quarterly company values. Company mix and accounting classification vary, so use it for direction rather than exact comparison.")}</p></div></div><div class="capex-trend-chart" role="img" aria-label="${t("최근 분기별 하이퍼스케일러 평균 CAPEX/OCF 추이", "Recent quarterly hyperscaler average CAPEX/OCF trend")}"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" x2="100" y1="${100 - .7 / max * 100}" y2="${100 - .7 / max * 100}"></line><line x1="0" x2="100" y1="${100 - 1 / max * 100}" y2="${100 - 1 / max * 100}"></line><polyline points="${points}"></polyline></svg></div><div class="capex-trend-values">${trend.map(({ date, value }) => `<span><small>${date}</small><b>${pct(value)}</b></span>`).join("")}</div>`;
+  compare.after(trendPanel);
+}
+
 function renderCards(data) {
   if (!earningsEls.cards) return;
   const rows = rowsWithLatest(data).sort((a, b) => a.company.name.localeCompare(b.company.name));
@@ -221,6 +262,7 @@ function render(data) {
   renderSummary(data);
   renderReleaseHighlights(data);
   renderTakeaways(data);
+  renderCapexStructure(data);
   renderRankings(data);
   renderCards(data);
   renderTable(data);

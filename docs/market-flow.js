@@ -43,7 +43,7 @@
     const summary = flow?.leaderConfidence === "confirmed"
       ? t(`${labels[flow.leaderId]}의 동행 신호가 규모 조건까지 충족했습니다.`, `${labels[flow.leaderId]} meets both alignment and size conditions.`)
       : t("한 주체의 동행만으로 방향을 단정할 수 없습니다. 60거래일 기준과 규모 조건을 함께 확인합니다.", "No single participant meets both the alignment and size conditions over the 60-session window.");
-    const methodology = `<section class="flow-regime" id="flow-5d"><div><span>${t("60거래일 수급 구조", "60-session flow structure")}</span><strong>${flow?.label || t("산출 대기", "Pending")}</strong><p>${summary}</p></div><ul>${subjects || `<li>${t("수급 이력을 불러오지 못했습니다.", "Flow history is unavailable.")}</li>`}</ul><small>${t("일별 KOSPI 변동률 절대값이 0.05% 미만인 날은 제외합니다. 동행 63% 이상, 역행 37% 이하이며 기존 상태는 57%/43%를 벗어날 때 전환합니다.", "Sessions with an absolute KOSPI move below 0.05% are excluded. Entry thresholds are 63% aligned and 37% contrarian; existing states change only beyond 57%/43%.")}</small></section>`;
+    const methodology = `<section class="flow-regime" id="flow-method"><div><span>${t("60거래일 수급 구조", "60-session flow structure")}</span><strong>${flow?.label || t("산출 대기", "Pending")}</strong><p>${summary}</p></div><ul>${subjects || `<li>${t("수급 이력을 불러오지 못했습니다.", "Flow history is unavailable.")}</li>`}</ul><small>${t("일별 KOSPI 변동률 절대값이 0.05% 미만인 날은 제외합니다. 동행 63% 이상, 역행 37% 이하이며 기존 상태는 57%/43%를 벗어날 때 전환합니다.", "Sessions with an absolute KOSPI move below 0.05% are excluded. Entry thresholds are 63% aligned and 37% contrarian; existing states change only beyond 57%/43%.")}</small></section>`;
     const placeholder = root.querySelector("[data-flow-note]");
     const panel = document.createElement("div");
     panel.innerHTML = methodology;
