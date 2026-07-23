@@ -55,7 +55,7 @@
       }
       const latest = rows.at(-1);
       const label = en ? latest.labelEn : latest.labelKo;
-      if (historyEl) historyEl.innerHTML = rows.map((row, index) => `<span class="${index === rows.length - 1 ? "is-current" : ""}" title="${row.date}">${row.date.slice(5).replace("-", ".")} · ${en ? row.labelEn : row.labelKo}</span>`).join("");
+      if (historyEl) historyEl.innerHTML = rows.map((row, index) => `<span class="${index === rows.length - 1 ? "is-current" : ""}" title="${row.date}">${row.date.slice(5).replace("-", ".")} | ${en ? row.labelEn : row.labelKo}</span>`).join("");
       visitBanner({ label, signalKey: latest.labelEn || latest.labelKo, date: latest.date });
     })
     .catch(() => {

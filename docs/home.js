@@ -98,9 +98,12 @@ function applyDailyState(state) {
     const lead = flowInput?.label || (flow?.state === "aligned" ? ht("수급 우세", "Flow dominant") : ht("수급 혼재", "Flow mixed"));
     const leader = (flowInput?.subjects || []).find((subject) => subject.id === flowInput?.leaderId);
     const shortRead = leader?.shortTrend === "continuing" ? ht("5일도 같은 추세", "5-session trend continues") : leader?.shortTrend === "turning" ? ht("5일은 변화", "5-session trend changed") : ht("5일 보합", "5-session flat");
+    const flowPrevious = { aligned: ht("수급 우세", "Flow dominant"), unrelated: ht("수급 혼재", "Flow mixed"), insufficient: ht("데이터 부족", "Insufficient history") }[flow?.prevState] || ht("전일 자료 없음", "No prior data");
+    const valuationPrevious = valuationLabels[valuation?.prevState] || ht("전일 자료 없음", "No prior data");
+    const riskPrevious = riskLabels[risk?.prevState] || ht("전일 자료 없음", "No prior data");
     change.textContent = ht(
-      `밸류에이션: 역사적 ${valuationLabels[valuation?.state] || "구간"} · 약세장 전환 위험: ${riskLabels[risk?.state] || "확인"} · 30일 수급: ${lead} (${shortRead})`,
-      `Valuation: historical ${valuationLabels[valuation?.state] || "range"} · bear-market transition risk: ${riskLabels[risk?.state] || "Checking"} · 30-session flow: ${lead} (${shortRead})`
+      `밸류에이션: 역사적 ${valuationLabels[valuation?.state] || "구간"} (전일 ${valuationPrevious}) | 약세장 전환 위험: ${riskLabels[risk?.state] || "확인"} (전일 ${riskPrevious}) | 30일 수급: ${lead} (전일 ${flowPrevious}, ${shortRead})`,
+      `Valuation: historical ${valuationLabels[valuation?.state] || "range"} (prior ${valuationPrevious}) | bear-market transition risk: ${riskLabels[risk?.state] || "Checking"} (prior ${riskPrevious}) | 30-session flow: ${lead} (prior ${flowPrevious}, ${shortRead})`
     );
   }
   const cardLabels = {

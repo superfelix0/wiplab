@@ -22,7 +22,16 @@
     if (value === "time-pre-market") return t("장 전", "Before market open");
     return value || t("시간 미정", "Time TBD");
   };
-  const eventText = (event) => `${event.name} (${event.symbol}) · ${event.date} · ${eventTime(event.time)}`;
+  const todayKst = () => {
+    const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+    return `${parts.year}-${parts.month}-${parts.day}`;
+  };
+  const daysUntil = (date) => Math.round((new Date(`${date}T00:00:00Z`) - new Date(`${todayKst()}T00:00:00Z`)) / 86400000);
+  const dDay = (date) => {
+    const days = daysUntil(date);
+    return days === 0 ? "D-day" : days > 0 ? `D-${days}` : t("발표일 경과", "Reported date passed");
+  };
+  const eventText = (event) => `${event.name} (${event.symbol}) · ${dDay(event.date)} · ${event.date} · ${eventTime(event.time)}`;
 
   function renderQuotes(data) {
     const items = data?.items || [];
