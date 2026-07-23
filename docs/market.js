@@ -429,14 +429,11 @@ function renderCards(perData, dailyState = null) {
 
   marketCards.innerHTML = buildCards(perData, dailyState)
     .map((card) => `
-      <article>
-        <div class="market-card-head">
-          <span>${card.title}</span>
-          <span class="market-badge-row"><span class="market-badge">${card.badge}</span></span>
-        </div>
-        <strong>${card.value}</strong>
-        <p>${card.description}</p>
-        <small>${card.footnote}</small>
+      <article class="wl-panel is-warn">
+        <span class="wl-panel-label">${card.title} · ${card.badge}</span>
+        <strong class="wl-panel-state">${card.value}</strong>
+        <p class="wl-panel-basis">${card.description}</p>
+        <small class="wl-panel-axis">${card.footnote}</small>
       </article>
     `)
     .join("");
