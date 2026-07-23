@@ -2715,5 +2715,12 @@ footer p {
 .capex-trend-values span { display: grid; gap: 3px; border-top: 1px solid var(--line-soft); padding-top: 6px; }
 .capex-trend-values small { color: var(--faint); font-size: 10px; }
 .capex-trend-values b { color: var(--title); font-size: 11px; }
+.memory-cycle-panel { margin: 18px 0; border: 1px solid var(--line); background: var(--panel-2); }
+.memory-cycle-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.memory-cycle-grid article { display: grid; gap: 6px; padding: 16px 18px; border-right: 1px solid var(--line); }
+.memory-cycle-grid article:last-child { border-right: 0; }
+.memory-cycle-grid span { color: var(--faint); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.memory-cycle-grid strong { color: var(--title); font-size: 17px; }
+.memory-cycle-grid small { color: var(--muted); font-size: 11px; line-height: 1.45; }
 @media (max-width: 760px) { .wl-flow-overview-head { display: grid; padding: 14px; } .wl-flow-divergence { grid-template-columns: 1fr; } .wl-flow-divergence article, .wl-flow-divergence article:last-child { border-right: 0; border-bottom: 1px solid var(--line); } .wl-flow-divergence article:last-child { border-bottom: 0; } }
-@media (max-width: 760px) { .flow-regime { grid-template-columns: 1fr; padding: 14px; } .flow-regime strong { font-size: 16px; } .valuation-percentile-scale { padding: 14px; } .valuation-scale-head, .capex-structure-head { display: grid; } .valuation-scale-track { margin-top: 42px; } .capex-structure-head { padding: 14px; } .capex-meter-labels, .capex-company-list { padding-right: 14px; padding-left: 14px; } .capex-company-list article { grid-template-columns: minmax(86px, .75fr) minmax(110px, 1.5fr) 48px; gap: 8px; } .capex-trend-chart { padding-right: 14px; padding-left: 14px; } .capex-trend-values { padding: 12px 14px 14px; } }
+@media (max-width: 760px) { .flow-regime { grid-template-columns: 1fr; padding: 14px; } .flow-regime strong { font-size: 16px; } .valuation-percentile-scale { padding: 14px; } .valuation-scale-head, .capex-structure-head { display: grid; } .valuation-scale-track { margin-top: 42px; } .capex-structure-head { padding: 14px; } .capex-meter-labels, .capex-company-list { padding-right: 14px; padding-left: 14px; } .capex-company-list article { grid-template-columns: minmax(86px, .75fr) minmax(110px, 1.5fr) 48px; gap: 8px; } .capex-trend-chart { padding-right: 14px; padding-left: 14px; } .capex-trend-values { padding: 12px 14px 14px; } .memory-cycle-grid { grid-template-columns: 1fr; } .memory-cycle-grid article, .memory-cycle-grid article:last-child { border-right: 0; border-bottom: 1px solid var(--line); } .memory-cycle-grid article:last-child { border-bottom: 0; } }

@@ -124,6 +124,40 @@ function renderMemorySummary(companies) {
   `;
 }
 
+function renderMemoryCycle(companies) {
+  const dashboard = document.querySelector(".earnings-dashboard");
+  const tabList = dashboard?.querySelector(".earnings-chart-tabs");
+  if (!dashboard || !tabList) return;
+  const rows = companies.map(enrichedCompany).filter((company) => company.quarters.length >= 2);
+  const growth = rows.map((company) => company.quarters.at(-1)?.opGrowth).filter(Number.isFinite);
+  const latestMargins = rows.map((company) => company.quarters.at(-1)?.opMargin).filter(Number.isFinite);
+  const priorMargins = rows.map((company) => company.quarters.at(-2)?.opMargin).filter(Number.isFinite);
+  const avgGrowth = growth.length ? averageMemory(growth) : null;
+  const marginChange = latestMargins.length && priorMargins.length ? averageMemory(latestMargins) - averageMemory(priorMargins) : null;
+  const priceRows = companies.map((company) => Number(company.priceSummary?.return3m)).filter(Number.isFinite);
+  const avgPrice = priceRows.length ? averageMemory(priceRows) : null;
+  const regime = Number.isFinite(avgGrowth) && avgGrowth > .1 && Number.isFinite(marginChange) && marginChange > 0
+    ? mt("실적 확장", "Earnings expansion")
+    : Number.isFinite(avgGrowth) && avgGrowth < -.1
+      ? mt("실적 둔화", "Earnings contraction")
+      : mt("실적 보합", "Earnings mixed");
+  const response = Number.isFinite(avgPrice) && avgPrice > .05
+    ? mt("주가 선행 강세", "Shares leading higher")
+    : Number.isFinite(avgPrice) && avgPrice < -.05
+      ? mt("주가 약세 반영", "Shares pricing in weakness")
+      : mt("주가 반응 혼재", "Shares mixed");
+  const panel = document.querySelector("#mem-cycle") || document.createElement("section");
+  panel.id = "mem-cycle";
+  panel.className = "memory-cycle-panel";
+  panel.innerHTML = `<div class="capex-structure-head"><div><span>L2 · ${mt("업황과 주가의 선후", "Cycle and market response")}</span><h2>${mt("실적 변화와 주가 반영을 분리해 읽기", "Separate earnings change from price response")}</h2><p>${mt("실적은 최근 결산 분기의 영업이익·마진 변화, 주가는 각 기업 최근 3개월 수익률의 단순 평균입니다. 두 지표의 시점이 다르므로 인과관계가 아닌 선후 관계를 점검합니다.", "Earnings use the latest reported operating-profit and margin changes; share prices use a simple average of each company's latest three-month return. Different timing means this is a lead–lag check, not a causal claim.")}</p></div></div><div class="memory-cycle-grid"><article><span>${mt("실적 국면", "Earnings regime")}</span><strong>${regime}</strong><small>${mt("평균 영업이익 QoQ", "Average operating-profit QoQ")} · ${mPct(avgGrowth)}</small></article><article><span>${mt("마진 변화", "Margin change")}</span><strong>${mPp(marginChange)}</strong><small>${mt("최근 분기 평균 대 직전 분기", "Latest average versus prior quarter")}</small></article><article><span>${mt("시장 반응", "Market response")}</span><strong>${response}</strong><small>${mt("평균 3개월 수익률", "Average 3-month return")} · ${mPct(avgPrice)}</small></article></div>`;
+  tabList.before(panel);
+}
+
+function averageMemory(values) {
+  const valid = values.filter(Number.isFinite);
+  return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : null;
+}
+
 function renderMemoryChart(companies) {
   const rows = chartRows(companies);
   if (!memoryEls.chart) return;
@@ -316,6 +350,7 @@ async function loadMemoryEarnings() {
     if (!response.ok || !data?.ok) throw new Error(mt("메모리 실적 데이터를 불러오지 못했습니다.", "Could not load memory earnings data."));
     const companies = memoryCompanies(data);
     renderMemorySummary(companies);
+    renderMemoryCycle(companies);
     renderMemoryReleaseHighlights(companies);
     renderMemoryChart(companies);
     renderMemoryTimeline(companies);
