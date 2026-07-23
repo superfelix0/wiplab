@@ -20,6 +20,24 @@
 .wl-history-kicker { margin: 24px 0 10px; }
 .wl .earnings-release-panel > .wl-kicker,
 .wl .earnings-takeaway-panel > .wl-kicker { margin: 0 0 10px; }
+.wl .sentiment-controls { margin: 12px 0; }
+.wl .sentiment-card-board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.wl .sentiment-card-board > article { padding: 14px; border: 1px solid var(--wl-border); border-radius: var(--wl-radius); background: var(--wl-surface); }
+.wl .sentiment-card-board > article.featured { grid-column: auto; }
+.wl .sentiment-card-board > article > span { display: block; color: var(--wl-ink-2); font-size: 12px; }
+.wl .sentiment-card-board > article > strong { display: block; margin: 5px 0; font-size: 20px; line-height: 1.2; }
+.wl .sentiment-card-board > article > small { display: block; color: var(--wl-ink-3); font-size: 11px; line-height: 1.55; }
+.wl .risk-summary-board { grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 12px 0; }
+.wl .risk-card-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }
+.wl .wl-risk-row { display: grid; grid-template-columns: 1fr auto; gap: 5px 10px; padding: 12px 0; border-bottom: 1px solid var(--wl-border); }
+.wl .wl-risk-row:last-child { border-bottom: 0; }
+.wl-risk-row-head { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; font-weight: 600; }
+.wl-risk-row-head strong { color: var(--wl-warn-ink); font-family: var(--wl-mono); font-size: 12px; }
+.wl .wl-risk-row > p { grid-column: 1 / -1; margin: 0; color: var(--wl-ink-2); font-size: 13px; line-height: 1.5; }
+.wl .wl-risk-row > small { grid-column: 1 / -1; color: var(--wl-ink-3); font-size: 11px; }
+.wl .wl-risk-row > a { justify-self: start; font-size: 12px; color: var(--wl-warn-ink); }
+.wl .chart-panel { margin: 0; padding: 12px 0 0; border: 0; background: transparent; }
+@media (max-width: 560px) { .wl .risk-summary-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }.wl .sentiment-card-board { grid-template-columns: 1fr; } }
 .wl-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .wl-h2 { margin: 0; font-size: 17px; font-weight: 600; }
 .wl-verdict, .wl-metrics { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }

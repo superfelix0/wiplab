@@ -68,13 +68,12 @@ function renderSummary(data, dailyState = null) {
 
 function renderCards(data) {
   bearEls.cards.innerHTML = (data.indicators || []).map((item) => `
-    <article data-tone="${scoreTone(item.score)}">
-      <div class="risk-card-head"><span>${escapeBear(item.id)}</span><strong>${scoreText(item.score)} / 2</strong></div>
-      <h3>${escapeBear(BEAR_IS_EN ? item.titleEn : item.titleKo)}</h3>
-      <b class="risk-state">${escapeBear(BEAR_IS_EN ? item.statusEn : item.statusKo)}</b>
+    <article class="wl-risk-row is-${scoreTone(item.score)}" data-tone="${scoreTone(item.score)}">
+      <div class="wl-risk-row-head"><span>${escapeBear(BEAR_IS_EN ? item.titleEn : item.titleKo)}</span><strong>${scoreText(item.score)} / 2</strong></div>
+      <div class="wl-dots" aria-label="${scoreText(item.score)} out of 2">${[0, 1].map((dot) => `<i class="wl-dot${item.score > dot ? " is-on" : ""}"></i>`).join("")}</div>
       <p>${escapeBear(BEAR_IS_EN ? item.observationEn : item.observationKo)}</p>
       <small>${escapeBear(BEAR_IS_EN ? item.recentChangeEn : item.recentChangeKo)}</small>
-      <a href="${escapeBear(item.anchor)}">${bt("상세 보기", "View detail")}</a>
+      <a href="${escapeBear(item.anchor)}">${bt("근거 보기", "View basis")}</a>
     </article>
   `).join("");
 }
