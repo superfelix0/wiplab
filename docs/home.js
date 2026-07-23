@@ -586,8 +586,20 @@ async function loadHomeRead() {
     updateMemoryPriceComment(earnings);
     updateBearRiskComment(bearRisk);
     const flowSummary = updateForeignFlowComment(foreignFlow);
-    updateMarketSentiment(per, sentiment, sentimentRows, earnings, bearRisk, flowSummary);
+    // The home view intentionally does not publish an aggregate investment score.
+    // Its label and change strip are derived only from the shared, per-axis regime state below.
     applyDailyState(dailyState);
+    if (!dailyState?.regime?.axes?.length) {
+      if (homeEls.marketSentimentLabel) {
+        homeEls.marketSentimentLabel.textContent = ht("데이터 확인 필요", "Data check needed");
+        homeEls.marketSentimentLabel.dataset.tone = "neutral";
+      }
+      const change = document.querySelector("#todaySignalChange");
+      if (change) change.textContent = ht(
+        "공통 상태 데이터를 불러오지 못했습니다. 각 상세 페이지의 최신 데이터와 출처를 확인해 주세요.",
+        "The shared regime data is unavailable. Please check each detailed page for its latest data and sources."
+      );
+    }
 
     const timestamps = [per?.generatedAt, sentiment?.generatedAt, earnings?.generatedAt, bearRisk?.generatedAt, foreignFlow?.generatedAt].filter(Boolean);
     if (homeEls.updatedAt) homeEls.updatedAt.textContent = timestamps.length ? `${ht("최근 업데이트", "Last update")} ${formatHomeUpdatedAt(timestamps.sort().at(-1))}` : ht("업데이트 정보 없음", "No update information");
