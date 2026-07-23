@@ -14,6 +14,44 @@ function valuationState(percentile, previous) {
   return applyHysteresis(previous, candidate, (state) => (state === "low" ? percentile < VALUATION.exit.low : state === "high" ? percentile > VALUATION.exit.high : percentile >= VALUATION.enter.low && percentile <= VALUATION.enter.high));
 }
 
+function csvRows(file) {
+  const [header, ...lines] = fs.readFileSync(path.join(root, file), "utf8").trim().split(/\r?\n/);
+  const columns = header.split(",");
+  return lines.map((line) => Object.fromEntries(columns.map((column, index) => [column, line.split(",")[index]])));
+}
+
+function flowSummary(rows, previousFlow = null) {
+  const closes = new Map(csvRows("docs/data/kospi-per-history.csv").map((row) => [row.date, Number(row.close)]));
+  const usable = rows.filter((row) => Number.isFinite(closes.get(row.date))).sort((a, b) => a.date.localeCompare(b.date));
+  if (usable.length < FLOW.window) return { state: "insufficient", label: `수급 이력 ${usable.length}/${FLOW.window}`, count: usable.length };
+  const sample = usable.slice(-FLOW.window);
+  const previousSubjects = new Map((previousFlow?.subjects || []).map((subject) => [subject.id, subject]));
+  const subjects = [["foreignSpot", "외국인"], ["individualSpot", "개인"], ["institutionSpot", "기관"]].map(([id, name]) => {
+    let matches = 0, observations = 0;
+    for (let index = 1; index < sample.length; index += 1) {
+      const change = (closes.get(sample[index].date) / closes.get(sample[index - 1].date) - 1) * 100;
+      if (Math.abs(change) < FLOW.flatReturnPct) continue;
+      observations += 1;
+      if (Math.sign(Number(sample[index][id])) === Math.sign(change)) matches += 1;
+    }
+    const matchRate = observations ? matches / observations * 100 : 50;
+    const prior = previousSubjects.get(id)?.state;
+    const remainsAligned = prior === "aligned" && matchRate >= FLOW.exit.aligned;
+    const remainsContrarian = prior === "contrarian" && matchRate <= FLOW.exit.contrarian;
+    const state = remainsAligned || matchRate >= FLOW.enter.aligned
+      ? "aligned"
+      : remainsContrarian || matchRate <= FLOW.enter.contrarian
+        ? "contrarian"
+        : "unrelated";
+    const size = sample.map((row) => Math.abs(Number(row[id]))).sort((a, b) => a - b)[Math.floor(sample.length / 2)];
+    return { id, name, matchRate: Number(matchRate.toFixed(1)), state, size };
+  });
+  const ranked = subjects.slice().sort((a, b) => b.size - a.size).map((subject, index) => ({ ...subject, sizeRank: index + 1 }));
+  const aligned = ranked.filter((subject) => subject.state === "aligned");
+  const leader = aligned.length === FLOW.leader.maxAlignedSubjects && aligned[0].sizeRank <= FLOW.leader.sizeRankWithin ? aligned[0] : null;
+  return { state: leader ? "aligned" : "unrelated", label: leader ? `${leader.name} 동행 · 규모 상위` : "방향 주도 불명", count: sample.length, subjects: ranked, leaderId: leader?.id ?? null, leaderConfidence: leader ? "confirmed" : "unclear" };
+}
+
 function main() {
   const market = read("docs/data/market-per.json").markets.kospi200;
   const riskData = read("docs/data/bear-market-risk.json");
@@ -27,20 +65,26 @@ function main() {
   const maxScore = Number(riskData.indicators?.length ?? 5) * RISK.indicatorMax;
   const previousRisk = previous?.regime?.axes?.find((axis) => axis.id === "risk")?.state ?? null;
   const rawRisk = riskStageFor(score, maxScore);
-  const risk = riskStageWithHysteresis(rawRisk, previousRisk, previousRisk && rawRisk !== previousRisk ? 0 : (previous?.regime?.axes?.find((axis) => axis.id === "risk")?.lowerWeeks ?? 0) + 1);
-  const flowRows = flow.rows || [];
-  const flowState = flowRows.length >= FLOW.window ? "ready" : "insufficient";
+  const previousRiskAxis = previous?.regime?.axes?.find((axis) => axis.id === "risk");
+  const rawRiskRank = RISK.stages.indexOf(rawRisk);
+  const previousRiskRank = RISK.stages.indexOf(previousRisk);
+  const lowerWeeks = previousRisk && rawRiskRank < previousRiskRank ? (previousRiskAxis?.lowerWeeks ?? 0) + 1 : 0;
+  const risk = riskStageWithHysteresis(rawRisk, previousRisk, lowerWeeks);
+  const flowResult = flowSummary(flow.rows || [], previous?.inputs?.flow);
   const basisDate = [market.date, riskData.lastUpdated, flow.lastDataDate].filter(Boolean).sort().at(-1) || now.slice(0, 10);
   const data = {
     meta: { basisDate, updatedAt: now, source: "WIP Labs connected data pipeline", session: "closed" },
     regime: { axes: [
-      { id: "valuation", state: valuation, stateLabel: VALUATION.labels[valuation], value: Number(percentile.toFixed(1)), href: "/valuation/#kospi-per" },
-      { id: "risk", state: risk, rawState: rawRisk, stateLabel: RISK.labels[risk], value: score, maxScore, href: "/sentiment-risk/#risk-score" },
-      { id: "flow", state: flowState, stateLabel: flowState === "ready" ? "판정 준비" : `수급 이력 ${flowRows.length}/${FLOW.window}`, href: "/market-flow/#flow-5d" },
+      { id: "valuation", state: valuation, prevState: previousValuation, stateLabel: VALUATION.labels[valuation], value: Number(percentile.toFixed(1)), href: "/valuation/#kospi-per" },
+      { id: "risk", state: risk, prevState: previousRisk, rawState: rawRisk, lowerWeeks, stateLabel: RISK.labels[risk], value: score, maxScore, href: "/sentiment-risk/#risk-score" },
+      { id: "flow", state: flowResult.state, prevState: previous?.regime?.axes?.find((axis) => axis.id === "flow")?.state ?? null, stateLabel: flowResult.label, href: "/market-flow/#flow-5d" },
     ] },
     diff: [],
-    inputs: { currentPer: market.per, perPercentile: Number(percentile.toFixed(1)), riskScore: score, riskMaxScore: maxScore, flowHistoryCount: flowRows.length },
+    inputs: { currentPer: market.per, perPercentile: Number(percentile.toFixed(1)), riskScore: score, riskMaxScore: maxScore, flow: flowResult },
   };
+  data.diff = data.regime.axes
+    .filter((axis) => axis.prevState && axis.prevState !== axis.state)
+    .map((axis) => ({ id: axis.id, type: "state-change", from: axis.prevState, to: axis.state, href: axis.href }));
   fs.writeFileSync(path.join(root, output), JSON.stringify(data, null, 2) + "\n");
   console.log(`Wrote ${output} for ${basisDate}`);
 }
