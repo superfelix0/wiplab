@@ -1,7 +1,7 @@
 {
   "meta": {
     "basisDate": "2026-07-23",
-    "updatedAt": "2026-07-24T03:54:09+09:00",
+    "updatedAt": "2026-07-24T03:55:19+09:00",
     "source": "WIP Labs connected data pipeline",
     "session": "closed"
   },
@@ -10,7 +10,7 @@
       {
         "id": "valuation",
         "state": "high",
-        "prevState": null,
+        "prevState": "high",
         "stateLabel": "역사적 상단",
         "value": 83.2,
         "href": "/valuation/#kospi-per"
@@ -18,7 +18,7 @@
       {
         "id": "risk",
         "state": "caution",
-        "prevState": null,
+        "prevState": "caution",
         "rawState": "caution",
         "lowerWeeks": 0,
         "stateLabel": "주의",
@@ -29,21 +29,21 @@
       {
         "id": "flow",
         "state": "unrelated",
-        "prevState": null,
+        "prevState": "unrelated",
         "stateLabel": "방향 주도 불명",
         "href": "/market-flow/#flow-5d"
       },
       {
         "id": "capex",
         "state": "strained",
-        "prevState": null,
+        "prevState": "strained",
         "stateLabel": "투자 부담",
         "href": "/ai-capex/"
       },
       {
         "id": "memory",
         "state": "expanding",
-        "prevState": null,
+        "prevState": "expanding",
         "stateLabel": "실적 확장",
         "href": "/memory-earnings/"
       }
