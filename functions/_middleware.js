@@ -2,7 +2,7 @@ const GA_ID = "G-GD6K8FB589";
 
 class HeadInjector {
   element(element) {
-    element.append(`<meta property="og:image" content="https://wiplabs.pages.dev/og-default.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://wiplabs.pages.dev/og-default.svg"><link rel="stylesheet" href="/shared/wiplabs.css?v=20260724a6"><script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${GA_ID}');</script><script defer src="/shared/wiplabs.js?v=20260725"></script><script defer src="/mobile-nav.js?v=20260723"></script><script defer src="/glossary-links.js?v=20260723"></script>`, { html: true });
+    element.append(`<meta property="og:image" content="https://wiplabs.pages.dev/og-default.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://wiplabs.pages.dev/og-default.svg"><link rel="stylesheet" href="/shared/wiplabs.css?v=20260724a7"><script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${GA_ID}');</script><script defer src="/shared/wiplabs.js?v=20260725"></script><script defer src="/mobile-nav.js?v=20260723"></script><script defer src="/glossary-links.js?v=20260723"></script>`, { html: true });
   }
 }
 
