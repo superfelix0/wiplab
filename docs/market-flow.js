@@ -30,6 +30,15 @@
     root.querySelector("[data-flow-date]").textContent = latest?.date || "--";
 
     const flow = regime?.inputs?.flow;
+    const overview = root.querySelector(".wl-flow-overview") || document.createElement("section");
+    overview.className = "wl-flow-overview";
+    overview.id = "flow-5d";
+    const flowLabel = flow?.leaderConfidence === "confirmed"
+      ? t(`${labels[flow.leaderId]} 동행`, `${labels[flow.leaderId]} aligned`)
+      : t("방향 주도 불명", "Direction leader unclear");
+    const divergence = (flow?.subjects || []).map((subject) => `<article><span>${labels[subject.id] || subject.name}</span><strong>${subject.matchRate}%</strong><small>${subject.state === "aligned" ? t("지수와 동행", "Aligned with index") : subject.state === "contrarian" ? t("지수와 역행", "Contrarian to index") : t("일관성 낮음", "No stable relation")}</small></article>`).join("");
+    overview.innerHTML = `<div class="wl-flow-overview-head"><div><span>${t("L1 · 수급 구조", "L1 · Flow structure")}</span><h2>${flowLabel}</h2><p>${t("당일 순매수 규모와 별개로, 60거래일 동안 지수 방향과 얼마나 일관되게 움직였는지를 봅니다.", "Separate daily flow size from the 60-session consistency of each participant with the index direction.")}</p></div><b>${flow?.count || 0}${t(" 거래일", " sessions")}</b></div><div class="wl-flow-divergence">${divergence || `<p>${t("수급 이력을 확인 중입니다.", "Checking flow history.")}</p>`}</div>`;
+    if (!overview.isConnected) root.querySelector(".flow-data-line")?.after(overview);
     const subjects = (flow?.subjects || []).map((subject) => `<li><b>${labels[subject.id] || subject.name}</b><span>${subject.matchRate}% ${t("일치", "match")}</span><small>${subject.state === "aligned" ? t("동행", "Aligned") : subject.state === "contrarian" ? t("역행", "Contrarian") : t("무관", "Unrelated")}</small></li>`).join("");
     const summary = flow?.leaderConfidence === "confirmed"
       ? t(`${labels[flow.leaderId]}의 동행 신호가 규모 조건까지 충족했습니다.`, `${labels[flow.leaderId]} meets both alignment and size conditions.`)
